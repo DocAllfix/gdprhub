@@ -74,6 +74,29 @@ p.on("response", (r) => {
   if (r.status() >= 400) rete.push(`${r.status()} ${r.request().method()} ${r.url()}`);
 });
 
+/**
+ * Attende che il riquadro dei moduli dica una certa cosa.
+ *
+ * Non si aspetta un numero di millisecondi: su Vercel attivare un modulo richiede quasi
+ * cinque secondi — sessantacinque scritture e un giro di rete — e un'attesa a orologio
+ * bocciava in produzione ciò che passava in locale. Un test che dipende dalla latenza non
+ * verifica il prodotto, verifica la connessione.
+ */
+async function attendiModuli(p, regola, cosa) {
+  try {
+    await p.waitForFunction(
+      (fonte) =>
+        new RegExp(fonte).test(document.querySelector('[data-tour="moduli-azienda"]')?.textContent ?? ""),
+      regola.source,
+      { timeout: 60000 },
+    );
+    return true;
+  } catch {
+    problema(cosa);
+    return false;
+  }
+}
+
 const scatta = (n) => p.screenshot({ path: `${S}/${n}.png`, fullPage: true });
 
 // --- 1. La radice reindirizza all'accesso -------------------------------------------------
@@ -229,24 +252,28 @@ if (!/Attivo · 42 adempimenti/.test(testoModuli)) problema("il modulo GDPR non 
 
 // Attiva 81/08
 await p.locator('[data-tour="modulo-d81"]').click();
-await p.waitForTimeout(2500);
-const dopoAttiva = await p.locator('[data-tour="moduli-azienda"]').innerText();
-if (!/Attivo · 64 adempimenti/.test(dopoAttiva)) problema("attivando 81/08 non compaiono 64 adempimenti");
-else nota("81/08 attivato → 64 adempimenti");
+if (await attendiModuli(p, /Attivo · 64 adempimenti/, "attivando 81/08 non compaiono 64 adempimenti")) {
+  nota("81/08 attivato → 64 adempimenti");
+}
 
 // Disattiva GDPR: i dati devono restare
 await p.locator('[data-tour="modulo-gdpr"]').click();
-await p.waitForTimeout(2500);
-const dopoDisattiva = await p.locator('[data-tour="moduli-azienda"]').innerText();
-if (!/Non attivo · 42 adempimenti conservati/.test(dopoDisattiva)) {
-  problema("disattivando il GDPR non si dichiara che i dati restano conservati");
-} else nota("GDPR disattivato → 42 adempimenti conservati");
+if (
+  await attendiModuli(
+    p,
+    /Non attivo · 42 adempimenti conservati/,
+    "disattivando il GDPR non si dichiara che i dati restano conservati",
+  )
+) {
+  nota("GDPR disattivato → 42 adempimenti conservati");
+}
 await scatta("08-moduli");
 
 // Riattiva GDPR
 await p.locator('[data-tour="modulo-gdpr"]').click();
-await p.waitForTimeout(2500);
-nota("GDPR riattivato");
+if (await attendiModuli(p, /Attivo · 42 adempimenti/, "riattivando il GDPR i 42 adempimenti non tornano")) {
+  nota("GDPR riattivato → 42 adempimenti");
+}
 
 // --- 8. Scheda dell'azienda di esempio --------------------------------------------------------
 console.log("\n8 · Azienda di esempio");

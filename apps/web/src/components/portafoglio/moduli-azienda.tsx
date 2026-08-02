@@ -1,8 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { Check, Power } from "lucide-react";
-import { DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
+import { useFormStatus } from "react-dom";
+import { Check, Loader2, Power } from "lucide-react";
+import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
 import { commutaModulo, type Esito } from "@/features/portafoglio/azioni";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,11 +15,65 @@ import { cn } from "@/lib/utils";
 // lavoro ricompare. Una disattivazione distruttiva sarebbe un modo eccellente di perdere due
 // anni di documentazione con un clic, e il pulsante lo dice invece di lasciarlo indovinare.
 
+/** Quanti adempimenti crea l'attivazione: il pulsante lo dice prima di farlo. */
+const ATTESI = Object.fromEntries(DOMINI.map((d) => [d, CATALOGHI[d].length])) as Record<Dominio, number>;
+
 const TINTA: Readonly<Record<Dominio, string>> = {
   gdpr: "text-gdpr",
   d231: "text-d231",
   d81: "text-d81",
 };
+
+/**
+ * Il pulsante di un singolo modulo.
+ *
+ * Vive in un componente suo per usare `useFormStatus`, che dà lo stato di attesa DEL SUO
+ * form: `useActionState` è condiviso fra i tre e li farebbe girare tutti insieme.
+ *
+ * Perché serve davvero: misurato su Vercel, attivare un modulo richiede quasi cinque
+ * secondi — sessantacinque adempimenti da scrivere e un giro di rete verso il database.
+ * Con il solo `disabled` il consulente clicca e per cinque secondi non succede niente di
+ * visibile. Il pulsante dice cosa sta facendo e quanto lavoro comporta.
+ */
+function PulsanteModulo({
+  attivo,
+  dominio,
+  quanti,
+  disabilitato,
+  titolo,
+}: {
+  attivo: boolean;
+  dominio: Dominio;
+  quanti: number;
+  disabilitato: boolean;
+  titolo: string;
+}) {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      size="sm"
+      variant={attivo ? "outline" : "default"}
+      disabled={pending || disabilitato}
+      data-tour={`modulo-${dominio}`}
+      className="w-full"
+      title={titolo}
+    >
+      {pending ? (
+        <Loader2 className="size-3.5 animate-spin" aria-hidden />
+      ) : (
+        <Power className="size-3.5" aria-hidden />
+      )}
+      {pending
+        ? attivo
+          ? "Disattivazione…"
+          : `Creo ${quanti} adempimenti…`
+        : attivo
+          ? "Disattiva"
+          : "Attiva"}
+    </Button>
+  );
+}
 
 export function ModuliAzienda({
   aziendaId,
@@ -32,7 +87,7 @@ export function ModuliAzienda({
   conteggi: Readonly<Record<Dominio, number>>;
   modificabile: boolean;
 }) {
-  const [esito, azione, inCorso] = useActionState<Esito | null, FormData>(commutaModulo, null);
+  const [esito, azione] = useActionState<Esito | null, FormData>(commutaModulo, null);
 
   return (
     <div className="space-y-3" data-tour="moduli-azienda">
@@ -66,24 +121,19 @@ export function ModuliAzienda({
               <form action={azione} className="mt-auto">
                 <input type="hidden" name="aziendaId" value={aziendaId} />
                 <input type="hidden" name="dominio" value={d} />
-                <Button
-                  type="submit"
-                  size="sm"
-                  variant={attivo ? "outline" : "default"}
-                  disabled={inCorso || !modificabile}
-                  data-tour={`modulo-${d}`}
-                  className="w-full"
-                  title={
+                <PulsanteModulo
+                  attivo={attivo}
+                  dominio={d}
+                  quanti={ATTESI[d]}
+                  disabilitato={!modificabile}
+                  titolo={
                     modificabile
                       ? attivo
                         ? "I dati restano conservati e ricompaiono riattivando"
                         : "Crea gli adempimenti del catalogo per questa azienda"
                       : "Serve il ruolo consulente o superiore"
                   }
-                >
-                  <Power className="size-3.5" aria-hidden />
-                  {attivo ? "Disattiva" : "Attiva"}
-                </Button>
+                />
               </form>
             </div>
           );
