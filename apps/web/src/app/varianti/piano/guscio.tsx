@@ -21,8 +21,15 @@ import { cn } from "@/lib/utils";
 // fra colonna e contenuto in ciascuno dei tre affinamenti, che è una cosa che su una
 // schermata isolata non si può vedere.
 //
-// La barra resta appiccicata mentre si scorrono le sette schermate: è come si comporta nel
+// La barra resta appiccicata mentre si scorrono le schermate: è come si comporta nel
 // prodotto, e valutarla ferma in cima non direbbe niente.
+//
+// ATTENZIONE AL CONTENITORE. `sticky` smette di funzionare se un antenato ha
+// `overflow: hidden`, perché quell'antenato diventa il contenitore di scorrimento di
+// riferimento e la barra si aggancia a un riquadro che scorre insieme alla pagina. Le
+// anteprime tagliano gli angoli con `overflow-clip`, che ritaglia senza creare un
+// contenitore di scorrimento. Difetto trovato guardando uno scatto in cui la colonna era
+// sparita, non leggendo il codice.
 
 const MENU = [
   { e: "Cruscotto", I: LayoutGrid },

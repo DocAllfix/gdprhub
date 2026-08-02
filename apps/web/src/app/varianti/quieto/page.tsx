@@ -142,7 +142,7 @@ function Anteprima({ v }: { v: VarianteQuieto }) {
   const d = datiVarianti();
   return (
     <div>
-      <div className="sticky top-0 z-20 -mx-6 mb-5 border-y border-border-strong bg-background/95 px-6 py-3 backdrop-blur">
+      <div className="-mx-6 mb-5 border-y border-border-strong bg-surface px-6 py-3">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <h2 className="titolo text-2xl">{v.nome}</h2>
           <p className="text-sm text-muted-foreground">{v.frase}</p>
@@ -156,7 +156,7 @@ function Anteprima({ v }: { v: VarianteQuieto }) {
         </div>
       </div>
 
-      <div data-quieto={v.id} className="overflow-hidden rounded-xl">
+      <div data-quieto={v.id} className="overflow-clip rounded-xl">
         <Guscio>
           <div className="space-y-8">
             {SCHERMATE.map((x) => (
