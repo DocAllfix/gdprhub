@@ -13,6 +13,33 @@ import { auditLog, catalogVersion, obligationLink, obligationTemplate } from "./
 const id = () => randomUUID();
 let versioneId: string;
 
+/**
+ * Esegue una query che DEVE essere respinta e restituisce l'intera catena di messaggi.
+ *
+ * Serve perché Drizzle avvolge l'errore di Postgres in un «Failed query: …» e il motivo
+ * vero — il nome del vincolo, il messaggio del trigger — resta in `cause`. Asserire sul
+ * messaggio esterno farebbe passare un test anche se la query fallisse per tutt'altro.
+ */
+async function motivoDelRifiuto(azione: () => Promise<unknown>): Promise<string> {
+  let errore: unknown;
+  let accettata = false;
+  try {
+    await azione();
+    accettata = true;
+  } catch (e) {
+    errore = e;
+  }
+  if (accettata) throw new Error("La query è stata ACCETTATA: il vincolo non è attivo sul database.");
+
+  const catena: string[] = [];
+  let corrente: unknown = errore;
+  while (corrente instanceof Error) {
+    catena.push(corrente.message);
+    corrente = (corrente as { cause?: unknown }).cause;
+  }
+  return catena.join(" || ");
+}
+
 beforeAll(async () => {
   versioneId = id();
   await db.insert(catalogVersion).values({
@@ -41,16 +68,18 @@ describe("registri append-only", () => {
     // È il motivo per cui si usa un trigger e non una revoca di privilegi: l'applicazione
     // si collega spesso come owner, e un GRANT non la fermerebbe.
     const [riga] = await db.insert(auditLog).values({ azione: "prova.immutabile" }).returning();
-    await expect(
+    const motivo = await motivoDelRifiuto(() =>
       db.execute(sql`UPDATE audit_log SET azione = 'manomessa' WHERE id = ${riga!.id}`),
-    ).rejects.toThrow(/append-only/);
+    );
+    expect(motivo).toMatch(/append-only/);
   });
 
   it("una riga di audit NON si può cancellare", async () => {
     const [riga] = await db.insert(auditLog).values({ azione: "prova.indelebile" }).returning();
-    await expect(db.execute(sql`DELETE FROM audit_log WHERE id = ${riga!.id}`)).rejects.toThrow(
-      /append-only/,
+    const motivo = await motivoDelRifiuto(() =>
+      db.execute(sql`DELETE FROM audit_log WHERE id = ${riga!.id}`),
     );
+    expect(motivo).toMatch(/append-only/);
   });
 
   it("dopo un tentativo fallito la riga è ancora lì, intatta", async () => {
@@ -76,7 +105,7 @@ describe("coerenza della periodicità", () => {
   it("un adempimento periodico senza mesi viene respinto", async () => {
     // Senza cadenza la scadenza non si deriva più, e l'obbligo sparisce silenziosamente
     // dallo scadenzario: è il difetto peggiore possibile per questo prodotto.
-    await expect(
+    const motivo = await motivoDelRifiuto(() =>
       db.insert(obligationTemplate).values({
         ...base,
         id: id(),
@@ -85,11 +114,12 @@ describe("coerenza della periodicità", () => {
         periodicitaTipo: "periodica",
         periodicitaMesi: null,
       }),
-    ).rejects.toThrow(/periodicita_coerente/);
+    );
+    expect(motivo).toMatch(/periodicita_coerente/);
   });
 
   it("un presidio continuo con dei mesi viene respinto", async () => {
-    await expect(
+    const motivo = await motivoDelRifiuto(() =>
       db.insert(obligationTemplate).values({
         ...base,
         id: id(),
@@ -98,7 +128,8 @@ describe("coerenza della periodicità", () => {
         periodicitaTipo: "continua",
         periodicitaMesi: 12,
       }),
-    ).rejects.toThrow(/periodicita_coerente/);
+    );
+    expect(motivo).toMatch(/periodicita_coerente/);
   });
 
   it("le combinazioni valide passano", async () => {
@@ -142,7 +173,7 @@ describe("i collegamenti devono attraversare due domini", () => {
       { ...comune, id: b, codice: "Y02" },
     ]);
 
-    await expect(
+    const motivo = await motivoDelRifiuto(() =>
       db.insert(obligationLink).values({
         id: id(),
         catalogVersionId: versioneId,
@@ -152,6 +183,7 @@ describe("i collegamenti devono attraversare due domini", () => {
         riferimento: "prova",
         motivo: "prova",
       }),
-    ).rejects.toThrow(/Collegamento interno al dominio/);
+    );
+    expect(motivo).toMatch(/Collegamento interno al dominio/);
   });
 });
