@@ -15,7 +15,10 @@ const schema = z.object({
   /** URL pubblico dell'istanza. Better Auth lo legge all'avvio (Fase 3). */
   APP_URL: z.url().default("http://localhost:3000"),
 
-  /** Postgres. Su Vercel è Neon (region EU); in produzione il container dello stack. */
+  /**
+   * Postgres, una stringa sola: su Vercel la inietta l'integrazione Neon (region EU), in
+   * produzione arriva dal container dello stack. Serve sia al runtime sia alle migrazioni.
+   */
   DATABASE_URL: z.string().min(1).optional(),
 
   /**

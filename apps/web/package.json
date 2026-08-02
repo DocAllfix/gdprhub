@@ -12,7 +12,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "gate:visivo": "node scripts/gate-visivo.mjs"
+    "gate:visivo": "node scripts/gate-visivo.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "node --experimental-strip-types src/lib/db/seed.ts"
   },
   "dependencies": {
     "@gdpr/engine": "workspace:*",
@@ -21,7 +25,9 @@
     "puppeteer-core": "^25.4.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
@@ -34,6 +40,7 @@
     "playwright": "^1.62.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "drizzle-kit": "^0.31.10"
   }
 }
