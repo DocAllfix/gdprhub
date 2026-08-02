@@ -1,0 +1,300 @@
+{
+  "cliente": "Gruppo Industriale Verdi S.p.A.",
+  "fonte": "Prototipo GDPR Compliance Hub v2",
+  "controlli": [
+    {
+      "codice": "T01",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": -12,
+      "priorita": "Critica",
+      "rischio": 9
+    },
+    {
+      "codice": "T02",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 3,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "T03",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 18,
+      "priorita": "Critica",
+      "rischio": 9
+    },
+    {
+      "codice": "T04",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": -2,
+      "priorita": "Alta",
+      "rischio": 8
+    },
+    {
+      "codice": "T05",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 5,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "T06",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 12,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "T07",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 7,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "T08",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 25,
+      "priorita": "Critica",
+      "rischio": 9
+    },
+    {
+      "codice": "T09",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 45,
+      "priorita": "Media",
+      "rischio": 6
+    },
+    {
+      "codice": "T10",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 60,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "T11",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": -25,
+      "priorita": "Critica",
+      "rischio": 9
+    },
+    {
+      "codice": "T12",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": -40,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "T13",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 10,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "T14",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": 2,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "T15",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 30,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "T16",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 15,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "T17",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 22,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "T18",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 55,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "T19",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 4,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "T20",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 90,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "R01",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": -5,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "R02",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 6,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "R03",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 20,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "R04",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": 1,
+      "priorita": "Critica",
+      "rischio": 9
+    },
+    {
+      "codice": "R05",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 8,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "R06",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 35,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "R07",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 14,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "R08",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 28,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "R09",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 40,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "R10",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 70,
+      "priorita": "Media",
+      "rischio": 4
+    },
+    {
+      "codice": "D01",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": -8,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "D02",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 9,
+      "priorita": "Critica",
+      "rischio": 8
+    },
+    {
+      "codice": "D03",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 11,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "D04",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": 3,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "D05",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 50,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "D06",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 16,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "D07",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 2,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "D08",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 6,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "D09",
+      "stato": "In ritardo",
+      "scadenzaOffsetGiorni": -15,
+      "priorita": "Alta",
+      "rischio": 7
+    },
+    {
+      "codice": "D10",
+      "stato": "Completata",
+      "scadenzaOffsetGiorni": 19,
+      "priorita": "Media",
+      "rischio": 5
+    },
+    {
+      "codice": "D11",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 32,
+      "priorita": "Alta",
+      "rischio": 6
+    },
+    {
+      "codice": "D12",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 65,
+      "priorita": "Media",
+      "rischio": 5
+    }
+  ]
+}

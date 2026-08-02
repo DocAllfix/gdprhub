@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifica:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.2.2
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Il catalogo dei controlli deve restare tracciabile al prototipo: se qualcuno lo
+      # modifica a mano invece di rigenerarlo, la build si ferma qui.
+      - name: Catalogo allineato al prototipo
+        run: pnpm seed:check
+
+      - name: Formattazione
+        run: pnpm format
+
+      - name: Tipi
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      # Il motore è la fonte di verità dei calcoli: non deve poter acquisire dipendenze
+      # a runtime, o smette di essere portabile e verificabile in isolamento.
+      - name: Il motore resta senza dipendenze
+        run: |
+          if node -e "const p=require('./packages/engine/package.json');process.exit(p.dependencies&&Object.keys(p.dependencies).length?1:0)"; then
+            echo "ok: nessuna dipendenza a runtime"
+          else
+            echo "::error::packages/engine ha acquisito dipendenze a runtime"; exit 1
+          fi

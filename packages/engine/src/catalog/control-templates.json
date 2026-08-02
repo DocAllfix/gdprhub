@@ -1,0 +1,422 @@
+[
+  {
+    "codice": "T01",
+    "titolo": "Registro trattamenti art. 30.1",
+    "descrizione": "Redazione e aggiornamento del registro delle attività di trattamento del Titolare con finalità, categorie, destinatari, misure di sicurezza.",
+    "articolo": "Art. 30.1 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 9
+  },
+  {
+    "codice": "T02",
+    "titolo": "Nomine Responsabili art. 28",
+    "descrizione": "Formalizzazione nomine responsabili esterni (fornitori, consulenti, SaaS) con art. 28 e verifica garanzie.",
+    "articolo": "Art. 28 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "T03",
+    "titolo": "DPIA - Valutazione impatto art. 35",
+    "descrizione": "Esecuzione DPIA per trattamenti ad alto rischio (videosorveglianza, profilazione, dati sanitari). Coinvolgimento DPO.",
+    "articolo": "Art. 35 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 9
+  },
+  {
+    "codice": "T04",
+    "titolo": "Registro Data Breach art. 33",
+    "descrizione": "Tenuta registro violazioni e procedura notifica Garante 72h e interessati senza ritardo.",
+    "articolo": "Art. 33-34 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "T05",
+    "titolo": "Informative artt. 13-14",
+    "descrizione": "Aggiornamento informative sito, dipendenti, clienti, fornitori con base giuridica, tempi conservazione, diritti.",
+    "articolo": "Art. 13-14 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Semestrale",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "T06",
+    "titolo": "Gestione consensi art. 7",
+    "descrizione": "Mappatura consensi marketing, cookie banner conforme, prova del consenso e revoca facile.",
+    "articolo": "Art. 7 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "T07",
+    "titolo": "Esercizio diritti interessati art. 12-22",
+    "descrizione": "Procedura gestione accesso, rettifica, cancellazione, portabilità, opposizione con SLA 30gg.",
+    "articolo": "Art. 12-22 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "T08",
+    "titolo": "Misure di sicurezza art. 32",
+    "descrizione": "Verifica cifratura, pseudonimizzazione, backup, resilienza, test vulnerabilità e log accessi.",
+    "articolo": "Art. 32 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Semestrale",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 9
+  },
+  {
+    "codice": "T09",
+    "titolo": "Politiche conservazione art. 5.1.e",
+    "descrizione": "Definizione tempi di conservazione per categoria dati e procedure di cancellazione sicura.",
+    "articolo": "Art. 5.1.e GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Media",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "T10",
+    "titolo": "LIA - Legittimo interesse",
+    "descrizione": "Bilanciamento per marketing B2B, antifrode, videosorveglianza con documentazione LIA.",
+    "articolo": "Art. 6.1.f GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "T11",
+    "titolo": "Trasferimenti extra UE art. 44-49",
+    "descrizione": "Mappatura trasferimenti USA, SCC, TIA, verifica adeguatezza e misure supplementari.",
+    "articolo": "Art. 44-49 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 9
+  },
+  {
+    "codice": "T12",
+    "titolo": "Nomina DPO art. 37",
+    "descrizione": "Valutazione obbligo nomina DPO, atto di nomina, comunicazione al Garante, pubblicazione contatti.",
+    "articolo": "Art. 37 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Una tantum",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "T13",
+    "titolo": "Audit interni periodici",
+    "descrizione": "Piano audit privacy su processi critici, check-list, evidenze, piano di remediation.",
+    "articolo": "Art. 24 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Semestrale",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "T14",
+    "titolo": "Formazione staff privacy",
+    "descrizione": "Formazione obbligatoria dipendenti, test, attestati, focus su data breach e phishing.",
+    "articolo": "Art. 39 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "T15",
+    "titolo": "Privacy by Design art. 25",
+    "descrizione": "Integrazione privacy by design/default in nuovi progetti IT, checklist sviluppo.",
+    "articolo": "Art. 25 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "T16",
+    "titolo": "Contratti Titolare-Responsabile",
+    "descrizione": "Adeguamento contrattuale con clausole art.28, audit, sub-responsabili, responsabilità.",
+    "articolo": "Art. 28 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "T17",
+    "titolo": "Procedure Data Breach 33-34",
+    "descrizione": "Playbook breach: detection, containment, assessment rischio, notifica, comunicazione interessati.",
+    "articolo": "Art. 33-34 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "T18",
+    "titolo": "Valutazione fornitori",
+    "descrizione": "Due diligence privacy fornitori critici, questionari, certificazioni ISO 27001, SOC2.",
+    "articolo": "Art. 28 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Semestrale",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "T19",
+    "titolo": "Registro consensi e revoche",
+    "descrizione": "Tracciamento consensi marketing, revoche, proof log immutabile e sincronizzazione CRM.",
+    "articolo": "Art. 7 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "T20",
+    "titolo": "Analisi gap art. 5 Accountability",
+    "descrizione": "Gap analysis principi liceità, minimizzazione, esattezza, limitazione, integrità.",
+    "articolo": "Art. 5 GDPR",
+    "ruolo": "Titolare",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "R01",
+    "titolo": "Registro art. 30.2 Responsabile",
+    "descrizione": "Registro categorie trattamenti svolti per conto dei Titolari con dettaglio finalità e misure.",
+    "articolo": "Art. 30.2 GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "R02",
+    "titolo": "Sicurezza trattamenti",
+    "descrizione": "Implementazione misure tecniche: cifratura at-rest, TLS, MFA, hardening, logging.",
+    "articolo": "Art. 32 GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "R03",
+    "titolo": "Sub-responsabili art. 28.2",
+    "descrizione": "Autorizzazione preventiva Titolare, elenco sub, contratti a cascata, monitoraggio.",
+    "articolo": "Art. 28.2 GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "R04",
+    "titolo": "Notifica breach a Titolare 24-72h",
+    "descrizione": "Procedura notifica immediata a Titolare in 24h, report tecnico, mitigazione.",
+    "articolo": "Art. 33.2 GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 9
+  },
+  {
+    "codice": "R05",
+    "titolo": "Assistenza esercizio diritti",
+    "descrizione": "Supporto tecnico a Titolare per riscontro diritti interessati entro SLA.",
+    "articolo": "Art. 28.3.e GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "R06",
+    "titolo": "Restituzione/cancellazione art. 28.3.g",
+    "descrizione": "Procedura fine servizio: restituzione dati in formato interoperabile e cancellazione sicura.",
+    "articolo": "Art. 28.3.g GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "R07",
+    "titolo": "Misure tecniche e organizzative",
+    "descrizione": "Manutenzione MTOM, backup testati, disaster recovery, vulnerability management.",
+    "articolo": "Art. 32 GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Mensile",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "R08",
+    "titolo": "Cooperazione Titolare-DPO",
+    "descrizione": "Canale diretto con DPO, report sicurezza, supporto ispezioni Garante.",
+    "articolo": "Art. 31 GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "R09",
+    "titolo": "Registro richieste Titolare",
+    "descrizione": "Tracciamento istruzioni Titolare, change log trattamenti, audit trail.",
+    "articolo": "Art. 28 GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "R10",
+    "titolo": "Audit supporto",
+    "descrizione": "Supporto audit Titolare, fornitura evidenze, piano correttivo.",
+    "articolo": "Art. 28.3.h GDPR",
+    "ruolo": "Responsabile",
+    "frequenza": "Semestrale",
+    "prioritaDefault": "Media",
+    "rischioDefault": 4
+  },
+  {
+    "codice": "D01",
+    "titolo": "Piano sorveglianza art. 39.1.b",
+    "descrizione": "Piano annuale sorveglianza conformità, KPI, controlli, reporting CdA.",
+    "articolo": "Art. 39.1.b GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "D02",
+    "titolo": "Pareri DPIA art. 35",
+    "descrizione": "Rilascio pareri su DPIA, valutazione necessità consultazione preventiva Garante.",
+    "articolo": "Art. 35 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Al verificarsi",
+    "prioritaDefault": "Critica",
+    "rischioDefault": 8
+  },
+  {
+    "codice": "D03",
+    "titolo": "Registro pareri DPO",
+    "descrizione": "Archivio pareri, consulenze, follow-up e tracciamento attuazione raccomandazioni.",
+    "articolo": "Art. 39 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "D04",
+    "titolo": "Formazione interna privacy",
+    "descrizione": "Piano formazione differenziata per HR, Marketing, IT, Legal con attestazione.",
+    "articolo": "Art. 39.1.b GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Semestrale",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "D05",
+    "titolo": "Punto contatto Garante art. 39.1.e",
+    "descrizione": "Gestione rapporti con Garante, consultazioni preventive, tenuta fascicoli.",
+    "articolo": "Art. 39.1.e GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "D06",
+    "titolo": "Report annuale DPO",
+    "descrizione": "Relazione annuale attività DPO per Titolare, trend, rischi, roadmap.",
+    "articolo": "Art. 39 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "D07",
+    "titolo": "Monitoraggio normativo",
+    "descrizione": "Watch su linee guida EDPB, provvedimenti Garante, sentenze, newsletter interna.",
+    "articolo": "Art. 39 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Mensile",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "D08",
+    "titolo": "Gestione reclami interessati",
+    "descrizione": "Procedura reclami, mediazione, coordinamento con Ufficio Legale.",
+    "articolo": "Art. 38 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "D09",
+    "titolo": "Sorveglianza registro trattamenti",
+    "descrizione": "Verifica completezza registro art.30, coerenza con informative e contratti.",
+    "articolo": "Art. 39 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Semestrale",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 7
+  },
+  {
+    "codice": "D10",
+    "titolo": "Consulenza contrattualistica",
+    "descrizione": "Review clausole data protection in contratti, DPA, SCC, addendum.",
+    "articolo": "Art. 28 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Continuo",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  },
+  {
+    "codice": "D11",
+    "titolo": "Mappatura flussi dati",
+    "descrizione": "Aggiornamento data flow map, RoPA incrociato, sistemi e basi dati.",
+    "articolo": "Art. 30 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Alta",
+    "rischioDefault": 6
+  },
+  {
+    "codice": "D12",
+    "titolo": "Piano audit privacy",
+    "descrizione": "Pianificazione audit 12 mesi, risk-based, con follow-up azioni correttive.",
+    "articolo": "Art. 39 GDPR",
+    "ruolo": "DPO",
+    "frequenza": "Annuale",
+    "prioritaDefault": "Media",
+    "rischioDefault": 5
+  }
+]

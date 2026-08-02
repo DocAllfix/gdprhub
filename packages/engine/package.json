@@ -1,0 +1,22 @@
+{
+  "name": "@gdpr/engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Motore di calcolo GDPR: unica fonte di verità di formule, soglie e giudizi. TypeScript puro, zero dipendenze, zero I/O.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./catalog": "./src/catalog/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.10",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

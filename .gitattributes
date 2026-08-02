@@ -1,0 +1,7 @@
+# Fine riga normalizzata a LF nel repository: gli script di deploy girano su Linux e
+# uno script committato con CRLF non parte ("bad interpreter").
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.pdf binary

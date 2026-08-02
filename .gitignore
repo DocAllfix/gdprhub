@@ -1,0 +1,37 @@
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# build
+dist/
+build/
+*.tsbuildinfo
+
+# ambiente — mai committare i segreti
+.env
+.env.*
+!.env.example
+
+# test
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# verifica visiva: gli screenshot si rigenerano, non si versionano
+screenshot/
+
+# deploy
+.vercel/
+deploy/.env.prod
+deploy/fleet.txt
+
+# sistema
+.DS_Store
+Thumbs.db
+*.log

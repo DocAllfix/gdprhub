@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+# Script di post-installazione consentiti. Tutti e tre collegano un binario nativo
+# della piattaforma: senza, il pacchetto non funziona.
+#   esbuild        → motore di trasformazione di Vitest
+#   sharp          → ottimizzazione immagini di Next
+#   unrs-resolver  → risolutore dei moduli di ESLint
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true

@@ -1,0 +1,11 @@
+node_modules
+.next
+dist
+coverage
+screenshot
+playwright-report
+test-results
+pnpm-lock.yaml
+archivio
+# Generato da scripts/extract-seed.mjs: si rigenera, non si riformatta.
+packages/engine/src/catalog/*.json
