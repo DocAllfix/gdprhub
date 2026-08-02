@@ -89,6 +89,19 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
       <section className="mt-8">
         <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-3">
           <h2 className="text-sm font-semibold tracking-tight">Prossime scadenze</h2>
+          {attivi.length > 0 ? (
+            <p className="text-xs text-muted-foreground">
+              Assessment completo:{" "}
+              {attivi.map((d, i) => (
+                <span key={d}>
+                  {i > 0 ? " · " : ""}
+                  <Link href={`/azienda/${a.id}/${d}`} className="underline hover:text-foreground">
+                    {ETICHETTE_DOMINIO[d].breve}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          ) : null}
           {c ? (
             <p className="text-xs">
               <span className="text-scaduta">{c.Scaduta} scadute</span>

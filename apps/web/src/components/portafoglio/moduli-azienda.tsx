@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { Check, Loader2, Power } from "lucide-react";
 import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
@@ -107,10 +108,14 @@ export function ModuliAzienda({
 
               <p className="text-xs">
                 {attivo ? (
-                  <span className="inline-flex items-center gap-1 text-regolare">
+                  <Link
+                    href={`/azienda/${aziendaId}/${d}`}
+                    data-tour={`apri-${d}`}
+                    className="inline-flex items-center gap-1 text-regolare hover:underline"
+                  >
                     <Check className="size-3.5" aria-hidden />
                     Attivo · {censiti} adempimenti
-                  </span>
+                  </Link>
                 ) : (
                   <span className="text-faint-foreground">
                     Non attivo{censiti > 0 ? ` · ${censiti} adempimenti conservati` : ""}

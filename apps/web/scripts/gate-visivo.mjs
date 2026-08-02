@@ -376,7 +376,11 @@ async function risolviDinamiche(browser, pagine) {
     );
     return pagine.filter((p) => !p.dinamica);
   }
-  return pagine.map((p) => (p.dinamica ? { ...p, percorso: primaAzienda } : p));
+  // `:prima` diventa l'identificativo trovato; il resto del percorso si conserva, così
+  // /azienda/:prima/d81 punta all'assessment della stessa azienda.
+  return pagine.map((p) =>
+    p.dinamica ? { ...p, percorso: p.percorso.replace("/azienda/:prima", primaAzienda) } : p,
+  );
 }
 
 async function main() {

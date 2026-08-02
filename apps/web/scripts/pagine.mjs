@@ -15,6 +15,13 @@ export const PAGINE = [
   { percorso: "/accedi", nome: "Accesso", fase: 6 },
   { percorso: "/portafoglio", nome: "Portafoglio", fase: 6, autenticata: true },
   { percorso: "/azienda/:prima", nome: "Scheda azienda", fase: 6, autenticata: true, dinamica: true },
+  {
+    percorso: "/azienda/:prima/d81",
+    nome: "Assessment 81/08",
+    fase: 7,
+    autenticata: true,
+    dinamica: true,
+  },
   { percorso: "/impostazioni", nome: "Impostazioni", fase: 6, autenticata: true },
   { percorso: "/design", nome: "Sistema di design", fase: 5 },
 ];

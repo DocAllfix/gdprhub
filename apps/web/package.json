@@ -25,7 +25,8 @@
     "db:seed-demo": "tsx --env-file-if-exists=.env.local src/lib/db/seed-demo-cli.ts",
     "db:demo-reset": "tsx --env-file-if-exists=.env.local src/lib/db/demo-reset-cli.ts",
     "db:consegna": "tsx --env-file-if-exists=.env.local src/lib/db/consegna-cli.ts",
-    "percorso": "node scripts/percorso.mjs"
+    "percorso": "node scripts/percorso.mjs",
+    "db:collaudatori": "tsx --env-file-if-exists=.env.local src/lib/db/collaudatori-cli.ts"
   },
   "dependencies": {
     "@gdpr/engine": "workspace:*",

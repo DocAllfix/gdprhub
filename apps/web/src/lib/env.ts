@@ -47,6 +47,19 @@ const schema = z.object({
   ADMIN_EMAIL: z.email().optional(),
   ADMIN_PASSWORD: z.string().min(12).optional(),
   ADMIN_NOME: z.string().default("Amministratore"),
+
+  /**
+   * Impone il cambio password al primo accesso.
+   *
+   * Acceso di default, e sulle istanze vendute deve restarlo: le credenziali iniziali stanno
+   * in chiaro nel file d'ambiente di una macchina che non controlliamo, e quella finestra va
+   * chiusa. Si spegne dove le utenze si creano a mano per far provare il sistema, perché lì
+   * chi consegna la password la conosce già e l'attrito non protegge nessuno.
+   */
+  RICHIEDI_CAMBIO_PASSWORD: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((v) => v === "true"),
   /** Nome dello studio proprietario dell'istanza. */
   STUDIO_NOME: z.string().default("Studio"),
 

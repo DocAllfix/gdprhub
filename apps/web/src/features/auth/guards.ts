@@ -2,6 +2,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { env } from "@/lib/env";
 import { db } from "@/lib/db";
 import { instanceConfig, member, organization } from "@/lib/db/schema";
 
@@ -93,7 +94,11 @@ export const requireStudio = cache(async (): Promise<ContestoStudio> => {
     organizationId: studio.id,
     studioNome: config?.brandNome ?? studio.name,
     ruolo: appartenenza.role,
-    mustChangePassword: Boolean((sessione.user as { mustChangePassword?: boolean }).mustChangePassword),
+    // L'obbligo vale solo dove l'istanza lo chiede: sulla vetrina le utenze si creano a
+    // mano per far provare il sistema, e chi consegna la password la conosce già.
+    mustChangePassword:
+      env.RICHIEDI_CAMBIO_PASSWORD &&
+      Boolean((sessione.user as { mustChangePassword?: boolean }).mustChangePassword),
     profilo: config?.profilo ?? "consulente",
     mode: config?.mode ?? "full",
   };

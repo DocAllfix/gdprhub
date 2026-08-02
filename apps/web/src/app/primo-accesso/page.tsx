@@ -1,83 +1,31 @@
-"use client";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { NonAutenticato, requireStudio } from "@/features/auth/guards";
+import { ModuloPrimoAccesso } from "./modulo";
 
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { AlertCircle, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cambiaPassword, type EsitoCambio } from "./azione";
+// Il cambio password forzato, con il suo guard.
+//
+// Serve in ENTRAMBE le direzioni: chi non ha ancora cambiato la password non esce di qui
+// (lo impone il layout dell'applicazione), e chi l'ha già cambiata non ci rientra.
+//
+// Senza il secondo verso, chi ricarica la pagina dopo aver cambiato la password si ritrova
+// davanti lo stesso modulo, prova le credenziali iniziali che non valgono più, e resta
+// bloccato senza capire perché. È successo al committente al primo accesso reale.
 
-// Il cambio password forzato. La pagina non ha navigazione: finché la password iniziale è
-// in vigore non si va da nessuna parte, ed è il punto.
+export const metadata: Metadata = { title: "Cambia la password" };
+export const dynamic = "force-dynamic";
 
-export default function PaginaPrimoAccesso() {
-  const router = useRouter();
-  const [esito, azione, inCorso] = useActionState<EsitoCambio | null, FormData>(cambiaPassword, null);
+export default async function PaginaPrimoAccesso() {
+  // Il reindirizzamento sta FUORI dal try: `redirect` funziona lanciando un'eccezione, e
+  // dentro un catch generico verrebbe intercettata insieme agli errori veri.
+  let deveCambiare: boolean;
+  try {
+    deveCambiare = (await requireStudio()).mustChangePassword;
+  } catch (errore) {
+    if (errore instanceof NonAutenticato) redirect("/accedi");
+    throw errore;
+  }
 
-  useEffect(() => {
-    if (esito?.ok) {
-      router.replace("/portafoglio");
-      router.refresh();
-    }
-  }, [esito, router]);
-
-  return (
-    <main className="flex min-h-dvh items-center justify-center px-6 py-16">
-      <div className="w-full max-w-sm">
-        <ShieldCheck className="size-5 text-muted-foreground" aria-hidden />
-        <h1 className="mt-3 text-xl font-semibold tracking-tight">Cambia la password</h1>
-        <p className="mt-1 mb-6 text-sm text-muted-foreground">
-          Le credenziali iniziali sono scritte nel file di configurazione dell&apos;istanza. Restano valide
-          finché non le sostituisci: fallo adesso.
-        </p>
-
-        <form action={azione} className="space-y-4" data-tour="primo-accesso" noValidate>
-          <div className="space-y-1.5">
-            <label htmlFor="attuale" className="text-xs font-medium">
-              Password attuale
-            </label>
-            <Input id="attuale" name="attuale" type="password" autoComplete="current-password" required />
-          </div>
-          <div className="space-y-1.5">
-            <label htmlFor="nuova" className="text-xs font-medium">
-              Nuova password
-            </label>
-            <Input
-              id="nuova"
-              name="nuova"
-              type="password"
-              autoComplete="new-password"
-              minLength={12}
-              required
-            />
-            <p className="text-xs text-muted-foreground">Almeno dodici caratteri.</p>
-          </div>
-          <div className="space-y-1.5">
-            <label htmlFor="conferma" className="text-xs font-medium">
-              Ripeti la nuova password
-            </label>
-            <Input
-              id="conferma"
-              name="conferma"
-              type="password"
-              autoComplete="new-password"
-              minLength={12}
-              required
-            />
-          </div>
-
-          {esito && !esito.ok ? (
-            <p role="alert" className="flex items-start gap-1.5 text-xs text-scaduta">
-              <AlertCircle className="mt-px size-3.5 shrink-0" aria-hidden />
-              {esito.errore}
-            </p>
-          ) : null}
-
-          <Button type="submit" disabled={inCorso} className="w-full">
-            {inCorso ? "Aggiornamento…" : "Aggiorna la password"}
-          </Button>
-        </form>
-      </div>
-    </main>
-  );
+  if (!deveCambiare) redirect("/portafoglio");
+  return <ModuloPrimoAccesso />;
 }

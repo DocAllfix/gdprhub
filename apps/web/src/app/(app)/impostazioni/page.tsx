@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { eq } from "drizzle-orm";
 import { DOMINI, ETICHETTE_DOMINIO, TUTTI_I_TEMPLATES } from "@gdpr/engine";
 import { db } from "@/lib/db";
-import { catalogVersion } from "@/lib/db/schema";
+import { catalogVersion, member, user } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";
 import { PRODOTTO } from "@/lib/brand";
 import { FormMarchio } from "@/components/impostazioni/form-marchio";
+import { GestioneUtenti, type RigaUtente } from "@/components/impostazioni/utenti";
 
 export const metadata: Metadata = { title: "Impostazioni" };
 export const dynamic = "force-dynamic";
@@ -14,8 +15,18 @@ export default async function PaginaImpostazioni() {
   const ctx = await requireStudio();
   const versione = await db.query.catalogVersion.findFirst({ where: eq(catalogVersion.attiva, "si") });
 
+  const membri = await db
+    .select({ id: user.id, nome: user.name, email: user.email, ruolo: member.role })
+    .from(member)
+    .innerJoin(user, eq(user.id, member.userId))
+    .where(eq(member.organizationId, ctx.organizationId));
+
+  const utenti: RigaUtente[] = membri
+    .map((m) => ({ ...m, io: m.id === ctx.userId }))
+    .sort((a, b) => a.nome.localeCompare(b.nome));
+
   return (
-    <div className="mx-auto max-w-3xl px-6 py-8">
+    <div className="mx-auto max-w-5xl px-6 py-8">
       <header>
         <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Impostazioni</p>
         <h1 className="mt-1.5 text-2xl font-semibold tracking-tight">Istanza e studio</h1>
@@ -28,6 +39,15 @@ export default async function PaginaImpostazioni() {
           una perizia al CdA di un cliente, la carta intestata propria vale più di molte funzionalità.
         </p>
         <FormMarchio nome={ctx.studioNome} modificabile={ctx.ruolo === "admin"} />
+      </section>
+
+      <section className="mt-9">
+        <h2 className="text-sm font-semibold tracking-tight">Utenze</h2>
+        <p className="mt-1 mb-3 max-w-prose text-sm text-muted-foreground">
+          Non esiste registrazione: le utenze le crea un amministratore. La password si vede una volta sola,
+          al momento della creazione, e non viene registrata da nessuna parte.
+        </p>
+        <GestioneUtenti utenti={utenti} modificabile={ctx.ruolo === "admin"} />
       </section>
 
       <section className="mt-9">
