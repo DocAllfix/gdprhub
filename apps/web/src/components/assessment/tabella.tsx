@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { X } from "lucide-react";
-import { STATI_LAVORO, STATI_SCADENZA, type StatoLavoro } from "@gdpr/engine";
+import { useRouter } from "next/navigation";
+import { useFiltriUrl } from "@/lib/filtri-url";
+import { Link2, X } from "lucide-react";
+import { ETICHETTE_DOMINIO, STATI_LAVORO, STATI_SCADENZA, type StatoLavoro } from "@gdpr/engine";
 import type { RigaAssessment } from "@/features/assessment/dati";
 import { cambiaStato } from "@/features/assessment/azioni";
 import { Input } from "@/components/ui/input";
@@ -23,13 +24,7 @@ import { cn } from "@/lib/utils";
 // cosa più veloce da usare con la tastiera e la più leggera da disegnare. «Non applicabile»
 // fa eccezione e apre il pannello, perché richiede una motivazione scritta.
 
-type Filtri = {
-  q: string;
-  lavoro: string;
-  scadenza: string;
-  categoria: string;
-  ruolo: string;
-};
+const INIZIALI = { q: "", lavoro: "", scadenza: "", categoria: "", ruolo: "" };
 
 export function TabellaAssessment({
   righe,
@@ -39,24 +34,9 @@ export function TabellaAssessment({
   modificabile: boolean;
 }) {
   const router = useRouter();
-  const parametri = useSearchParams();
   const [inCorso, avvia] = useTransition();
   const [apertaId, setApertaId] = useState<string | null>(null);
-
-  const filtri: Filtri = {
-    q: parametri.get("q") ?? "",
-    lavoro: parametri.get("lavoro") ?? "",
-    scadenza: parametri.get("scadenza") ?? "",
-    categoria: parametri.get("categoria") ?? "",
-    ruolo: parametri.get("ruolo") ?? "",
-  };
-
-  const imposta = (chiave: keyof Filtri, valore: string) => {
-    const p = new URLSearchParams(parametri.toString());
-    if (valore === "") p.delete(chiave);
-    else p.set(chiave, valore);
-    router.replace(`?${p.toString()}`, { scroll: false });
-  };
+  const { filtri, imposta, azzera } = useFiltriUrl(INIZIALI);
 
   const categorie = useMemo(() => [...new Set(righe.map((r) => r.categoria))], [righe]);
   const ruoli = useMemo(() => [...new Set(righe.map((r) => r.ruolo))].sort(), [righe]);
@@ -142,12 +122,7 @@ export function TabellaAssessment({
         />
 
         {attivi > 0 ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-2 text-xs"
-            onClick={() => router.replace("?", { scroll: false })}
-          >
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={() => azzera()}>
             <X className="size-3.5" aria-hidden />
             Azzera i filtri
           </Button>
@@ -207,7 +182,10 @@ export function TabellaAssessment({
                         className="hover:underline"
                         data-tour="apri-adempimento"
                       >
-                        <Codice codice={voce.codice} />
+                        <Codice
+                          codice={voce.codice}
+                          {...(voce.letturaDa ? { origine: voce.letturaDa.dominio } : {})}
+                        />
                       </button>
                     </TableCell>
                     <TableCell className="px-3 py-0">
@@ -228,20 +206,32 @@ export function TabellaAssessment({
                       <Priorita priorita={voce.priorita} />
                     </TableCell>
                     <TableCell className="px-3 py-0">
-                      <select
-                        value={voce.stato}
-                        disabled={!modificabile || inCorso}
-                        aria-label={`Stato del lavoro di ${voce.codice}`}
-                        data-tour="stato-riga"
-                        onChange={(e) => cambia(voce, e.target.value)}
-                        className="h-6 rounded border border-border bg-surface px-1.5 text-xs outline-none hover:border-border-strong focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-                      >
-                        {STATI_LAVORO.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
+                      {voce.letturaDa ? (
+                        // Presidio di un altro modulo: si mostra il suo stato e non si tocca.
+                        // Renderlo modificabile qui creerebbe due verità sullo stesso fatto.
+                        <span
+                          className="inline-flex items-center gap-1 text-xs text-muted-foreground"
+                          title={`Presidiato in ${ETICHETTE_DOMINIO[voce.letturaDa.dominio].breve} ${voce.letturaDa.codice} · ${voce.letturaDa.riferimento}`}
+                        >
+                          <Link2 className="size-3 shrink-0" aria-hidden />
+                          {voce.stato}
+                        </span>
+                      ) : (
+                        <select
+                          value={voce.stato}
+                          disabled={!modificabile || inCorso}
+                          aria-label={`Stato del lavoro di ${voce.codice}`}
+                          data-tour="stato-riga"
+                          onChange={(e) => cambia(voce, e.target.value)}
+                          className="h-6 rounded border border-border bg-surface px-1.5 text-xs outline-none hover:border-border-strong focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                        >
+                          {STATI_LAVORO.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                      )}
                     </TableCell>
                     <TableCell className="px-3 py-0">
                       <Scadenza

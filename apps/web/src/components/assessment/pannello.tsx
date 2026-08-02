@@ -95,6 +95,8 @@ function Corpo({
   };
 
   const serveMotivazione = riga.stato === "Non applicabile";
+  // Un presidio di un altro modulo si guarda, non si tocca: si modifica dov'è censito.
+  const scrivibile = modificabile && riga.letturaDa === null;
 
   return (
     <Sheet open={aperto} onOpenChange={(v) => !v && onChiudi()}>
@@ -146,6 +148,22 @@ function Corpo({
             </p>
           ) : null}
 
+          {riga.letturaDa ? (
+            <div className="rounded-md border border-border bg-surface-sunken px-3 py-2.5 text-xs leading-relaxed">
+              <p className="font-medium">Presidio condiviso, censito altrove</p>
+              <p className="mt-1 text-muted-foreground">
+                Questo adempimento è presidiato in{" "}
+                <span className="font-medium">
+                  {ETICHETTE_DOMINIO[riga.letturaDa.dominio].breve} {riga.letturaDa.codice} ·{" "}
+                  {riga.letturaDa.titolo}
+                </span>
+                . Lo stato e la scadenza che vedi sono i suoi, e si modificano da lì: due verità sullo stesso
+                fatto sarebbero peggio di nessuna.
+              </p>
+              <p className="mt-1 font-mono text-[10px] text-faint-foreground">{riga.letturaDa.riferimento}</p>
+            </div>
+          ) : null}
+
           {/* --- Stato del lavoro ---------------------------------------------------- */}
           <section className="space-y-2 border-t border-border pt-4">
             <h3 className="text-xs font-semibold tracking-[0.09em] uppercase">Stato del lavoro</h3>
@@ -155,7 +173,7 @@ function Corpo({
                   key={s}
                   size="sm"
                   variant={riga.stato === s ? "default" : "outline"}
-                  disabled={!modificabile || inCorso}
+                  disabled={!scrivibile || inCorso}
                   data-tour={`stato-${s.replace(/\s/g, "-").toLowerCase()}`}
                   onClick={() =>
                     applica(
@@ -183,7 +201,7 @@ function Corpo({
                   id="motivazione"
                   value={motivazione}
                   onChange={(e) => setMotivazione(e.target.value)}
-                  disabled={!modificabile}
+                  disabled={!scrivibile}
                   rows={2}
                   className="w-full rounded-md border border-input bg-surface px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   placeholder="Perché questo adempimento non si applica a questa azienda"
@@ -191,7 +209,7 @@ function Corpo({
                 <Button
                   size="sm"
                   variant="outline"
-                  disabled={!modificabile || inCorso}
+                  disabled={!scrivibile || inCorso}
                   onClick={() =>
                     applica(() => cambiaStato(riga.id, "Non applicabile", motivazione), "motivazione")
                   }
@@ -218,7 +236,7 @@ function Corpo({
                   id="ultima"
                   type="date"
                   value={data}
-                  disabled={!modificabile}
+                  disabled={!scrivibile}
                   onChange={(e) => setData(e.target.value)}
                   className="h-8 w-40 text-sm"
                   data-tour="ultima-esecuzione"
@@ -226,7 +244,7 @@ function Corpo({
               </div>
               <Button
                 size="sm"
-                disabled={!modificabile || inCorso || data === (riga.ultimaEsecuzione ?? "")}
+                disabled={!scrivibile || inCorso || data === (riga.ultimaEsecuzione ?? "")}
                 onClick={() =>
                   applica(() => impostaUltimaEsecuzione(riga.id, data || null), "ultima esecuzione")
                 }
@@ -237,7 +255,7 @@ function Corpo({
                 <Button
                   size="sm"
                   variant="ghost"
-                  disabled={!modificabile || inCorso}
+                  disabled={!scrivibile || inCorso}
                   onClick={() => {
                     setData("");
                     applica(() => impostaUltimaEsecuzione(riga.id, null), "ultima esecuzione azzerata");
@@ -269,7 +287,7 @@ function Corpo({
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              disabled={!modificabile}
+              disabled={!scrivibile}
               rows={3}
               className="w-full rounded-md border border-input bg-surface px-2.5 py-1.5 text-sm outline-none"
               placeholder="Annotazioni interne su questo adempimento"
@@ -277,7 +295,7 @@ function Corpo({
             <Button
               size="sm"
               variant="outline"
-              disabled={!modificabile || inCorso || note === (riga.note ?? "")}
+              disabled={!scrivibile || inCorso || note === (riga.note ?? "")}
               onClick={() => applica(() => salvaNote(riga.id, note), "note")}
             >
               Salva le note

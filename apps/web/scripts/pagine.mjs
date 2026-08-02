@@ -22,6 +22,7 @@ export const PAGINE = [
     autenticata: true,
     dinamica: true,
   },
+  { percorso: "/scadenzario", nome: "Scadenzario unificato", fase: 8, autenticata: true },
   { percorso: "/impostazioni", nome: "Impostazioni", fase: 6, autenticata: true },
   { percorso: "/design", nome: "Sistema di design", fase: 5 },
 ];

@@ -37,7 +37,7 @@ const ICONE = {
 
 export const MENU: readonly VoceMenu[] = [
   { href: "/portafoglio", etichetta: "Portafoglio", icona: "portafoglio", tour: "portafoglio" },
-  { href: "/scadenzario", etichetta: "Scadenzario", icona: "scadenzario", tour: "scadenzario", futura: true },
+  { href: "/scadenzario", etichetta: "Scadenzario", icona: "scadenzario", tour: "scadenzario" },
   { href: "/relazioni", etichetta: "Relazioni", icona: "relazioni", tour: "relazioni", futura: true },
   { href: "/impostazioni", etichetta: "Impostazioni", icona: "impostazioni", tour: "impostazioni" },
 ];
