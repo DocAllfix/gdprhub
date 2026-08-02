@@ -66,6 +66,11 @@ function Corpo({
   const [note, setNote] = useState(riga.note ?? "");
   const [data, setData] = useState(riga.ultimaEsecuzione ?? "");
   const [voci, setVoci] = useState<Voce[] | null>(null);
+  // L'INTENZIONE, non lo stato salvato. Il campo della motivazione deve comparire appena si
+  // preme «Non applicabile», non dopo che il salvataggio è riuscito: legandolo allo stato
+  // già scritto si creava un vicolo cieco — il sistema chiedeva una motivazione e non dava
+  // nessun posto dove scriverla. Trovato provando il flusso, non leggendo il codice.
+  const [chiedeNonApplicabile, setChiedeNonApplicabile] = useState(riga.stato === "Non applicabile");
 
   const id = riga.id;
 
@@ -94,7 +99,7 @@ function Corpo({
     });
   };
 
-  const serveMotivazione = riga.stato === "Non applicabile";
+  const serveMotivazione = riga.stato === "Non applicabile" || chiedeNonApplicabile;
   // Un presidio di un altro modulo si guarda, non si tocca: si modifica dov'è censito.
   const scrivibile = modificabile && riga.letturaDa === null;
 
@@ -175,7 +180,8 @@ function Corpo({
                   variant={riga.stato === s ? "default" : "outline"}
                   disabled={!scrivibile || inCorso}
                   data-tour={`stato-${s.replace(/\s/g, "-").toLowerCase()}`}
-                  onClick={() =>
+                  onClick={() => {
+                    setChiedeNonApplicabile(s === "Non applicabile");
                     applica(
                       () =>
                         cambiaStato(
@@ -184,8 +190,8 @@ function Corpo({
                           s === "Non applicabile" ? motivazione : undefined,
                         ),
                       `stato: ${s}`,
-                    )
-                  }
+                    );
+                  }}
                 >
                   {s}
                 </Button>

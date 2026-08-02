@@ -41,8 +41,10 @@ const env = Object.fromEntries(
     }),
 );
 
-const EMAIL = env.ADMIN_EMAIL;
-const PASSWORD_INIZIALE = env.ADMIN_PASSWORD;
+// Si usa l'utenza dedicata alle verifiche, non quella del committente: la sua password
+// la cambia lui, e uno script che ne dipende si rompe il giorno che lo fa.
+const EMAIL = env.GATE_EMAIL ?? env.ADMIN_EMAIL;
+const PASSWORD_INIZIALE = env.GATE_PASSWORD ?? env.ADMIN_PASSWORD;
 const PASSWORD_NUOVA = process.argv[3] ?? PASSWORD_INIZIALE;
 
 mkdirSync(S, { recursive: true });
@@ -284,6 +286,150 @@ nota(`aperta: ${await p.locator("h1").textContent()}`);
 const scadenze = await p.locator("tbody tr").count();
 nota(`${scadenze} scadenze in agenda`);
 await scatta("09-azienda-demo");
+
+// --- 8bis. Assessment: ogni transizione di stato, i filtri, lo storico ---------------------
+console.log("\n8bis · Assessment");
+await p.goto(`${BASE}${primoLink}/d81`, { waitUntil: "networkidle" });
+await p.waitForTimeout(900);
+const righeAss = await p.locator("tbody tr").count();
+nota(`${righeAss} righe (categorie comprese)`);
+if (righeAss < 60) problema(`l'assessment 81/08 mostra ${righeAss} righe, attese almeno 64 con le categorie`);
+
+for (const [etichetta, valore] of [
+  ["Filtra per lavoro", "Completata"],
+  ["Filtra per scadenza", "Scaduta"],
+]) {
+  await p.selectOption(`select[aria-label="${etichetta}"]`, valore);
+  await p.waitForTimeout(400);
+  nota(
+    `${etichetta} = ${valore} → ${await p.locator("tbody tr").count()} righe · ${new URL(p.url()).search}`,
+  );
+}
+const firmato = await p.locator("tbody tr").count();
+if (firmato === 0)
+  problema("nessun adempimento «Completata» e «Scaduta»: il caso firmato non è dimostrabile");
+else nota(`il caso firmato: ${firmato} completati e scaduti insieme`);
+
+const conFiltri = p.url();
+await p.goto(conFiltri, { waitUntil: "networkidle" });
+await p.waitForTimeout(900);
+if ((await p.locator("tbody tr").count()) !== firmato) {
+  problema("ricaricando l'indirizzo con i filtri il risultato cambia");
+} else nota("indirizzo con filtri ricaricabile: stesso risultato");
+
+await p.getByRole("button", { name: "Azzera i filtri" }).click();
+await p.waitForTimeout(500);
+nota(`azzerati → ${await p.locator("tbody tr").count()} righe`);
+
+await p.locator('[data-tour="apri-adempimento"]').first().click();
+await p.waitForTimeout(900);
+if (!(await p.locator('[data-tour="dettaglio-adempimento"]').isVisible())) {
+  problema("il pannello di dettaglio non si apre");
+} else {
+  nota("pannello aperto");
+
+  await p.locator('[data-tour="stato-non-applicabile"]').click();
+  await p.waitForTimeout(2500);
+  const rifiuto = await p
+    .locator('[data-tour="dettaglio-adempimento"] [role="alert"]')
+    .first()
+    .textContent()
+    .catch(() => null);
+  if (!rifiuto) problema("«Non applicabile» accettato senza motivazione");
+  else nota(`non applicabile senza motivazione → «${rifiuto.trim()}»`);
+
+  await p.fill("#motivazione", "Azienda priva di attrezzature soggette a verifica periodica.");
+  await p
+    .locator('[data-tour="dettaglio-adempimento"]')
+    .getByRole("button", { name: "Salva la motivazione" })
+    .click();
+  await p.waitForTimeout(3500);
+  const dopoNA = await p.locator('[data-tour="dettaglio-adempimento"]').innerText();
+  if (!/Salvato/.test(dopoNA)) problema("la motivazione non viene salvata");
+  else nota("non applicabile CON motivazione → salvato");
+
+  await p.locator('[data-tour="stato-completata"]').click();
+  await p.waitForTimeout(2500);
+  // Una data DIVERSA da quella gia' presente: «Aggiorna» resta giustamente spento quando
+  // non c'e' nulla da aggiornare, e un test che usa sempre lo stesso valore fallisce alla
+  // seconda esecuzione per un motivo che non e' un difetto.
+  const attuale = await p.inputValue('[data-tour="ultima-esecuzione"]');
+  const nuovaData = attuale === "2026-01-15" ? "2025-11-30" : "2026-01-15";
+  await p.fill('[data-tour="ultima-esecuzione"]', nuovaData);
+  await p
+    .locator('[data-tour="dettaglio-adempimento"]')
+    .getByRole("button", { name: "Aggiorna", exact: true })
+    .click();
+  await p.waitForTimeout(3500);
+  const dopoData = await p.locator('[data-tour="dettaglio-adempimento"]').innerText();
+  if (!/Salvato/.test(dopoData)) problema("l'ultima esecuzione non viene salvata");
+  else nota(`ultima esecuzione ${nuovaData} → scadenza ricalcolata dal motore`);
+
+  // Il titolo si rende MAIUSCOLO per foglio di stile, e `innerText` restituisce il testo
+  // trasformato: cercare «Storico» non trovava nulla pur essendoci tutto.
+  const storico = dopoData.split(/storico/i)[1] ?? "";
+  const voci = (storico.match(/→/g) || []).length;
+  if (voci < 2) problema(`lo storico registra ${voci} passaggi, attesi almeno 2`);
+  else nota(`storico: ${voci} passaggi registrati`);
+
+  await p
+    .locator('[data-tour="dettaglio-adempimento"]')
+    .getByRole("button", { name: "Chiudi", exact: true })
+    .click();
+  await p.waitForTimeout(700);
+}
+
+// --- 8ter. Scadenzario unificato ----------------------------------------------------------
+console.log("\n8ter · Scadenzario unificato");
+await p.goto(`${BASE}/scadenzario`, { waitUntil: "networkidle" });
+await p.waitForTimeout(1200);
+const indicatoriS = await p.locator('[data-tour="indicatori-scadenzario"] p.text-2xl').allTextContents();
+nota(`scadute ${indicatoriS[0]} · 7gg ${indicatoriS[1]} · 30gg ${indicatoriS[2]} · 90gg ${indicatoriS[3]}`);
+
+const conteggi = [];
+for (const [i, nomeF] of [
+  [1, "Scadute"],
+  [2, "7 giorni"],
+  [3, "30 giorni"],
+  [4, "90 giorni"],
+  [0, "Tutte"],
+]) {
+  await p.locator('[data-tour="finestre"] button').nth(i).click();
+  await p.waitForTimeout(450);
+  const n = await p.locator("tbody tr").count();
+  conteggi.push(n);
+  nota(`finestra ${nomeF}: ${n} righe · ${new URL(p.url()).search || "(nessun parametro)"}`);
+}
+// Le finestre sono cumulative: 7 dentro 30, 30 dentro 90, 90 dentro tutte.
+if (!(conteggi[1] <= conteggi[2] && conteggi[2] <= conteggi[3] && conteggi[3] <= conteggi[4])) {
+  problema(`le finestre non sono cumulative: ${conteggi.join(" / ")}`);
+} else nota("finestre cumulative, come le pensa un consulente");
+
+let chiamate = 0;
+const conta = (r) => {
+  if (r.resourceType() === "fetch" || r.resourceType() === "document") chiamate += 1;
+};
+p.on("request", conta);
+await p.type('input[aria-label="Cerca nello scadenzario"]', "formazione", { delay: 30 });
+await p.waitForTimeout(700);
+p.off("request", conta);
+nota(`ricerca «formazione» → ${await p.locator("tbody tr").count()} righe, ${chiamate} richieste al server`);
+if (chiamate > 0) problema(`la ricerca fa ${chiamate} richieste al server: una per battuta`);
+
+await p.selectOption('select[aria-label="Filtra per decreto"]', "d81");
+await p.waitForTimeout(450);
+nota(`+ decreto 81/08 → ${await p.locator("tbody tr").count()} righe · ${new URL(p.url()).search}`);
+
+// --- 8quater. Adempimento condiviso fra decreti -------------------------------------------
+console.log("\n8quater · Presidio condiviso");
+await p.goto(`${BASE}${primoLink}/d231?q=M53`, { waitUntil: "networkidle" });
+await p.waitForTimeout(1000);
+const tendine = await p.locator("tbody select").count();
+const testoM53 = await p.locator("tbody").innerText();
+if (!testoM53.includes("81/08")) problema("la riga condivisa non dichiara il modulo d'origine");
+else nota("la riga M53 dichiara di essere letta dall'81/08");
+if (tendine !== 0) problema(`la riga condivisa ha ${tendine} tendine: dev'essere in sola lettura`);
+else nota("riga condivisa in sola lettura: nessuna tendina");
 
 // --- 9. Impostazioni ---------------------------------------------------------------------------
 console.log("\n9 · Impostazioni");

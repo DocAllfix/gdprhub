@@ -171,8 +171,13 @@ export function TabellaScadenzario({
                   className="h-riga border-b border-border-subtle last:border-0 hover:bg-accent"
                 >
                   <TableCell className="px-3 py-0">
+                    {/* `prefetch={false}`: Next precarica i collegamenti che entrano nel
+                        campo visivo, e qui le righe possono essere milleduecento. Misurato
+                        digitando nella ricerca: cinquanta richieste al server per dieci
+                        caratteri, tutte per pagine che nessuno aprirà. */}
                     <Link
                       href={`/azienda/${v.aziendaId}/${v.dominio}?q=${v.codice}`}
+                      prefetch={false}
                       className="block max-w-48 truncate text-sm hover:underline"
                       title={v.azienda}
                     >

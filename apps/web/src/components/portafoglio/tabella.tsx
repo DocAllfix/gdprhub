@@ -78,6 +78,7 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
           <span className="block">
             <Link
               href={`/azienda/${row.original.id}`}
+              prefetch={false}
               className="font-medium hover:underline"
               data-tour={row.index === 0 ? "prima-azienda" : undefined}
             >
