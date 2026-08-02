@@ -1,0 +1,1026 @@
+[
+  {
+    "dominio": "d81",
+    "codice": "S01",
+    "titolo": "DVR - Documento Valutazione Rischi",
+    "descrizione": "Valutazione di tutti i rischi presenti in azienda",
+    "nota": "Rielaborazione ad ogni modifica rilevante",
+    "riferimento": "Art. 28-29 D.Lgs 81/08",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "Datore di Lavoro / RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S02",
+    "titolo": "DUVRI",
+    "descrizione": "Documento Unico Valutazione Rischi Interferenziali",
+    "nota": "Obbligatorio in caso di appalti",
+    "riferimento": "Art. 26 D.Lgs 81/08",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S03",
+    "titolo": "PSC - Piano Sicurezza e Coordinamento",
+    "descrizione": "Piano per cantieri temporanei o mobili",
+    "nota": "Aggiornato per ogni cantiere",
+    "riferimento": "Art. 100 D.Lgs 81/08",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "CSP/CSE",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S04",
+    "titolo": "POS - Piano Operativo Sicurezza",
+    "descrizione": "Piano redatto da impresa esecutrice",
+    "nota": null,
+    "riferimento": "Art. 89 comma 1 lett. h",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "Impresa Esecutrice",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S05",
+    "titolo": "Valutazione Rischio Incendio",
+    "descrizione": "Valutazione incendio e classificazione livello rischio",
+    "nota": "Aggiornare con layout",
+    "riferimento": "DM 03/09/2021 - Art. 46",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S06",
+    "titolo": "Piano Emergenza ed Evacuazione",
+    "descrizione": "Procedure esodo e gestione emergenze",
+    "nota": "Prove evacuazione annuali",
+    "riferimento": "Art. 43 D.Lgs 81/08",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP / Addetti Emergenza",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S07",
+    "titolo": "Valutazione Stress Lavoro-Correlato",
+    "descrizione": "Valutazione rischio stress organizzativo",
+    "nota": "Questionari e focus group",
+    "riferimento": "Art. 28 - Accordo Stato Regioni 2010",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP / Medico",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 24
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S08",
+    "titolo": "Valutazione MMC - Movimentazione Manuale Carichi",
+    "descrizione": "Analisi sovraccarico biomeccanico",
+    "nota": "Metodo NIOSH / Snook",
+    "riferimento": "Titolo VI - All. XXXIII",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S09",
+    "titolo": "Valutazione Rumore",
+    "descrizione": "Misura e valutazione esposizione rumore",
+    "nota": "Fonometrie se >80dB(A)",
+    "riferimento": "Art. 190 - Titolo VIII Capo II",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP / Tecnico",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 48
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S10",
+    "titolo": "Valutazione Vibrazioni",
+    "descrizione": "Mano-braccio e corpo intero",
+    "nota": null,
+    "riferimento": "Art. 202 Titolo VIII Capo III",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 48
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S11",
+    "titolo": "Valutazione Rischio Chimico",
+    "descrizione": "Schede sicurezza e MoVaRisCh",
+    "nota": "Aggiornare con nuove SDS",
+    "riferimento": "Art. 223 Titolo IX Capo I",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP / Medico",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S12",
+    "titolo": "Valutazione Rischio Cancerogeno",
+    "descrizione": "Registro esposti e misure tecniche",
+    "nota": "Registro esposti",
+    "riferimento": "Art. 236-242 Titolo IX Capo II",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "Medico Competente",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S13",
+    "titolo": "Valutazione Rischio Biologico",
+    "descrizione": "Classificazione agenti biologici",
+    "nota": null,
+    "riferimento": "Art. 271 Titolo X",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP / Medico",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S14",
+    "titolo": "Valutazione ATEX",
+    "descrizione": "Atmosfere esplosive - classificazione zone",
+    "nota": "Documento protezione esplosione",
+    "riferimento": "Titolo XI - Art. 290",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP / Tecnico",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S15",
+    "titolo": "Valutazione ROA - Radiazioni Ottiche Artificiali",
+    "descrizione": "Laser, saldatura, UV",
+    "nota": null,
+    "riferimento": "Art. 216 Titolo VIII Capo V",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S16",
+    "titolo": "Valutazione CEM - Campi Elettromagnetici",
+    "descrizione": "Esposizione a CEM 0Hz-300GHz",
+    "nota": null,
+    "riferimento": "Art. 210 Titolo VIII Capo IV",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S17",
+    "titolo": "Valutazione Microclima",
+    "descrizione": "Ambienti caldi/freddi severi",
+    "nota": null,
+    "riferimento": "Art. 180 - All. IV",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Bassa",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S18",
+    "titolo": "Valutazione Lavoratrici Madri",
+    "descrizione": "Tutela gravidanza e allattamento",
+    "nota": "In caso di presenza",
+    "riferimento": "Art. 28 - D.Lgs 151/01",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP / Medico",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S19",
+    "titolo": "Differenze Genere, Età, Provenienza",
+    "descrizione": "Valutazione trasversale art.28",
+    "nota": null,
+    "riferimento": "Art. 28 comma 1",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Bassa",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S20",
+    "titolo": "Valutazione Lavoro Notturno",
+    "descrizione": "Sorveglianza e organizzazione",
+    "nota": null,
+    "riferimento": "D.Lgs 66/03 - Art. 28",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "Medico / RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 24
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S21",
+    "titolo": "PEE - Piano Emergenza Interno",
+    "descrizione": "Stabilimenti a rischio rilevante",
+    "nota": "Se applicabile",
+    "riferimento": "D.Lgs 105/15 Seveso III",
+    "categoria": "Documenti Obbligatori",
+    "ruolo": "Gestore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S22",
+    "titolo": "Nomina RSPP",
+    "descrizione": "Responsabile Servizio Prevenzione Protezione",
+    "nota": "Verifica crediti agg.",
+    "riferimento": "Art. 17 comma 1 lett.b - Art.32",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S23",
+    "titolo": "Nomina ASPP",
+    "descrizione": "Addetto SPP",
+    "nota": null,
+    "riferimento": "Art. 32",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S24",
+    "titolo": "Nomina Medico Competente",
+    "descrizione": "Lettera incarico e contratto",
+    "nota": "Verifica requisiti",
+    "riferimento": "Art. 18 comma1 lett.a - Art.38",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S25",
+    "titolo": "Nomina RLS / RLST",
+    "descrizione": "Elezione e comunicazione INAIL",
+    "nota": "Comunicazione annuale",
+    "riferimento": "Art. 47",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Lavoratori / Datore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S26",
+    "titolo": "Addetti Antincendio",
+    "descrizione": "Designazione e formazione",
+    "nota": "Numero adeguato",
+    "riferimento": "Art. 18 comma1 lett.b - Art.46",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S27",
+    "titolo": "Addetti Primo Soccorso",
+    "descrizione": "Designazione e formazione specifica",
+    "nota": null,
+    "riferimento": "Art. 18 comma1 lett.b - Art.45",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S28",
+    "titolo": "Nomina Preposti",
+    "descrizione": "Individuazione formale preposti",
+    "nota": "Obbligo Accordo 2021",
+    "riferimento": "Art. 2 comma1 lett.e - Art.19",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S29",
+    "titolo": "Nomina Dirigenti Sicurezza",
+    "descrizione": "Delega e individuazione",
+    "nota": null,
+    "riferimento": "Art. 2 comma1 lett.d - Art.18",
+    "categoria": "Nomine e Figure",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S30",
+    "titolo": "Formazione Lavoratori Base + Aggiornamento",
+    "descrizione": "4h generale + specifica + 6h ogni 5 anni",
+    "nota": "6h quinquennale",
+    "riferimento": "Art.37 - Accordo SR 21/12/11",
+    "categoria": "Formazione",
+    "ruolo": "RSPP / Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S31",
+    "titolo": "Formazione Preposti",
+    "descrizione": "8h aggiuntive + 6h agg biennale",
+    "nota": "Agg 6h ogni 2 anni",
+    "riferimento": "Art.37 c.7 - Accordo 21/12/11",
+    "categoria": "Formazione",
+    "ruolo": "Formatore qualificato",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 24
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S32",
+    "titolo": "Formazione Dirigenti",
+    "descrizione": "16h + 6h agg quinquennale",
+    "nota": null,
+    "riferimento": "Accordo SR 21/12/11",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S33",
+    "titolo": "Formazione Datore Lavoro RSPP",
+    "descrizione": "Corso DL-RSPP per datori",
+    "nota": "Rischio basso/medio/alto",
+    "riferimento": "Art.34 - Accordo 21/12/11",
+    "categoria": "Formazione",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S34",
+    "titolo": "Formazione RLS - 32h + agg",
+    "descrizione": "Corso base e aggiornamento annuale",
+    "nota": "4h <15 dip, 8h >15",
+    "riferimento": "Art.37 c.10-11",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S35",
+    "titolo": "Antincendio Rischio Basso - Agg.",
+    "descrizione": "2h aggiornamento triennale",
+    "nota": "Livello 1",
+    "riferimento": "DM 02/09/21",
+    "categoria": "Formazione",
+    "ruolo": "VVF / Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S36",
+    "titolo": "Antincendio Rischio Medio - Agg.",
+    "descrizione": "5h aggiornamento triennale",
+    "nota": "Livello 2",
+    "riferimento": "DM 02/09/21",
+    "categoria": "Formazione",
+    "ruolo": "VVF",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S37",
+    "titolo": "Antincendio Rischio Alto - Agg.",
+    "descrizione": "8h aggiornamento triennale",
+    "nota": "Livello 3",
+    "riferimento": "DM 02/09/21",
+    "categoria": "Formazione",
+    "ruolo": "VVF",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S38",
+    "titolo": "Primo Soccorso - Aggiornamento",
+    "descrizione": "4h gruppo B-C, 6h gruppo A triennale",
+    "nota": null,
+    "riferimento": "DM 388/03 - Art.45",
+    "categoria": "Formazione",
+    "ruolo": "Medico / Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 36
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S39",
+    "titolo": "PES PAV PEI - Lavori elettrici",
+    "descrizione": "Addetti lavori elettrici CEI 11-27",
+    "nota": "Agg quinquennale",
+    "riferimento": "Art. 82 - CEI 11-27",
+    "categoria": "Formazione",
+    "ruolo": "Formatore CEI",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S40",
+    "titolo": "Carrelli Elevatori Muletti",
+    "descrizione": "12h + agg 4h quinquennale",
+    "nota": "Patentino",
+    "riferimento": "Accordo SR 22/02/12 - All.VI",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S41",
+    "titolo": "PLE - Piattaforme Elevabili",
+    "descrizione": "8-10h + agg 4h quinquennale",
+    "nota": null,
+    "riferimento": "Accordo SR 22/02/12 All.III",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S42",
+    "titolo": "Gru a torre / Autogru / Mobili",
+    "descrizione": "Abilitazione gru",
+    "nota": null,
+    "riferimento": "Accordo SR 22/02/12 All.IV",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S43",
+    "titolo": "Trattori Agricoli/Forestali",
+    "descrizione": "Abilitazione trattori",
+    "nota": null,
+    "riferimento": "Accordo SR 22/02/12 All.VIII",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S44",
+    "titolo": "DPI III Categoria",
+    "descrizione": "Lavori in quota, anticaduta",
+    "nota": "Imbracature, linee vita",
+    "riferimento": "Art. 77 comma 5",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S45",
+    "titolo": "Spazi Confinati",
+    "descrizione": "DPR 177/11 qualificazione",
+    "nota": null,
+    "riferimento": "DPR 177/11 - Art.66",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S46",
+    "titolo": "Lavori in Quota",
+    "descrizione": "Addestramento specifico",
+    "nota": null,
+    "riferimento": "Art. 107-115 Titolo IV",
+    "categoria": "Formazione",
+    "ruolo": "Formatore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 60
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S47",
+    "titolo": "Visite Mediche Periodiche",
+    "descrizione": "Idoneità periodica lavoratori",
+    "nota": "Periodicità da protocollo",
+    "riferimento": "Art. 41",
+    "categoria": "Sorveglianza Sanitaria",
+    "ruolo": "Medico Competente",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S48",
+    "titolo": "Protocollo Sanitario",
+    "descrizione": "Redazione e aggiornamento protocollo",
+    "nota": "Allegato a DVR",
+    "riferimento": "Art. 25 comma1 lett.b",
+    "categoria": "Sorveglianza Sanitaria",
+    "ruolo": "Medico Competente",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S49",
+    "titolo": "Giudizi Idoneità",
+    "descrizione": "Gestione giudizi e limitazioni",
+    "nota": "Consegna al lavoratore",
+    "riferimento": "Art. 41 comma 6",
+    "categoria": "Sorveglianza Sanitaria",
+    "ruolo": "Medico Competente",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S50",
+    "titolo": "Cartelle Sanitarie e di Rischio",
+    "descrizione": "Tenuta e custodia",
+    "nota": "Conservazione 10 anni",
+    "riferimento": "Art. 25 comma1 lett.c",
+    "categoria": "Sorveglianza Sanitaria",
+    "ruolo": "Medico Competente",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S51",
+    "titolo": "Verifiche Attrezzature All.VII",
+    "descrizione": "Gru, carrelli, ascensori, ponteggi, piattaforme",
+    "nota": "Prima verifica + periodiche",
+    "riferimento": "Art.71 comma 11 - All.VII",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "INAIL / Organismo",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S52",
+    "titolo": "Manutenzione Estintori",
+    "descrizione": "Controllo semestrale e revisione",
+    "nota": "Registro antincendio",
+    "riferimento": "UNI 9994-1 - DM 02/09/21",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "Ditta manutentrice",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S53",
+    "titolo": "Porte REI Tagliafuoco",
+    "descrizione": "Manutenzione e controllo",
+    "nota": null,
+    "riferimento": "DM 02/09/21 - UNI 11473",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "Manutentore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S54",
+    "titolo": "Illuminazione Emergenza",
+    "descrizione": "Verifica funzionamento e autonomia",
+    "nota": "Mensile + annuale",
+    "riferimento": "UNI EN 1838 - UNI 11222",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "Elettricista",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S55",
+    "titolo": "Verifica Impianto Elettrico DPR 462",
+    "descrizione": "DPR 462/01 verifica periodica",
+    "nota": "Biennale / quinquennale",
+    "riferimento": "Art.86 - DPR 462/01",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "Organismo abilitato",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 24
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S56",
+    "titolo": "Impianto Messa a Terra",
+    "descrizione": "Misura resistenza di terra",
+    "nota": null,
+    "riferimento": "DPR 462/01 Art.4",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "Organismo",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 24
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S57",
+    "titolo": "Scariche Atmosferiche LPS",
+    "descrizione": "Verifica parafulmine",
+    "nota": null,
+    "riferimento": "DPR 462/01 - CEI EN 62305",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "Organismo",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 24
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S58",
+    "titolo": "Cassette Primo Soccorso",
+    "descrizione": "Controllo contenuto e reintegro",
+    "nota": "Allegato 1 Gruppo A/B",
+    "riferimento": "DM 388/03 All.1-2",
+    "categoria": "Attrezzature e Luoghi",
+    "ruolo": "Addetto PS / RSPP",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S59",
+    "titolo": "Riunione Periodica Art.35",
+    "descrizione": "Riunione annuale >15 dipendenti",
+    "nota": "Verbale firmato",
+    "riferimento": "Art. 35",
+    "categoria": "Riunioni e Adempimenti",
+    "ruolo": "Datore / RSPP / MC / RLS",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S60",
+    "titolo": "Consultazione RLS",
+    "descrizione": "Consultazione preventiva e periodica",
+    "nota": "Verbale",
+    "riferimento": "Art. 50",
+    "categoria": "Riunioni e Adempimenti",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S61",
+    "titolo": "Denuncia Infortuni INAIL",
+    "descrizione": "Comunicazione telematica entro 48h",
+    "nota": "Registro + denuncia",
+    "riferimento": "Art. 18 comma1 lett.r - DPR 1124/65",
+    "categoria": "Riunioni e Adempimenti",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S62",
+    "titolo": "Comunicazione Sorveglianza Sanitaria",
+    "descrizione": "All. 3B entro I trimestre",
+    "nota": "Entro 31/03",
+    "riferimento": "Art. 40 All.3B",
+    "categoria": "Riunioni e Adempimenti",
+    "ruolo": "Medico Competente",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S63",
+    "titolo": "Registro Infortuni / Cruscotto",
+    "descrizione": "Tenuta e analisi infortuni",
+    "nota": "Cruscotto INAIL dal 2024",
+    "riferimento": "Art. 28 - D.Lgs 81/08",
+    "categoria": "Riunioni e Adempimenti",
+    "ruolo": "RSPP / Datore",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d81",
+    "codice": "S64",
+    "titolo": "Registro Controlli Antincendio",
+    "descrizione": "Annotazione controlli periodici",
+    "nota": "Obbligatorio",
+    "riferimento": "DM 02/09/21 Art.5",
+    "categoria": "Riunioni e Adempimenti",
+    "ruolo": "Addetto Antincendio",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  }
+]

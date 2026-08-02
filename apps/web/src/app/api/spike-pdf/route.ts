@@ -1,6 +1,16 @@
 import { rendiPdf } from "@/lib/pdf";
 import { env } from "@/lib/env";
-import { CONTROL_TEMPLATES, DEMO_ASSESSMENT } from "@gdpr/engine";
+import {
+  CATALOGHI,
+  CLIENTI_DIMOSTRATIVI,
+  DOMINI,
+  ETICHETTE_DOMINIO,
+  TUTTI_I_TEMPLATES,
+  costruisciDemo,
+  descriviPeriodicita,
+  oggiA,
+  risolviTutti,
+} from "@gdpr/engine";
 
 // SPIKE DELLA FASE 0 — da rimuovere alla Fase 10, quando esisterà il generatore vero.
 //
@@ -52,23 +62,41 @@ export async function GET() {
  * sfondi colorati, caratteri accentati e simbolo di valuta.
  */
 function documentoDiProva(): string {
-  const righe = CONTROL_TEMPLATES.map((t) => {
-    const demo = DEMO_ASSESSMENT.controlli.find((c) => c.codice === t.codice);
-    return `<tr>
-      <td class="mono">${esc(t.codice)}</td>
+  const oggi = oggiA();
+  const dataIt = new Date().toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" });
+
+  const sezioni = DOMINI.map((d) => {
+    const risolti = risolviTutti(costruisciDemo(CATALOGHI[d], CLIENTI_DIMOSTRATIVI[d], oggi), oggi);
+    const righe = risolti
+      .map((a) => {
+        const t = CATALOGHI[d].find((x) => x.codice === a.codice)!;
+        return `<tr>
+      <td class="mono">${esc(a.codice)}</td>
       <td>${esc(t.titolo)}</td>
-      <td>${esc(t.articolo)}</td>
-      <td>${esc(t.ruolo)}</td>
-      <td><span class="pill ${classePriorita(t.prioritaDefault)}">${esc(t.prioritaDefault)}</span></td>
-      <td class="num">${t.rischioDefault}/10</td>
-      <td>${esc(demo?.stato ?? "-")}</td>
+      <td>${esc(t.riferimento)}</td>
+      <td>${esc(a.ruolo)}</td>
+      <td>${esc(descriviPeriodicita(a.periodicita))}</td>
+      <td><span class="pill ${classePriorita(a.priorita)}">${esc(a.priorita)}</span></td>
+      <td>${esc(a.stato)}</td>
+      <td><span class="pill ${classeScadenza(a.statoScadenza)}">${esc(a.statoScadenza)}</span></td>
+      <td class="mono">${a.scadenza ? esc(a.scadenza) : "&mdash;"}</td>
     </tr>`;
+      })
+      .join("");
+
+    return `<h2>${esc(ETICHETTE_DOMINIO[d].breve)} &middot; ${esc(ETICHETTE_DOMINIO[d].esteso)}</h2>
+  <p class="sotto">${esc(ETICHETTE_DOMINIO[d].norma)} &middot; ${CATALOGHI[d].length} adempimenti</p>
+  <table>
+    <thead><tr><th>Cod.</th><th>Adempimento</th><th>Riferimento</th><th>Responsabile</th>
+      <th>Periodicit&agrave;</th><th>Priorit&agrave;</th><th>Lavoro</th><th>Scadenza</th><th>Data</th></tr></thead>
+    <tbody>${righe}</tbody>
+  </table>`;
   }).join("");
 
   return `<!doctype html>
-<html lang="it"><head><meta charset="utf-8"><title>Spike PDF - Fase 0</title>
+<html lang="it"><head><meta charset="utf-8"><title>Spike PDF - Suite Compliance</title>
 <style>
-  @page { size: A4; margin: 18mm 16mm 20mm; }
+  @page { size: A4; margin: 18mm 14mm 20mm; }
   @page { @bottom-center { content: counter(page); } }
   * { box-sizing: border-box; }
   body { font-family: ui-serif, Georgia, "Times New Roman", serif; color: #16202b; font-size: 10.5pt; line-height: 1.5; margin: 0; }
@@ -78,54 +106,65 @@ function documentoDiProva(): string {
   .filo { height: 3px; background: #1b3a5c; width: 54mm; margin-bottom: 9mm; }
   .meta { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 9pt; color: #47586a; }
   .meta b { color: #16202b; font-weight: 600; }
-  h2 { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13pt; margin: 0 0 5mm; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 8pt;
+  h2 { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13pt; margin: 10mm 0 1mm; font-weight: 600;
+       break-after: avoid; border-top: 2px solid #1b3a5c; padding-top: 3mm; }
+  .sotto { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 8pt; color: #5b6b7c; margin: 0 0 4mm; break-after: avoid; }
+  table { width: 100%; border-collapse: collapse; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 7.5pt;
           font-variant-numeric: tabular-nums; }
   thead { display: table-header-group; background: #eef2f6; }
-  th { text-align: left; padding: 2.2mm 2mm; font-size: 7pt; letter-spacing: .07em; text-transform: uppercase;
+  th { text-align: left; padding: 2mm 1.6mm; font-size: 6.5pt; letter-spacing: .07em; text-transform: uppercase;
        color: #47586a; border-bottom: 1.5px solid #c6d2de; }
-  td { padding: 2mm; border-bottom: .5px solid #e3e9ef; vertical-align: top; }
+  td { padding: 1.6mm; border-bottom: .5px solid #e3e9ef; vertical-align: top; }
   tr { page-break-inside: avoid; }
-  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
-  .num { text-align: right; }
-  .pill { display: inline-block; padding: .5mm 2mm; border-radius: 8px; font-size: 7pt; font-weight: 600; }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; white-space: nowrap; }
+  .pill { display: inline-block; padding: .4mm 1.6mm; border-radius: 8px; font-size: 6.5pt; font-weight: 600; white-space: nowrap; }
   .critica { background: #fbe4e4; color: #8c1c1c; }
   .alta    { background: #fdf0dc; color: #8a5108; }
   .media   { background: #e7eef6; color: #29506f; }
-  .kpi { display: flex; gap: 5mm; margin: 0 0 8mm; }
-  .kpi div { flex: 1; border: .5px solid #c6d2de; border-top: 2.5px solid #1b3a5c; padding: 3.5mm; }
+  .bassa   { background: #eef1f4; color: #5b6b7c; }
+  .scaduta { background: #fbe4e4; color: #8c1c1c; }
+  .imminente { background: #fdf0dc; color: #8a5108; }
+  .regolare { background: #e3f2e8; color: #1f5c37; }
+  .programmare { background: #eef1f4; color: #5b6b7c; }
+  .kpi { display: flex; gap: 4mm; margin: 0 0 6mm; }
+  .kpi div { flex: 1; border: .5px solid #c6d2de; border-top: 2.5px solid #1b3a5c; padding: 3mm; }
   .kpi .v { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 19pt; font-weight: 600;
             font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-  .kpi .e { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 7pt; text-transform: uppercase;
+  .kpi .e { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 6.5pt; text-transform: uppercase;
             letter-spacing: .09em; color: #5b6b7c; }
 </style></head>
 <body>
   <section class="copertina">
-    <div class="marchio">Verifica tecnica &middot; Fase 0</div>
+    <div class="marchio">Verifica tecnica &middot; Fase 1</div>
     <div>
       <div class="filo"></div>
-      <h1>Relazione di conformità<br/>al Regolamento UE 2016/679</h1>
+      <h1>Relazione integrata<br/>di conformit&agrave;</h1>
       <div class="meta">
-        <b>${esc(DEMO_ASSESSMENT.cliente)}</b><br/>
-        Documento di prova generato il ${new Date().toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })}<br/>
-        Driver di resa: <b>${esc(env.PDF_DRIVER)}</b> &middot; Controlli nel catalogo: <b>${CONTROL_TEMPLATES.length}</b>
+        <b>Gruppo Industriale Verdi S.p.A.</b><br/>
+        Documento di prova generato il ${dataIt}<br/>
+        Reg. UE 2016/679 &middot; D.Lgs 231/2001 &middot; D.Lgs 81/2008<br/>
+        Driver di resa: <b>${esc(env.PDF_DRIVER)}</b> &middot; Adempimenti: <b>${TUTTI_I_TEMPLATES.length}</b>
       </div>
     </div>
-    <div class="meta">Accentate: à è é ì ò ù &middot; Valuta: € 636.515 &middot; Simboli: § ¶ † ‰</div>
+    <div class="meta">Accentate: &agrave; &egrave; &eacute; &igrave; &ograve; &ugrave; &middot; Valuta: &euro; 636.515 &middot; Simboli: &sect; &para; &dagger; &permil;</div>
   </section>
 
-  <h2>Estratto del registro dei controlli</h2>
   <div class="kpi">
-    <div><div class="e">Controlli</div><div class="v">${CONTROL_TEMPLATES.length}</div></div>
-    <div><div class="e">Titolare</div><div class="v">${CONTROL_TEMPLATES.filter((t) => t.ruolo === "Titolare").length}</div></div>
-    <div><div class="e">Responsabile</div><div class="v">${CONTROL_TEMPLATES.filter((t) => t.ruolo === "Responsabile").length}</div></div>
-    <div><div class="e">DPO</div><div class="v">${CONTROL_TEMPLATES.filter((t) => t.ruolo === "DPO").length}</div></div>
+    <div><div class="e">Totale</div><div class="v">${TUTTI_I_TEMPLATES.length}</div></div>
+    ${DOMINI.map((d) => `<div><div class="e">${esc(ETICHETTE_DOMINIO[d].breve)}</div><div class="v">${CATALOGHI[d].length}</div></div>`).join("")}
   </div>
-  <table>
-    <thead><tr><th>Cod.</th><th>Adempimento</th><th>Articolo</th><th>Ruolo</th><th>Priorità</th><th>Rischio</th><th>Stato</th></tr></thead>
-    <tbody>${righe}</tbody>
-  </table>
+  ${sezioni}
 </body></html>`;
+}
+
+function classeScadenza(s: string): string {
+  return s === "Scaduta"
+    ? "scaduta"
+    : s === "In scadenza"
+      ? "imminente"
+      : s === "Regolare"
+        ? "regolare"
+        : "programmare";
 }
 
 /** Nessun valore finisce grezzo nel documento: è il difetto B3 dell'analisi del prototipo. */
@@ -137,5 +176,5 @@ function esc(s: string): string {
 }
 
 function classePriorita(p: string): string {
-  return p === "Critica" ? "critica" : p === "Alta" ? "alta" : "media";
+  return p === "Critica" ? "critica" : p === "Alta" ? "alta" : p === "Media" ? "media" : "bassa";
 }

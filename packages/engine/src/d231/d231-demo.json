@@ -1,0 +1,526 @@
+{
+  "fonte": "Prototipo d231",
+  "riferimentoDedotto": "2025-11-15",
+  "controlli": [
+    {
+      "codice": "M01",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 120,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M02",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 16,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M03",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 15,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M04",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 61,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M05",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 35,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M06",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 92,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M07",
+      "statoPrototipo": "Scaduto",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -26,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M08",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 166,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M09",
+      "statoPrototipo": "In ritardo",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 0,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M10",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 25,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M11",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 77,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M12",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 46,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M13",
+      "statoPrototipo": "Scaduto",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -10,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M14",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 106,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M15",
+      "statoPrototipo": "In ritardo",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -21,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M16",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 30,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M17",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 105,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M18",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 92,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M19",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": -16,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M20",
+      "statoPrototipo": "Scaduto",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -31,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M21",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -28,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M22",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -14,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M23",
+      "statoPrototipo": "Scaduto",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -24,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M24",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -26,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M25",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -10,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M26",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 46,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M27",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": -5,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M28",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 20,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M29",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 5,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M30",
+      "statoPrototipo": "Scaduto",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -27,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M31",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -25,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M32",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 0,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M33",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -3,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M34",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -7,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M35",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 35,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M36",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -14,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M37",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": -18,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M38",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 56,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M39",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 10,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M40",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 16,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M41",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": -15,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M42",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 136,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M43",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 105,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M44",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 181,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M45",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 30,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M46",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 15,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M47",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 66,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M48",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 87,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M49",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 35,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M50",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 25,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M51",
+      "statoPrototipo": "In ritardo",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 0,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M52",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 151,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M53",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 77,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M54",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -5,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M55",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 46,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M56",
+      "statoPrototipo": "In corso",
+      "stato": "In corso",
+      "scadenzaOffsetGiorni": 15,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M57",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": -10,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M58",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 20,
+      "priorita": "Media",
+      "rischio": null
+    },
+    {
+      "codice": "M59",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 30,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M60",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 105,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M61",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 120,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M62",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 25,
+      "priorita": "Critica",
+      "rischio": null
+    },
+    {
+      "codice": "M63",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 77,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M64",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 35,
+      "priorita": "Alta",
+      "rischio": null
+    },
+    {
+      "codice": "M65",
+      "statoPrototipo": "Da fare",
+      "stato": "Da fare",
+      "scadenzaOffsetGiorni": 15,
+      "priorita": "Critica",
+      "rischio": null
+    }
+  ]
+}

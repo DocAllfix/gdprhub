@@ -1,0 +1,1029 @@
+[
+  {
+    "dominio": "d231",
+    "codice": "M01",
+    "titolo": "Nomina/Rinnovo OdV collegiale o monocratico",
+    "descrizione": "Nomina/Rinnovo OdV collegiale o monocratico",
+    "nota": "Verifica requisiti art. 6, indipendenza, professionalità",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "CdA",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 24
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M02",
+    "titolo": "Verifica requisiti indipendenza e onorabilità OdV",
+    "descrizione": "Verifica requisiti indipendenza e onorabilità OdV",
+    "nota": "Autodichiarazioni + casellario",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "CdA",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M03",
+    "titolo": "Definizione Budget annuale OdV",
+    "descrizione": "Definizione Budget annuale OdV",
+    "nota": "Capitolo autonomo, poteri di spesa",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M04",
+    "titolo": "Adozione/Aggiornamento Regolamento OdV",
+    "descrizione": "Adozione/Aggiornamento Regolamento OdV",
+    "nota": "Funzionamento, convocazioni, quorum",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M05",
+    "titolo": "Piano annuale attività di vigilanza OdV",
+    "descrizione": "Piano annuale attività di vigilanza OdV",
+    "nota": "Risk-based, approvato",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M06",
+    "titolo": "Riunione trimestrale OdV Q1",
+    "descrizione": "Riunione trimestrale OdV Q1",
+    "nota": "Ordine del giorno + convocazione",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M07",
+    "titolo": "Verbali riunioni OdV - archiviazione",
+    "descrizione": "Verbali riunioni OdV - archiviazione",
+    "nota": "Libro verbali OdV",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M08",
+    "titolo": "Relazione annuale OdV al CdA",
+    "descrizione": "Relazione annuale OdV al CdA",
+    "nota": "Art. 6, esito vigilanza",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M09",
+    "titolo": "Relazione semestrale OdV",
+    "descrizione": "Relazione semestrale OdV",
+    "nota": "Da inviare a CdA e Collegio",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M10",
+    "titolo": "Coordinamento OdV con Collegio Sindacale / Revisori",
+    "descrizione": "Coordinamento OdV con Collegio Sindacale / Revisori",
+    "nota": "Verbale congiunto",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Costituzione e Funzionamento OdV",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M11",
+    "titolo": "Mappatura rischi-reato aggiornata 2024-2026",
+    "descrizione": "Mappatura rischi-reato aggiornata 2024-2026",
+    "nota": "Inclusi nuovi reati: false comunicazioni cripto, ecc.",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Modello Organizzativo 231",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M12",
+    "titolo": "Aggiornamento MOG per nuovi reati presupposto (L. 112/2024, L. 114/2024)",
+    "descrizione": "Aggiornamento MOG per nuovi reati presupposto (L. 112/2024, L. 114/2024)",
+    "nota": "Reati contro PA, riciclaggio, tributari estesi",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Modello Organizzativo 231",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M13",
+    "titolo": "Verifica protocolli Parte Speciale",
+    "descrizione": "Verifica protocolli Parte Speciale",
+    "nota": "Test walk-through",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Modello Organizzativo 231",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M14",
+    "titolo": "Gap analysis MOG vs prassi operative",
+    "descrizione": "Gap analysis MOG vs prassi operative",
+    "nota": "Interviste process owner",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Modello Organizzativo 231",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M15",
+    "titolo": "Aggiornamento organigramma e mansionari ai fini 231",
+    "descrizione": "Aggiornamento organigramma e mansionari ai fini 231",
+    "nota": "Coerenza con procure",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Modello Organizzativo 231",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M16",
+    "titolo": "Verifica procure e deleghe",
+    "descrizione": "Verifica procure e deleghe",
+    "nota": "Allineamento poteri e rischi",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Modello Organizzativo 231",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M17",
+    "titolo": "Aggiornamento sistema disciplinare 231",
+    "descrizione": "Aggiornamento sistema disciplinare 231",
+    "nota": "Proporzionalità sanzioni",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Modello Organizzativo 231",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M18",
+    "titolo": "Aggiornamento Codice Etico",
+    "descrizione": "Aggiornamento Codice Etico",
+    "nota": "Valori, conflitti interesse",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Codice Etico e Sistema Disciplinare",
+    "ruolo": "CdA",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M19",
+    "titolo": "Diffusione Codice Etico e attestazioni ricezione",
+    "descrizione": "Diffusione Codice Etico e attestazioni ricezione",
+    "nota": "Piattaforma HR + firma",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Codice Etico e Sistema Disciplinare",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M20",
+    "titolo": "Applicazione sanzioni disciplinari 231",
+    "descrizione": "Applicazione sanzioni disciplinari 231",
+    "nota": "Registro sanzioni",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Codice Etico e Sistema Disciplinare",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M21",
+    "titolo": "Flusso: Infortuni sul lavoro e quasi infortuni",
+    "descrizione": "Flusso: Infortuni sul lavoro e quasi infortuni",
+    "nota": "Entro 24h a OdV",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "RSPP",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M22",
+    "titolo": "Flusso: Provvedimenti disciplinari e contestazioni",
+    "descrizione": "Flusso: Provvedimenti disciplinari e contestazioni",
+    "nota": "Report HR",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M23",
+    "titolo": "Flusso: Sanzioni da Enti (INPS, INAIL, GdF, ecc.)",
+    "descrizione": "Flusso: Sanzioni da Enti (INPS, INAIL, GdF, ecc.)",
+    "nota": "Notifica immediata OdV",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M24",
+    "titolo": "Flusso: Avvio procedimenti giudiziari / indagini",
+    "descrizione": "Flusso: Avvio procedimenti giudiziari / indagini",
+    "nota": "Informativa riservata",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M25",
+    "titolo": "Flusso: Assunzioni e rapporti con PA / ex PA",
+    "descrizione": "Flusso: Assunzioni e rapporti con PA / ex PA",
+    "nota": "Pantouflage check",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M26",
+    "titolo": "Flusso: Erogazione / rendicontazione contributi pubblici",
+    "descrizione": "Flusso: Erogazione / rendicontazione contributi pubblici",
+    "nota": "Fondi PNRR",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M27",
+    "titolo": "Flusso: Donazioni, sponsorizzazioni, omaggi > soglia",
+    "descrizione": "Flusso: Donazioni, sponsorizzazioni, omaggi > soglia",
+    "nota": "Soglia €500",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M28",
+    "titolo": "Flusso: Anomalie ciclo attivo/passivo",
+    "descrizione": "Flusso: Anomalie ciclo attivo/passivo",
+    "nota": "Fatture anomale, split payment",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M29",
+    "titolo": "Flusso: Operazioni societarie straordinarie",
+    "descrizione": "Flusso: Operazioni societarie straordinarie",
+    "nota": "Fusioni, cessioni ramo",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "CdA",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M30",
+    "titolo": "Flusso: Incidenti ambientali / sversamenti",
+    "descrizione": "Flusso: Incidenti ambientali / sversamenti",
+    "nota": "Entro 12h",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M31",
+    "titolo": "Flusso: Violazioni privacy / data breach",
+    "descrizione": "Flusso: Violazioni privacy / data breach",
+    "nota": "Coordinamento DPO-OdV 72h",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "IT",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M32",
+    "titolo": "Flusso: Cambi organizzativi rilevanti",
+    "descrizione": "Flusso: Cambi organizzativi rilevanti",
+    "nota": "Nuovi responsabili area a rischio",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M33",
+    "titolo": "Flusso: Verifiche fiscali e doganali",
+    "descrizione": "Flusso: Verifiche fiscali e doganali",
+    "nota": "PVC",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M34",
+    "titolo": "Flusso: Gare e appalti pubblici",
+    "descrizione": "Flusso: Gare e appalti pubblici",
+    "nota": "CIG, aggiudicazioni",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M35",
+    "titolo": "Flusso: Segnalazioni agenti e distributori",
+    "descrizione": "Flusso: Segnalazioni agenti e distributori",
+    "nota": "Anomalie provvigioni",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Flussi Informativi verso OdV",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M36",
+    "titolo": "Verifica funzionamento canale whistleblowing interno",
+    "descrizione": "Verifica funzionamento canale whistleblowing interno",
+    "nota": "Piattaforma crittografata D.Lgs 24/2023",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Whistleblowing D.Lgs 24/2023",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M37",
+    "titolo": "Gestione segnalazioni ricevute (istruttoria 3 mesi)",
+    "descrizione": "Gestione segnalazioni ricevute (istruttoria 3 mesi)",
+    "nota": "Riscontro entro 7gg",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Whistleblowing D.Lgs 24/2023",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M38",
+    "titolo": "Report trimestrale whistleblowing anonimo a CdA",
+    "descrizione": "Report trimestrale whistleblowing anonimo a CdA",
+    "nota": "Statistiche, no dati identificativi",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Whistleblowing D.Lgs 24/2023",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M39",
+    "titolo": "Formazione specifica whistleblowing a tutti",
+    "descrizione": "Formazione specifica whistleblowing a tutti",
+    "nota": "Obbligo informativa art.5",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Whistleblowing D.Lgs 24/2023",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M40",
+    "titolo": "Verifica divieto ritorsione verso segnalante",
+    "descrizione": "Verifica divieto ritorsione verso segnalante",
+    "nota": "ANAC",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Whistleblowing D.Lgs 24/2023",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M41",
+    "titolo": "Formazione 231 neoassunti (entro 30gg)",
+    "descrizione": "Formazione 231 neoassunti (entro 30gg)",
+    "nota": "E-learning + test",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Formazione 231",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M42",
+    "titolo": "Formazione dipendenti aree a rischio",
+    "descrizione": "Formazione dipendenti aree a rischio",
+    "nota": "Acquisti, vendite, finance",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Formazione 231",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M43",
+    "titolo": "Formazione apicali e CdA",
+    "descrizione": "Formazione apicali e CdA",
+    "nota": "Focus responsabilità enti",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Formazione 231",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M44",
+    "titolo": "Formazione specialistica OdV",
+    "descrizione": "Formazione specialistica OdV",
+    "nota": "Aggiornamento giurisprudenza",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Formazione 231",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M45",
+    "titolo": "Raccolta attestazioni completamento formazione",
+    "descrizione": "Raccolta attestazioni completamento formazione",
+    "nota": "Tracciabilità",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Formazione 231",
+    "ruolo": "HR",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M46",
+    "titolo": "Audit protocollo acquisti e vendor rating",
+    "descrizione": "Audit protocollo acquisti e vendor rating",
+    "nota": "Test 3 vie",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Vigilanza e Audit",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M47",
+    "titolo": "Audit sicurezza lavoro art. 30 D.Lgs 81/08",
+    "descrizione": "Audit sicurezza lavoro art. 30 D.Lgs 81/08",
+    "nota": "Interferenza 231-81",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Vigilanza e Audit",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M48",
+    "titolo": "Audit ambiente (rifiuti, emissioni)",
+    "descrizione": "Audit ambiente (rifiuti, emissioni)",
+    "nota": "MUD, formulari",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Vigilanza e Audit",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M49",
+    "titolo": "Audit finanziari - flussi e tesoreria",
+    "descrizione": "Audit finanziari - flussi e tesoreria",
+    "nota": "Antiriciclaggio",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Vigilanza e Audit",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M50",
+    "titolo": "Audit IT - accessi, log, cyber",
+    "descrizione": "Audit IT - accessi, log, cyber",
+    "nota": "Reati informatici 24-bis",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Vigilanza e Audit",
+    "ruolo": "IT",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M51",
+    "titolo": "Follow-up azioni correttive audit precedenti",
+    "descrizione": "Follow-up azioni correttive audit precedenti",
+    "nota": "Piano rimedio",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Vigilanza e Audit",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M52",
+    "titolo": "Test di efficacia protocolli 231",
+    "descrizione": "Test di efficacia protocolli 231",
+    "nota": "Sampling",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Vigilanza e Audit",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M53",
+    "titolo": "Aggiornamento DVR e valutazione interferenze 231",
+    "descrizione": "Aggiornamento DVR e valutazione interferenze 231",
+    "nota": "Art. 28 D.Lgs 81/08",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Datore di Lavoro - Sicurezza",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M54",
+    "titolo": "DUVRI - appalti e cantieri",
+    "descrizione": "DUVRI - appalti e cantieri",
+    "nota": "Costi sicurezza",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Datore di Lavoro - Sicurezza",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M55",
+    "titolo": "Nomina / conferma RSPP e Medico Competente",
+    "descrizione": "Nomina / conferma RSPP e Medico Competente",
+    "nota": "Requisiti",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Datore di Lavoro - Sicurezza",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M56",
+    "titolo": "Riunione periodica sicurezza art.35",
+    "descrizione": "Riunione periodica sicurezza art.35",
+    "nota": "Verbale + RLS",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Datore di Lavoro - Sicurezza",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M57",
+    "titolo": "Sorveglianza sanitaria e idoneità",
+    "descrizione": "Sorveglianza sanitaria e idoneità",
+    "nota": "Giudizi",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Datore di Lavoro - Sicurezza",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 1
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M58",
+    "titolo": "Rapporti con RLS e consultazioni",
+    "descrizione": "Rapporti con RLS e consultazioni",
+    "nota": "Informazione rischi",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Datore di Lavoro - Sicurezza",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Media",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M59",
+    "titolo": "Verifica reati societari e false comunicazioni",
+    "descrizione": "Verifica reati societari e false comunicazioni",
+    "nota": "Art. 25-ter",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Adempimenti Societari e Reati Presupposto",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M60",
+    "titolo": "Verifica reati ambientali D.Lgs 152",
+    "descrizione": "Verifica reati ambientali D.Lgs 152",
+    "nota": "Art. 25-undecies",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Adempimenti Societari e Reati Presupposto",
+    "ruolo": "Datore di Lavoro",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M61",
+    "titolo": "Verifica reati informatici e cyber (L. 90/2024)",
+    "descrizione": "Verifica reati informatici e cyber (L. 90/2024)",
+    "nota": "Riforma 2024",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Adempimenti Societari e Reati Presupposto",
+    "ruolo": "IT",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 6
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M62",
+    "titolo": "Reati tributari - verifica soglie e esterovestizione",
+    "descrizione": "Reati tributari - verifica soglie e esterovestizione",
+    "nota": "Art. 25-quinquiesdecies",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Adempimenti Societari e Reati Presupposto",
+    "ruolo": "Compliance",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M63",
+    "titolo": "Aggiornamento per riforma Cartabia e procedibilità",
+    "descrizione": "Aggiornamento per riforma Cartabia e procedibilità",
+    "nota": "Impatto 231",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Rapporti con Autorità e Reporting",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 12
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M64",
+    "titolo": "Reporting a CdA su contenziosi 231 rilevanti",
+    "descrizione": "Reporting a CdA su contenziosi 231 rilevanti",
+    "nota": "Riservato",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Rapporti con Autorità e Reporting",
+    "ruolo": "Legale",
+    "periodicita": {
+      "tipo": "periodica",
+      "mesi": 3
+    },
+    "prioritaDefault": "Alta",
+    "rischioDefault": null
+  },
+  {
+    "dominio": "d231",
+    "codice": "M65",
+    "titolo": "Comunicazione ANAC / Autorità Vigilanza se previsto",
+    "descrizione": "Comunicazione ANAC / Autorità Vigilanza se previsto",
+    "nota": "Whistleblowing esterno",
+    "riferimento": "D.Lgs 231/01",
+    "categoria": "Rapporti con Autorità e Reporting",
+    "ruolo": "OdV",
+    "periodicita": {
+      "tipo": "evento"
+    },
+    "prioritaDefault": "Critica",
+    "rischioDefault": null
+  }
+]
