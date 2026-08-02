@@ -12,5 +12,5 @@ export const dynamic = "force-dynamic";
 
 export default async function Radice() {
   const sessione = await sessioneCorrente();
-  redirect(sessione?.user ? "/portafoglio" : "/accedi");
+  redirect(sessione?.user ? "/cruscotto" : "/accedi");
 }

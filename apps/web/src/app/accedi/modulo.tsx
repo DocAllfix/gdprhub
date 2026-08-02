@@ -26,7 +26,7 @@ export function ModuloAccesso({ studio }: { studio: string }) {
   const [inCorso, setInCorso] = useState(false);
 
   const entra = () => {
-    router.push("/portafoglio");
+    router.push("/cruscotto");
     router.refresh();
   };
 

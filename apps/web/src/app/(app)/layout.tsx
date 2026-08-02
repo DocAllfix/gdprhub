@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
 import { Shell } from "@/components/shell/shell";
@@ -23,8 +24,17 @@ export default async function LayoutApplicazione({ children }: { children: React
   // file d'ambiente dell'istanza.
   if (ctx.mustChangePassword) redirect("/primo-accesso");
 
+  // La preferenza sulla barra si legge dal cookie SUL SERVER: con `localStorage` il primo
+  // fotogramma mostrerebbe sempre la barra aperta e poi la vedresti chiudersi.
+  const collassata = (await cookies()).get("barra-collassata")?.value === "1";
+
   return (
-    <Shell studio={ctx.studioNome} utente={ctx.nome || ctx.email} ruolo={ctx.ruolo}>
+    <Shell
+      studio={ctx.studioNome}
+      utente={ctx.nome || ctx.email}
+      ruolo={ctx.ruolo}
+      collassataIniziale={collassata}
+    >
       {children}
     </Shell>
   );

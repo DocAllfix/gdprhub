@@ -28,10 +28,22 @@
   /* --- Neutri, tinti verso l'inchiostro ------------------------------------ */
   /* Mai #fff, mai #000: ogni neutro porta una traccia della tinta di marca, ma la
      croma resta sotto 0.01 o il grigio inizia a leggersi come azzurro. */
-  --background: oklch(0.974 0.003 262); /* la scrivania */
+  --background: oklch(0.963 0.004 262); /* la scrivania */
   --surface: oklch(0.995 0.0015 262); /* il foglio */
-  --surface-sunken: oklch(0.955 0.004 262);
-  --sidebar: oklch(0.962 0.005 258);
+  --surface-sunken: oklch(0.947 0.005 262);
+  --surface-raised: oklch(1 0 0 / 0.6); /* velo chiaro su fondo, per le fasce dati */
+
+  /* LA BARRA LATERALE È INCHIOSTRO, e il contenuto è carta.
+     È la decisione che cambia la faccia del prodotto più di ogni altra: un pannello
+     scuro accanto a un foglio chiaro legge come uno strumento professionale, due
+     grigi quasi uguali leggono come un abbozzo. Lo fanno Linear, Attio, Vercel — e lo
+     facevano anche i tre prototipi di partenza, che avevano #0f172a in colonna.
+     Qui è la stessa idea senza il resto: nessun gradiente, nessun bagliore. */
+  --sidebar: oklch(0.225 0.019 262);
+  --sidebar-foreground: oklch(0.93 0.006 262);
+  --sidebar-muted: oklch(0.66 0.012 262);
+  --sidebar-border: oklch(0.31 0.016 262);
+  --sidebar-selected: oklch(0.3 0.026 262);
 
   --foreground: oklch(0.24 0.018 262);
   --muted-foreground: oklch(0.5 0.008 262);
@@ -46,24 +58,31 @@
   --primary: oklch(0.245 0.021 262);
   --primary-hover: oklch(0.185 0.022 262);
   --primary-foreground: oklch(0.985 0.002 262);
-  --selected: oklch(0.945 0.012 262);
-  --ring: oklch(0.45 0.05 262);
+  --selected: oklch(0.935 0.018 262);
+  --ring: oklch(0.5 0.13 258);
+
+  /* Accento del PRODOTTO, distinto dall'inchiostro dei pulsanti: serve a far vedere
+     dove si sta guardando e a colorare le barre dei dati. Blu profondo, lontano dai
+     tre colori di stato e dalle tre tinte di dominio. Resta sotto il 10% della pagina. */
+  --accento: oklch(0.5 0.13 258);
+  --accento-surface: oklch(0.955 0.028 258);
+  --accento-border: oklch(0.87 0.07 258);
 
   /* --- Stato della scadenza: RISERVATO ------------------------------------- */
   /* Questi tre non compaiono da nessun'altra parte. Se il colore decora, non può
      più segnalare. Su fondo scuro si schiariscono e perdono croma: un rosso saturo
      su nero vibra e diventa illeggibile. */
-  --scaduta: oklch(0.505 0.175 26);
-  --scaduta-surface: oklch(0.957 0.028 26);
-  --scaduta-border: oklch(0.88 0.06 26);
+  --scaduta: oklch(0.505 0.192 26);
+  --scaduta-surface: oklch(0.947 0.042 26);
+  --scaduta-border: oklch(0.85 0.085 26);
 
-  --imminente: oklch(0.515 0.125 62);
-  --imminente-surface: oklch(0.962 0.038 72);
-  --imminente-border: oklch(0.88 0.075 68);
+  --imminente: oklch(0.5 0.135 62);
+  --imminente-surface: oklch(0.952 0.055 72);
+  --imminente-border: oklch(0.85 0.1 68);
 
-  --regolare: oklch(0.475 0.105 152);
-  --regolare-surface: oklch(0.958 0.028 152);
-  --regolare-border: oklch(0.885 0.055 152);
+  --regolare: oklch(0.475 0.115 152);
+  --regolare-surface: oklch(0.95 0.04 152);
+  --regolare-border: oklch(0.86 0.075 152);
 
   /* «Da programmare» non è un rischio: è un'assenza. Resta neutro apposta. */
   --programmare: oklch(0.55 0.012 262);
@@ -107,8 +126,8 @@
   --radius-lg: 0.5rem;
 
   /* Ombre fredde e discrete. Mai bagliori colorati. */
-  --shadow-sm: 0 1px 2px oklch(0.24 0.018 262 / 0.05);
-  --shadow: 0 1px 3px oklch(0.24 0.018 262 / 0.07);
+  --shadow-sm: 0 1px 2px oklch(0.24 0.018 262 / 0.06);
+  --shadow: 0 1px 2px oklch(0.24 0.018 262 / 0.05), 0 4px 12px oklch(0.24 0.018 262 / 0.06);
   --shadow-panel: -1px 0 3px oklch(0.24 0.018 262 / 0.06);
 
   /* --- Densità -------------------------------------------------------------- */
@@ -127,7 +146,15 @@
   --background: oklch(0.185 0.012 262);
   --surface: oklch(0.225 0.014 262);
   --surface-sunken: oklch(0.165 0.012 262);
-  --sidebar: oklch(0.2 0.014 258);
+  --sidebar: oklch(0.155 0.012 258);
+  --sidebar-foreground: oklch(0.93 0.006 262);
+  --sidebar-muted: oklch(0.62 0.01 262);
+  --sidebar-border: oklch(0.27 0.012 262);
+  --sidebar-selected: oklch(0.26 0.018 262);
+  --surface-raised: oklch(1 0 0 / 0.04);
+  --accento: oklch(0.68 0.12 258);
+  --accento-surface: oklch(0.27 0.045 258);
+  --accento-border: oklch(0.38 0.07 258);
   --foreground: oklch(0.93 0.006 262);
   --muted-foreground: oklch(0.71 0.007 262);
   --faint-foreground: oklch(0.58 0.006 262);
@@ -194,6 +221,14 @@
   --color-surface: var(--surface);
   --color-surface-sunken: var(--surface-sunken);
   --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-selected: var(--sidebar-selected);
+  --color-surface-raised: var(--surface-raised);
+  --color-accento: var(--accento);
+  --color-accento-surface: var(--accento-surface);
+  --color-accento-border: var(--accento-border);
 
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);

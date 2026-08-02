@@ -70,37 +70,46 @@ export async function requireSessione() {
 export const requireStudio = cache(async (): Promise<ContestoStudio> => {
   const sessione = await requireSessione();
 
-  const studio = await db.query.organization.findFirst();
-  if (!studio) {
+  // UNA SOLA QUERY per studio, appartenenza e configurazione. Erano tre in fila, e ogni
+  // viaggio verso il database costa: su una pagina che ne fa già una decina, tre di meno si
+  // vedono. La riverifica dell'appartenenza resta — è il punto centrale di questo guard —
+  // ma si fa con una giunzione invece che con un secondo giro.
+  const [riga] = await db
+    .select({
+      studioId: organization.id,
+      studioNome: organization.name,
+      ruolo: member.role,
+      brandNome: instanceConfig.brandNome,
+      profilo: instanceConfig.profilo,
+      mode: instanceConfig.mode,
+    })
+    .from(organization)
+    .leftJoin(member, and(eq(member.organizationId, organization.id), eq(member.userId, sessione.user.id)))
+    .leftJoin(instanceConfig, eq(instanceConfig.organizationId, organization.id))
+    .limit(1);
+
+  if (!riga) {
     throw new NonAutorizzato(
       "L'istanza non è ancora inizializzata: nessuno studio configurato. Vedi lo script di onboarding.",
     );
   }
-
-  // La riverifica sul database è il punto centrale di questo guard.
-  const appartenenza = await db.query.member.findFirst({
-    where: and(eq(member.organizationId, studio.id), eq(member.userId, sessione.user.id)),
-  });
-  if (!appartenenza) throw new NonAutorizzato("L'utente non appartiene allo studio di questa istanza.");
-
-  const config = await db.query.instanceConfig.findFirst({
-    where: eq(instanceConfig.organizationId, studio.id),
-  });
+  // `leftJoin` restituisce la riga anche senza appartenenza: il controllo resta esplicito.
+  if (!riga.ruolo) throw new NonAutorizzato("L'utente non appartiene allo studio di questa istanza.");
 
   return {
     userId: sessione.user.id,
     email: sessione.user.email,
     nome: sessione.user.name,
-    organizationId: studio.id,
-    studioNome: config?.brandNome ?? studio.name,
-    ruolo: appartenenza.role,
+    organizationId: riga.studioId,
+    studioNome: riga.brandNome ?? riga.studioNome,
+    ruolo: riga.ruolo,
     // L'obbligo vale solo dove l'istanza lo chiede: sulla vetrina le utenze si creano a
     // mano per far provare il sistema, e chi consegna la password la conosce già.
     mustChangePassword:
       env.RICHIEDI_CAMBIO_PASSWORD &&
       Boolean((sessione.user as { mustChangePassword?: boolean }).mustChangePassword),
-    profilo: config?.profilo ?? "consulente",
-    mode: config?.mode ?? "full",
+    profilo: riga.profilo ?? "consulente",
+    mode: riga.mode ?? "full",
   };
 });
 

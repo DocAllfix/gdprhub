@@ -3,18 +3,34 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Building2, CalendarClock, FileText, LayoutGrid, LogOut, Menu, Settings, X } from "lucide-react";
+import {
+  Building2,
+  CalendarClock,
+  FileText,
+  LayoutGrid,
+  LogOut,
+  Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Settings,
+  X,
+} from "lucide-react";
 import { signOut } from "@/lib/auth/client";
-import { Button } from "@/components/ui/button";
 import { SelettoreTema } from "@/components/shell/tema";
 import { cn } from "@/lib/utils";
 
 // La shell. Una sola, per tutte le schermate: passando dal portafoglio al 231 cambia il
 // contenuto e l'accento, mai la disposizione. Il consulente impara l'interfaccia una volta.
 //
-// La barra laterale è STRETTA e le voci sono POCHE. Un professionista che apre lo strumento
-// sei ore al giorno non naviga: sa dove andare. Lo spazio guadagnato va alla tabella, che è
-// il posto dove il lavoro succede davvero.
+// LA BARRA È INCHIOSTRO E IL CONTENUTO È CARTA. È la decisione che cambia la faccia del
+// prodotto più di ogni altra: un pannello scuro accanto a un foglio chiaro legge come uno
+// strumento professionale, due grigi quasi uguali leggono come un abbozzo. È anche ciò che
+// facevano i tre prototipi, che avevano una colonna quasi nera — di quello si prende
+// l'idea, non i gradienti e i bagliori che ci stavano sopra.
+//
+// SI COLLASSA A BINARIO DI ICONE. Chi guarda quaranta clienti su un portatile da tredici
+// pollici vuole quei duecento pixel per la tabella. La scelta resta fra le sessioni: è una
+// preferenza, non uno stato temporaneo.
 //
 // Gli attributi `data-tour` si scrivono qui, insieme al componente, e non in una passata
 // successiva: un tour che punta a un selettore inventato dopo si rompe al primo refactoring.
@@ -22,13 +38,14 @@ import { cn } from "@/lib/utils";
 export type VoceMenu = {
   readonly href: string;
   readonly etichetta: string;
-  readonly icona: "portafoglio" | "scadenzario" | "relazioni" | "impostazioni";
+  readonly icona: "cruscotto" | "portafoglio" | "scadenzario" | "relazioni" | "impostazioni";
   readonly tour: string;
   /** Ancora da costruire: si mostra spenta invece di sparire, così il perimetro è leggibile. */
   readonly futura?: boolean;
 };
 
 const ICONE = {
+  cruscotto: LayoutGrid,
   portafoglio: Building2,
   scadenzario: CalendarClock,
   relazioni: FileText,
@@ -36,26 +53,33 @@ const ICONE = {
 } as const;
 
 export const MENU: readonly VoceMenu[] = [
+  { href: "/cruscotto", etichetta: "Cruscotto", icona: "cruscotto", tour: "cruscotto" },
   { href: "/portafoglio", etichetta: "Portafoglio", icona: "portafoglio", tour: "portafoglio" },
   { href: "/scadenzario", etichetta: "Scadenzario", icona: "scadenzario", tour: "scadenzario" },
   { href: "/relazioni", etichetta: "Relazioni", icona: "relazioni", tour: "relazioni", futura: true },
   { href: "/impostazioni", etichetta: "Impostazioni", icona: "impostazioni", tour: "impostazioni" },
 ];
 
+const CHIAVE_COLLASSO = "barra-collassata";
+
 export function Shell({
   studio,
   utente,
   ruolo,
+  collassataIniziale,
   children,
 }: {
   studio: string;
   utente: string;
   ruolo: string;
+  /** Letta dal cookie sul server: senza, la barra lampeggia aperta e poi si chiude. */
+  collassataIniziale: boolean;
   children: React.ReactNode;
 }) {
   const percorso = usePathname();
   const router = useRouter();
   const [apertaSuMobile, setApertaSuMobile] = useState(false);
+  const [collassata, setCollassata] = useState(collassataIniziale);
   const [uscendo, setUscendo] = useState(false);
 
   const esci = async () => {
@@ -65,23 +89,45 @@ export function Shell({
     router.refresh();
   };
 
+  const commutaCollasso = () => {
+    const nuovo = !collassata;
+    setCollassata(nuovo);
+    // Un cookie e non `localStorage`: il server deve saperlo per disegnare la barra già
+    // nella misura giusta. Con `localStorage` il primo fotogramma è sempre quello sbagliato.
+    document.cookie = `${CHIAVE_COLLASSO}=${nuovo ? "1" : "0"}; path=/; max-age=31536000; samesite=lax`;
+  };
+
+  const stretta = collassata && !apertaSuMobile;
+
   const navigazione = (
     <nav className="flex flex-col gap-0.5" aria-label="Navigazione principale">
       {MENU.map((voce) => {
         const Icona = ICONE[voce.icona];
         const attiva = percorso === voce.href || percorso.startsWith(`${voce.href}/`);
+        const contenuto = (
+          <>
+            <Icona className="size-4 shrink-0" aria-hidden />
+            {stretta ? <span className="sr-only">{voce.etichetta}</span> : voce.etichetta}
+            {!stretta && voce.futura ? (
+              <span className="ml-auto text-[9px] tracking-wide uppercase opacity-70">presto</span>
+            ) : null}
+          </>
+        );
+        const classi = cn(
+          "flex items-center gap-2.5 rounded-md py-1.5 text-sm transition-colors",
+          stretta ? "justify-center px-0" : "px-2.5",
+        );
+
         if (voce.futura) {
           return (
             <span
               key={voce.href}
               data-tour={voce.tour}
               aria-disabled="true"
-              title="In costruzione"
-              className="flex cursor-not-allowed items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-faint-foreground"
+              title={`${voce.etichetta} · in costruzione`}
+              className={cn(classi, "cursor-not-allowed text-sidebar-muted/60")}
             >
-              <Icona className="size-4 shrink-0" aria-hidden />
-              {voce.etichetta}
-              <span className="ml-auto text-[10px] tracking-wide uppercase">presto</span>
+              {contenuto}
             </span>
           );
         }
@@ -90,17 +136,17 @@ export function Shell({
             key={voce.href}
             href={voce.href}
             data-tour={voce.tour}
+            title={stretta ? voce.etichetta : undefined}
             aria-current={attiva ? "page" : undefined}
             onClick={() => setApertaSuMobile(false)}
             className={cn(
-              "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm",
+              classi,
               attiva
-                ? "bg-selected font-medium text-foreground"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                ? "bg-sidebar-selected font-medium text-sidebar-foreground"
+                : "text-sidebar-muted hover:bg-sidebar-selected/60 hover:text-sidebar-foreground",
             )}
           >
-            <Icona className="size-4 shrink-0" aria-hidden />
-            {voce.etichetta}
+            {contenuto}
           </Link>
         );
       })}
@@ -109,8 +155,6 @@ export function Shell({
 
   return (
     <div className="min-h-dvh bg-background">
-      {/* Il salto al contenuto è il primo elemento focalizzabile: chi naviga da tastiera
-          non deve attraversare la barra laterale a ogni pagina. */}
       <a
         href="#contenuto"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:shadow-md"
@@ -119,30 +163,39 @@ export function Shell({
       </a>
 
       <div className="flex">
-        {/* Chiusa su schermo stretto la barra è `invisible`, non solo spostata fuori campo.
-            `translate-x` da solo la toglie dagli occhi ma la lascia nell'ordine di
-            tabulazione e nell'albero di accessibilità: chi naviga da tastiera su un telefono
-            attraversa cinque comandi che non vede. `visibility: hidden` li rimuove davvero, e
-            `lg:visible` li restituisce dove la barra c'è per davvero.
-            Trovato dal cancello visivo, che su mobile non riusciva a cliccarli. */}
+        {/* Chiusa su schermo stretto la barra è `invisible`, non solo spostata fuori campo:
+            `translate-x` da solo la lascia nell'ordine di tabulazione, e chi naviga da
+            tastiera su un telefono attraversa comandi che non vede. */}
         <aside
           data-tour="barra-laterale"
           className={cn(
-            "fixed inset-y-0 left-0 z-40 flex w-56 shrink-0 flex-col border-r border-border bg-sidebar px-3 py-4 transition-transform lg:static lg:visible lg:translate-x-0",
+            "fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-[transform,width] duration-200 ease-out lg:static lg:visible lg:translate-x-0",
+            stretta ? "w-14 px-2 py-3" : "w-56 px-3 py-4",
             apertaSuMobile ? "translate-x-0" : "invisible -translate-x-full",
           )}
         >
-          <div className="flex items-start justify-between gap-2 px-1.5">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold tracking-tight" title={studio}>
-                {studio}
-              </p>
-              <p className="text-[10px] tracking-[0.1em] text-faint-foreground uppercase">Suite Compliance</p>
-            </div>
+          <div
+            className={cn("flex items-start gap-2", stretta ? "justify-center" : "justify-between px-1.5")}
+          >
+            {stretta ? (
+              <span
+                className="grid size-8 place-items-center rounded-md bg-sidebar-selected text-xs font-semibold"
+                title={studio}
+              >
+                {studio.slice(0, 2).toUpperCase()}
+              </span>
+            ) : (
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold tracking-tight" title={studio}>
+                  {studio}
+                </p>
+                <p className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</p>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setApertaSuMobile(false)}
-              className="text-muted-foreground hover:text-foreground lg:hidden"
+              className="text-sidebar-muted hover:text-sidebar-foreground lg:hidden"
               aria-label="Chiudi la navigazione"
             >
               <X className="size-4" aria-hidden />
@@ -151,27 +204,49 @@ export function Shell({
 
           <div className="mt-5">{navigazione}</div>
 
-          <div className="mt-auto space-y-3 border-t border-border pt-3">
-            <div className="px-1.5">
-              <p className="truncate text-xs font-medium" title={utente}>
-                {utente}
-              </p>
-              <p className="text-[10px] text-faint-foreground capitalize">{ruolo}</p>
-            </div>
-            <div className="flex items-center justify-between gap-2 px-1.5">
-              <SelettoreTema />
-              <Button
-                variant="ghost"
-                size="sm"
+          <div className="mt-auto space-y-2.5 border-t border-sidebar-border pt-3">
+            {stretta ? null : (
+              <div className="px-1.5">
+                <p className="truncate text-xs font-medium" title={utente}>
+                  {utente}
+                </p>
+                <p className="text-[10px] text-sidebar-muted capitalize">{ruolo}</p>
+              </div>
+            )}
+
+            <div className={cn("flex items-center gap-1.5", stretta ? "flex-col" : "justify-between px-1.5")}>
+              {stretta ? null : <SelettoreTema />}
+              <button
+                type="button"
                 onClick={esci}
                 disabled={uscendo}
                 data-tour="esci"
-                className="h-7 px-2 text-xs"
+                title="Esci"
+                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground disabled:opacity-50"
               >
                 <LogOut className="size-3.5" aria-hidden />
-                {uscendo ? "Uscita…" : "Esci"}
-              </Button>
+                {stretta ? <span className="sr-only">Esci</span> : uscendo ? "Uscita…" : "Esci"}
+              </button>
             </div>
+
+            <button
+              type="button"
+              onClick={commutaCollasso}
+              data-tour="collassa"
+              aria-pressed={collassata}
+              title={collassata ? "Espandi la barra" : "Riduci la barra"}
+              className={cn(
+                "hidden w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground lg:flex",
+                stretta && "justify-center px-0",
+              )}
+            >
+              {collassata ? (
+                <PanelLeftOpen className="size-4 shrink-0" aria-hidden />
+              ) : (
+                <PanelLeftClose className="size-4 shrink-0" aria-hidden />
+              )}
+              {stretta ? <span className="sr-only">Espandi la barra</span> : "Riduci"}
+            </button>
           </div>
         </aside>
 
@@ -180,7 +255,7 @@ export function Shell({
             type="button"
             aria-label="Chiudi la navigazione"
             onClick={() => setApertaSuMobile(false)}
-            className="fixed inset-0 z-30 bg-foreground/20 lg:hidden"
+            className="fixed inset-0 z-30 bg-foreground/30 lg:hidden"
           />
         ) : null}
 
@@ -194,9 +269,9 @@ export function Shell({
             >
               <Menu className="size-5" aria-hidden />
             </button>
-            <span className="flex items-center gap-1.5 text-sm font-semibold">
-              <LayoutGrid className="size-4" aria-hidden />
-              {studio}
+            <span className="text-sm font-semibold">{studio}</span>
+            <span className="ml-auto">
+              <SelettoreTema />
             </span>
           </header>
 

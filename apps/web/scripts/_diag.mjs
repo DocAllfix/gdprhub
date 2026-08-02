@@ -1,37 +1,21 @@
 import { chromium } from "playwright";
-const B = process.argv[2] ?? "https://gdprhub.vercel.app";
-const b = await chromium.launch();
-const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, locale: "it-IT" });
-await ctx.request.post(`${B}/api/auth/sign-in/email`, { data: { email: "collaudo1@compliancedesk.it", password: "3g29f-tk8de-ipjsd" } });
-const p = await ctx.newPage();
-
-for (const percorso of ["/portafoglio", "/scadenzario"]) {
-  await p.goto(`${B}${percorso}`, { waitUntil: "load" });
-  await p.goto("about:blank");
-  const t0 = Date.now();
-  await p.goto(`${B}${percorso}`, { waitUntil: "load" });
-  const m = await p.evaluate(() => {
-    const n = performance.getEntriesByType("navigation")[0];
-    const risorse = performance.getEntriesByType("resource");
-    const js = risorse.filter((r) => r.name.endsWith(".js"));
-    return {
-      risposta: Math.round(n.responseStart - n.requestStart),
-      scarico: Math.round(n.responseEnd - n.responseStart),
-      html: Math.round(n.transferSize / 1024),
-      dcl: Math.round(n.domContentLoadedEventEnd - n.startTime),
-      load: Math.round(n.loadEventEnd - n.startTime),
-      nodi: document.querySelectorAll("*").length,
-      jsFile: js.length,
-      jsKb: Math.round(js.reduce((a, r) => a + (r.transferSize || 0), 0) / 1024),
-      jsMs: Math.round(Math.max(...js.map((r) => r.responseEnd), 0)),
-    };
-  });
-  console.log(`${percorso}
-  risposta del server   ${m.risposta} ms
-  scarico dell'HTML     ${m.scarico} ms  (${m.html} KB)
-  JavaScript            ${m.jsFile} file, ${m.jsKb} KB, ultimo a ${m.jsMs} ms
-  DOM pronto            ${m.dcl} ms
-  caricamento completo  ${m.load} ms   ·  ${m.nodi} nodi nel DOM
-  misurato dall'esterno ${Date.now() - t0} ms\n`);
+const S = process.argv[2];
+const B="http://127.0.0.1:3100";
+const b=await chromium.launch();
+const ctx=await b.newContext({viewport:{width:1512,height:950},locale:"it-IT",deviceScaleFactor:1});
+await ctx.request.post(`${B}/api/auth/sign-in/email`,{data:{email:"collaudo1@compliancedesk.it",password:"3g29f-tk8de-ipjsd"}});
+const p=await ctx.newPage();
+p.on("pageerror",e=>console.log("[pageerror]",e.message.slice(0,200)));
+for (const [rotta, nome] of [["/cruscotto","cruscotto"],["/portafoglio","portafoglio"],["/scadenzario","scadenzario"]]) {
+  await p.goto(`${B}${rotta}`,{waitUntil:"networkidle"});
+  await p.waitForTimeout(700);
+  await p.screenshot({path:`${S}/${nome}.png`});
+  console.log(nome, "ok");
 }
+// barra collassata
+await p.goto(`${B}/cruscotto`,{waitUntil:"networkidle"});
+await p.locator('[data-tour="collassa"]').click();
+await p.waitForTimeout(700);
+await p.screenshot({path:`${S}/cruscotto-collassata.png`});
+console.log("collassata:", await p.locator('[data-tour="collassa"]').getAttribute("aria-pressed"));
 await b.close();

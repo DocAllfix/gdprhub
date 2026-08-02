@@ -13,6 +13,7 @@
 
 export const PAGINE = [
   { percorso: "/accedi", nome: "Accesso", fase: 6 },
+  { percorso: "/cruscotto", nome: "Cruscotto unificato", fase: 10, autenticata: true },
   { percorso: "/portafoglio", nome: "Portafoglio", fase: 6, autenticata: true },
   { percorso: "/azienda/:prima", nome: "Scheda azienda", fase: 6, autenticata: true, dinamica: true },
   {
