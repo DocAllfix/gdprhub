@@ -52,6 +52,12 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # Il Chromium non è importato da nessun modulo: se una rotta PDF non è dichiarata in
+      # outputFileTracingIncludes, la build resta verde e la rotta risponde 500 solo in
+      # produzione. È successo due volte. Ora si legge la tracciatura invece di scoprirlo.
+      - name: Rotte PDF complete di Chromium
+        run: pnpm --filter web pdf:traccia
+
       # Il motore è la fonte di verità dei calcoli: non deve poter acquisire dipendenze
       # a runtime, o smette di essere portabile e verificabile in isolamento.
       - name: Il motore resta senza dipendenze

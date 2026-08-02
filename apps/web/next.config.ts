@@ -39,7 +39,11 @@ const nextConfig: NextConfig = {
   // locale, perché la rotta nuova non era in questo elenco.
   outputFileTracingIncludes: {
     "/api/spike-pdf": [CHROMIUM_BIN],
-    "/prototipi/[documento]": [CHROMIUM_BIN],
+    // NON scrivere `/prototipi/[documento]`: le chiavi sono glob, e le parentesi quadre
+    // valgono come classe di caratteri. `[documento]` significa «un carattere fra d, o, c,
+    // u, m, e, n, t», quindi non corrisponde a nulla e la cartella non viene inclusa.
+    // La build resta verde e la rotta risponde 500 solo in produzione.
+    "/prototipi/**": [CHROMIUM_BIN],
   },
 
   poweredByHeader: false,

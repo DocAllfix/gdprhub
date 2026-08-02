@@ -20,7 +20,8 @@
     "db:bootstrap": "tsx --env-file-if-exists=.env.local src/lib/db/bootstrap-cli.ts",
     "font:incorpora": "node scripts/incorpora-font.mjs",
     "font:check": "node scripts/incorpora-font.mjs --check",
-    "prototipi": "node scripts/prototipi-pdf.mjs"
+    "prototipi": "node scripts/prototipi-pdf.mjs",
+    "pdf:traccia": "node scripts/traccia-pdf.mjs"
   },
   "dependencies": {
     "@gdpr/engine": "workspace:*",
