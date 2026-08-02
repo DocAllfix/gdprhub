@@ -22,6 +22,24 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1).optional(),
 
   /**
+   * Segreto delle sessioni. In sviluppo ha un valore riconoscibile e innocuo; in produzione
+   * è obbligatorio e lungo, e l'istanza si rifiuta di partire senza (vedi il controllo in
+   * fondo al file). Si genera con `openssl rand -hex 32`.
+   */
+  AUTH_SECRET: z.string().min(32).default("sviluppo-non-usare-in-produzione-0000000000000000"),
+
+  /**
+   * Amministratore iniziale, creato al primo avvio dell'istanza.
+   * Le credenziali si consegnano al referente su canale sicuro e al primo accesso il cambio
+   * password e il secondo fattore sono forzati.
+   */
+  ADMIN_EMAIL: z.email().optional(),
+  ADMIN_PASSWORD: z.string().min(12).optional(),
+  ADMIN_NOME: z.string().default("Amministratore"),
+  /** Nome dello studio proprietario dell'istanza. */
+  STUDIO_NOME: z.string().default("Studio"),
+
+  /**
    * Dove finiscono le evidenze documentali.
    *   blob → Vercel Blob (vetrina)
    *   fs   → volume locale (produzione per istanza)
@@ -78,6 +96,25 @@ if (!analisi.success) {
 
 export const env = analisi.data;
 export type Env = typeof env;
+
+/**
+ * Controlli che valgono solo in produzione.
+ *
+ * Il segreto di sviluppo è comodo perché fa partire l'istanza senza configurare nulla, ma è
+ * pubblico: sta nel repository. Se finisse in produzione, chiunque legga questo file
+ * potrebbe forgiare una sessione valida. Meglio che l'istanza si rifiuti di partire.
+ */
+if (env.NODE_ENV === "production") {
+  const mancanti: string[] = [];
+  if (env.AUTH_SECRET.startsWith("sviluppo-")) mancanti.push("AUTH_SECRET (è ancora quello di sviluppo)");
+  if (!env.DATABASE_URL) mancanti.push("DATABASE_URL");
+  if (mancanti.length) {
+    throw new Error(
+      `L'istanza non può partire in produzione:\n  - ${mancanti.join("\n  - ")}\n\n` +
+        "Genera il segreto con `openssl rand -hex 32` e mettilo in .env.prod.",
+    );
+  }
+}
 
 /** Vero quando l'istanza gira su un ambiente effimero senza filesystem persistente. */
 export const isVetrinaServerless = env.STORAGE_DRIVER === "blob" || env.PDF_DRIVER === "serverless";
