@@ -15,6 +15,11 @@ export * from "./core/types";
 export * from "./core/deadlines";
 export * from "./core/recurrence";
 export * from "./core/compliance";
+export * from "./core/risk";
+export * from "./core/exposure";
+// `prontezza` e `esposizione` vivono entrambe in core/exposure.
+export * from "./core/simulate";
+export * from "./suite/agenda";
 export { costruisciDemo } from "./core/demo";
 export type { StatoDemo, VoceDemo } from "./core/demo";
 
@@ -26,6 +31,42 @@ import type { AdempimentoTemplate, Dominio } from "./core/types";
 import type { StatoDemo } from "./core/demo";
 
 export { GDPR_TEMPLATES, D231_TEMPLATES, D81_TEMPLATES, GDPR_DEMO, D231_DEMO, D81_DEMO };
+
+// --- Sanzioni: tre metodologie distinte, mai sommabili fra loro -------------------------
+export { stimaSanzioneGdpr } from "./gdpr/sanction";
+export type {
+  ParametriSanzioneGdpr,
+  StimaSanzione,
+  CategoriaViolazione,
+  Gravita,
+  Circostanze,
+} from "./gdpr/sanction";
+export {
+  stimaSanzione231,
+  QUOTE_MIN,
+  QUOTE_MAX,
+  VALORE_QUOTA_MIN,
+  VALORE_QUOTA_MAX,
+  TETTO_RIDUZIONE,
+} from "./d231/sanction";
+export type { ParametriSanzione231, StimaSanzione231, GravitaFatto, Riduzione } from "./d231/sanction";
+export { esposizioneD81 } from "./d81/sanction";
+export type { EsposizioneD81, FattispecieSanzionatoria, SoggettoResponsabile } from "./d81/sanction";
+
+/**
+ * Presidi che un ispettore chiede per primi, per dominio.
+ * Alimentano il calcolo della prontezza: sono il «fascicolo» da avere pronto.
+ */
+export const PRESIDI_CHIAVE: Readonly<Record<Dominio, readonly string[]>> = {
+  // Registro art.30 (Titolare e Responsabile), informative, DPIA, breach, nomina DPO,
+  // misure di sicurezza, trasferimenti extra UE.
+  gdpr: ["T01", "R01", "T05", "T03", "T04", "T12", "T08", "T11"],
+  // Nomina OdV, piano di vigilanza, relazione al CdA, mappatura rischi-reato,
+  // codice etico, canale whistleblowing.
+  d231: ["M01", "M05", "M08", "M11", "M18", "M36"],
+  // DVR, DUVRI, piano di emergenza, nomina RSPP e medico competente, riunione periodica.
+  d81: ["S01", "S02", "S06"],
+};
 
 /** I cataloghi dei tre domini, indicizzati. 42 + 65 + 64 = 171 adempimenti. */
 export const CATALOGHI: Readonly<Record<Dominio, readonly AdempimentoTemplate[]>> = {
