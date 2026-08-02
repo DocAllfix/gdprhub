@@ -48,12 +48,17 @@ function variato(base: readonly AdempimentoRisolto[], scarto: number): Adempimen
   );
 }
 
+const MESI_BREVI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+
 export function datiVarianti() {
   const perDominio = Object.fromEntries(DOMINI.map((d) => [d, risolti(d)])) as Record<
     Dominio,
     readonly AdempimentoRisolto[]
   >;
   const tutti = DOMINI.flatMap((d) => perDominio[d]);
+  const tuttoIlPortafoglio = AZIENDE.flatMap((_, i) =>
+    DOMINI.flatMap((d) => variato(perDominio[d], i * 3)),
+  );
 
   const righe = AZIENDE.map((az, i) => {
     const suoi = DOMINI.map((d) => ({ dominio: d, adempimenti: variato(perDominio[d], i * 3) }));
@@ -164,6 +169,57 @@ export function datiVarianti() {
         .map(([etichetta, v]) => ({ etichetta, ...v }))
         .sort((x, y) => y.scaduti - x.scaduti)
         .slice(0, 6);
+    })(),
+
+    /** Chi è il collo di bottiglia. Nei prototipi era una torta: una torta con nove spicchi
+     *  non si legge, e la domanda vera è «chi ne ha di più», che è un ordinamento. */
+    perRuolo: (() => {
+      const m = new Map<string, { quanti: number; scaduti: number }>();
+      for (const a of tuttoIlPortafoglio) {
+        const v = m.get(a.ruolo) ?? { quanti: 0, scaduti: 0 };
+        v.quanti += 1;
+        if (a.statoScadenza === "Scaduta") v.scaduti += 1;
+        m.set(a.ruolo, v);
+      }
+      return [...m.entries()]
+        .map(([etichetta, v]) => ({ etichetta, ...v }))
+        .sort((x, y) => y.quanti - x.quanti)
+        .slice(0, 7);
+    })(),
+
+    /** IL CARICO DEI PROSSIMI DODICI MESI, per dominio.
+     *
+     *  È il grafico che nei prototipi era finto: il «trend compliance» a sei mesi veniva da
+     *  `62 + i*5 + Math.random()*3`, cioè da niente. Questo invece è calcolato, ed è anche
+     *  la domanda più utile delle due: non «come sono andato», che richiede uno storico che
+     *  una istanza nuova non ha, ma «quando mi cade addosso il lavoro», che si deriva dalle
+     *  periodicità e si sa dal primo giorno. */
+    caricoMensile: (() => {
+      // Le date del motore sono stringhe ISO, non oggetti Date: si affettano invece di
+      // parsarle, e così non esiste nemmeno la possibilità di un fuso orario di mezzo.
+      const annoOggi = Number(OGGI.slice(0, 4));
+      const meseOggi = Number(OGGI.slice(5, 7)) - 1;
+      const mesi = Array.from({ length: 12 }, (_, i) => {
+        const assoluto = meseOggi + i;
+        const anno = annoOggi + Math.floor(assoluto / 12);
+        const mese = ((assoluto % 12) + 12) % 12;
+        return {
+          chiave: `${anno}-${mese}`,
+          etichetta: MESI_BREVI[mese]!,
+          anno,
+          per: { gdpr: 0, d231: 0, d81: 0 } as Record<Dominio, number>,
+          totale: 0,
+        };
+      });
+      const indice = new Map(mesi.map((m) => [m.chiave, m]));
+      for (const a of tuttoIlPortafoglio) {
+        if (!a.scadenza) continue;
+        const m = indice.get(`${Number(a.scadenza.slice(0, 4))}-${Number(a.scadenza.slice(5, 7)) - 1}`);
+        if (!m) continue;
+        m.per[a.dominio] += 1;
+        m.totale += 1;
+      }
+      return mesi;
     })(),
   };
 }
