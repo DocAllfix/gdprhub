@@ -73,6 +73,31 @@ carattere istituzionale: legge come documento, non come app. Il mono sui codici 
 **Il documento PDF è l'altro registro**: serif editoriale (Newsreader), margini ampi,
 copertina. Il contrasto fra i due è deliberato ed è il lusso del prodotto.
 
+## Il documento
+
+Registro editoriale, in `src/lib/documenti/`. Prototipi su `/design`, cancello
+`pnpm prototipi`. **Il documento è sempre chiaro: è carta, non esiste un PDF in tema scuro.**
+
+Tre gesti che la schermata non ha, e che tengono i due registri separati:
+
+1. **Colonna di marginalia.** Numero di sezione e riferimento normativo fuori dalla colonna
+   di testo. È il fascicolo istruttorio, e nell'applicazione non c'è.
+2. **Impaginazione nostra, non del browser.** Ogni pagina è un blocco 210×297 mm: nessuna
+   intestazione di categoria orfana, nessuna riga spezzata, «Pagina 3 di 12» esatta. Su un
+   atto consegnato a un'autorità la numerazione è una garanzia di integrità.
+3. **Il colore è il secondo canale, mai il primo.** Ogni scadenza porta la parola oltre alla
+   data colorata: il consulente stampa in bianco e nero, e l'ispettore legge quello.
+
+**Font incorporati, sempre.** Sei tagli latini in `font-incorporati.ts`, generati da
+`pnpm font:incorpora` e verificati in CI. Il Chromium serverless non ha caratteri di
+sistema: un documento che si fida della macchina si stampa diverso su ogni computer, e
+quello del cliente è il computer su cui non abbiamo alcun controllo.
+
+**Ogni nuova rotta che genera PDF va aggiunta a `outputFileTracingIncludes`** in
+`next.config.ts`, con una chiave **glob** (`/prototipi/**`, non `/prototipi/[documento]`:
+le parentesi quadre valgono come classe di caratteri). `pnpm pdf:traccia` lo verifica dopo
+la build: senza, la build resta verde e la rotta risponde 500 solo in produzione.
+
 ## Densità
 
 **22 righe visibili a 1440×900** nell'assessment. Se ne entrano otto è una dashboard, se ne

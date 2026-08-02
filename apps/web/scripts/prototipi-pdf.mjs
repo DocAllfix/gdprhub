@@ -158,6 +158,16 @@ for (const nome of DOCUMENTI) {
   }
   if (incorporati === 0) problema("nessun font incorporato nel PDF");
 
+  // I nomi dei font scritti DENTRO il PDF sono la prova finale. Il prefisso di sei lettere
+  // indica un sottoinsieme incorporato; un nome senza prefisso, o una famiglia che non è
+  // fra le nostre tre, significa che la macchina ha prestato un carattere suo, ed è quello
+  // che è successo allo spike della Fase 0 su Vercel.
+  const famiglie = [
+    ...new Set((testo.match(/\/BaseFont\s*\/[A-Za-z0-9+#-]+/g) || []).map((x) => x.split("/").pop())),
+  ];
+  const estranei = famiglie.filter((f) => !/^[A-Z]{6}\+(Newsreader|IBMPlex(Sans|Mono))/.test(f));
+  if (estranei.length > 0) problema(`font non nostri nel PDF: ${estranei.join(", ")}`);
+
   const quote = esito.riempimento.map((r) => `${Math.round(r.quota * 100)}%`).join(" ");
   console.log(
     `  ${errori === 0 ? "ok" : "  "}  ${esito.pagine} pagine · ${Math.round(corpo.length / 1024)} KB · ${incorporati} font incorporati · riempimento ${quote}`,
