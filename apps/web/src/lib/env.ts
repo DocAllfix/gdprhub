@@ -43,7 +43,26 @@ const schema = z.object({
   SENTRY_DSN: z.string().optional(),
 });
 
-const analisi = schema.safeParse(process.env);
+/**
+ * Su Vercel il filesystem è effimero e Chromium di sistema non esiste: i due driver
+ * DEVONO essere quelli serverless. Invece di pretendere che qualcuno lo configuri a mano
+ * (e scoprire l'errore al primo PDF generato), l'istanza riconosce da sé dove sta girando.
+ *
+ * Resta comunque sovrascrivibile: un valore esplicito nell'ambiente ha sempre la meglio.
+ */
+type Ambiente = Record<string, string | undefined>;
+
+export function predefinitiDellAmbiente(ambiente: Ambiente): Ambiente {
+  if (ambiente.VERCEL !== "1") return ambiente;
+  return {
+    ...ambiente,
+    STORAGE_DRIVER: ambiente.STORAGE_DRIVER ?? "blob",
+    PDF_DRIVER: ambiente.PDF_DRIVER ?? "serverless",
+    APP_URL: ambiente.APP_URL ?? (ambiente.VERCEL_URL ? `https://${ambiente.VERCEL_URL}` : undefined),
+  };
+}
+
+const analisi = schema.safeParse(predefinitiDellAmbiente(process.env));
 
 if (!analisi.success) {
   const dettagli = analisi.error.issues
