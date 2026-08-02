@@ -1,26 +1,236 @@
 @import "tailwindcss";
 
+/* ============================================================================
+   Token della Suite Compliance
+   ----------------------------------------------------------------------------
+   Fonte di verità: docs/03-brief-di-forma.md e DESIGN.md.
+   Regola vincolante: NESSUN colore, raggio o ombra scritto a mano nei componenti.
+   Se un valore serve e non c'è qui, si aggiunge qui.
+
+   Gerarchia del colore, rigida:
+     1. STATO DELLA SCADENZA   rosso · ambra · verde      riservati, mai altrove
+     2. DOMINIO                indaco · prugna · acciaio  solo dove i tre convivono
+     3. PRODOTTO               inchiostro                 azioni, selezione, focus
+
+   L'accento primario è inchiostro e non blu: lascia libero il canale cromatico per
+   stato e dominio, evita il riflesso «pulsante primario blu», e appartiene al
+   registro dell'inchiostro su carta.
+
+   Due blocchi: chiaro in :root, scuro sotto [data-theme="dark"], stampato sulla radice
+   prima del disegno dallo script in layout.tsx. Al primo giro i token scuri stavano sotto
+   una classe che nessuno applicava e il cancello visivo passava verde lo stesso: ora il
+   cancello confronta il fondo dei due temi e boccia se coincidono.
+   ========================================================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /* --- Neutri, tinti verso l'inchiostro ------------------------------------ */
+  /* Mai #fff, mai #000: ogni neutro porta una traccia della tinta di marca, ma la
+     croma resta sotto 0.01 o il grigio inizia a leggersi come azzurro. */
+  --background: oklch(0.974 0.003 262); /* la scrivania */
+  --surface: oklch(0.995 0.0015 262); /* il foglio */
+  --surface-sunken: oklch(0.955 0.004 262);
+  --sidebar: oklch(0.962 0.005 258);
+
+  --foreground: oklch(0.24 0.018 262);
+  --muted-foreground: oklch(0.5 0.008 262);
+  --faint-foreground: oklch(0.62 0.006 262);
+
+  --border: oklch(0.905 0.005 262);
+  --border-strong: oklch(0.82 0.007 262);
+  --border-subtle: oklch(0.938 0.004 262);
+
+  /* --- Prodotto: inchiostro ------------------------------------------------ */
+  /* Su fondo scuro l'inchiostro si inverte in chiaro: resta il canale neutro. */
+  --primary: oklch(0.245 0.021 262);
+  --primary-hover: oklch(0.185 0.022 262);
+  --primary-foreground: oklch(0.985 0.002 262);
+  --selected: oklch(0.945 0.012 262);
+  --ring: oklch(0.45 0.05 262);
+
+  /* --- Stato della scadenza: RISERVATO ------------------------------------- */
+  /* Questi tre non compaiono da nessun'altra parte. Se il colore decora, non può
+     più segnalare. Su fondo scuro si schiariscono e perdono croma: un rosso saturo
+     su nero vibra e diventa illeggibile. */
+  --scaduta: oklch(0.505 0.175 26);
+  --scaduta-surface: oklch(0.957 0.028 26);
+  --scaduta-border: oklch(0.88 0.06 26);
+
+  --imminente: oklch(0.515 0.125 62);
+  --imminente-surface: oklch(0.962 0.038 72);
+  --imminente-border: oklch(0.88 0.075 68);
+
+  --regolare: oklch(0.475 0.105 152);
+  --regolare-surface: oklch(0.958 0.028 152);
+  --regolare-border: oklch(0.885 0.055 152);
+
+  /* «Da programmare» non è un rischio: è un'assenza. Resta neutro apposta. */
+  --programmare: oklch(0.55 0.012 262);
+  --programmare-surface: oklch(0.955 0.004 262);
+  --programmare-border: oklch(0.9 0.005 262);
+
+  /* --- Dominio: solo dove i tre convivono ---------------------------------- */
+  /* Separati in TINTA e in LUMINOSITÀ: in deuteranopia le tinte collassano verso il
+     blu, e resta il valore a distinguerli. Più l'etichetta testuale, che c'è sempre. */
+  --gdpr: oklch(0.45 0.125 272); /* indaco  · medio */
+  --gdpr-surface: oklch(0.955 0.022 272);
+  --d231: oklch(0.375 0.1 342); /* prugna  · scuro */
+  --d231-surface: oklch(0.95 0.022 342);
+  --d81: oklch(0.565 0.055 232); /* acciaio · chiaro */
+  --d81-surface: oklch(0.955 0.017 232);
+
+  /* --- Forma ed elevazione -------------------------------------------------- */
+  /* Raggi contenuti: il registro è il documento, non la carta di credito. */
+  --radius-sm: 0.25rem;
+  --radius: 0.375rem;
+  --radius-lg: 0.5rem;
+
+  /* Ombre fredde e discrete. Mai bagliori colorati. */
+  --shadow-sm: 0 1px 2px oklch(0.24 0.018 262 / 0.05);
+  --shadow: 0 1px 3px oklch(0.24 0.018 262 / 0.07);
+  --shadow-panel: -1px 0 3px oklch(0.24 0.018 262 / 0.06);
+
+  /* --- Densità -------------------------------------------------------------- */
+  /* 22 righe visibili a 1440×900: è il numero che separa uno strumento da una
+     dashboard. Se cambia questo, si rimisura la tabella. */
+  --riga-h: 2.25rem;
+  --riga-h-comoda: 2.75rem;
+}
+
+/* Un solo blocco scuro, applicato dall'attributo che lo script in `layout.tsx` stampa
+   sulla radice prima del disegno. Niente `light-dark()`: Lightning CSS lo trasforma in un
+   valore non valido quando sta dentro una variabile personalizzata, e il risultato e' un
+   fondo trasparente. Trovato dal cancello visivo, non leggendo il codice. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: oklch(0.185 0.012 262);
+  --surface: oklch(0.225 0.014 262);
+  --surface-sunken: oklch(0.165 0.012 262);
+  --sidebar: oklch(0.2 0.014 258);
+  --foreground: oklch(0.93 0.006 262);
+  --muted-foreground: oklch(0.71 0.007 262);
+  --faint-foreground: oklch(0.58 0.006 262);
+  --border: oklch(0.33 0.012 262);
+  --border-strong: oklch(0.44 0.014 262);
+  --border-subtle: oklch(0.28 0.012 262);
+  --primary: oklch(0.93 0.006 262);
+  --primary-hover: oklch(1 0 0);
+  --primary-foreground: oklch(0.2 0.014 262);
+  --selected: oklch(0.27 0.018 262);
+  --ring: oklch(0.72 0.05 262);
+  --scaduta: oklch(0.72 0.145 26);
+  --scaduta-surface: oklch(0.29 0.055 26);
+  --scaduta-border: oklch(0.4 0.09 26);
+  --imminente: oklch(0.78 0.12 72);
+  --imminente-surface: oklch(0.3 0.05 68);
+  --imminente-border: oklch(0.42 0.08 68);
+  --regolare: oklch(0.73 0.11 152);
+  --regolare-surface: oklch(0.28 0.045 152);
+  --regolare-border: oklch(0.4 0.075 152);
+  --programmare: oklch(0.68 0.011 262);
+  --programmare-surface: oklch(0.26 0.012 262);
+  --programmare-border: oklch(0.36 0.012 262);
+  --gdpr: oklch(0.72 0.115 272);
+  --gdpr-surface: oklch(0.29 0.05 272);
+  --d231: oklch(0.66 0.1 342);
+  --d231-surface: oklch(0.28 0.05 342);
+  --d81: oklch(0.79 0.055 232);
+  --d81-surface: oklch(0.29 0.03 232);
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
+  --shadow: 0 1px 3px oklch(0 0 0 / 0.4);
+  --shadow-panel: -1px 0 3px oklch(0 0 0 / 0.35);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-sidebar: var(--sidebar);
+
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-faint-foreground: var(--faint-foreground);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-selected: var(--selected);
+  --color-ring: var(--ring);
+
+  --color-scaduta: var(--scaduta);
+  --color-scaduta-surface: var(--scaduta-surface);
+  --color-scaduta-border: var(--scaduta-border);
+  --color-imminente: var(--imminente);
+  --color-imminente-surface: var(--imminente-surface);
+  --color-imminente-border: var(--imminente-border);
+  --color-regolare: var(--regolare);
+  --color-regolare-surface: var(--regolare-surface);
+  --color-regolare-border: var(--regolare-border);
+  --color-programmare: var(--programmare);
+  --color-programmare-surface: var(--programmare-surface);
+  --color-programmare-border: var(--programmare-border);
+
+  --color-gdpr: var(--gdpr);
+  --color-gdpr-surface: var(--gdpr-surface);
+  --color-d231: var(--d231);
+  --color-d231-surface: var(--d231-surface);
+  --color-d81: var(--d81);
+  --color-d81-surface: var(--d81-surface);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius-lg);
+
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+
+  --spacing-riga: var(--riga-h);
+  --spacing-riga-comoda: var(--riga-h-comoda);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--border);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+    /* Cifre tabellari ovunque, non solo nelle tabelle: una colonna di numeri che non
+       si allinea è il primo segnale che il prodotto non è preciso. */
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Il focus si vede sempre, in entrambi i temi. Non è negoziabile. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Intestazioni di colonna in maiuscoletto spaziato: è il segnale del registro
+     catastale, e costa zero in altezza. */
+  th {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }

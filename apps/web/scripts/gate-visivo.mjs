@@ -41,6 +41,9 @@ const soloPercorso = soloIndice >= 0 ? argomenti[soloIndice + 1] : null;
 const difetti = [];
 const segnala = (dove, cosa) => difetti.push(`${dove}\n     ${cosa}`);
 
+/** Colore di fondo osservato per ogni pagina/larghezza/tema: serve al confronto fra temi. */
+const fondiPerTema = new Map();
+
 /** Elementi che l'utente può azionare. I collegamenti si verificano a parte: cliccarli naviga via. */
 const SELETTORE_AZIONABILI = [
   "button:not([disabled])",
@@ -103,6 +106,14 @@ async function verificaPagina(browser, pagina, misura, tema) {
   mkdirSync(SCREENSHOT, { recursive: true });
   const nomeFile = `${pagina.percorso.replace(/\W+/g, "_") || "_radice"}--${misura.nome}--${tema}.png`;
   await tab.screenshot({ path: join(SCREENSHOT, nomeFile), fullPage: true });
+
+  // --- 0. Il tema è davvero applicato? -------------------------------------------------
+  // Al primo giro questo cancello è passato verde su una pagina in cui il tema scuro non
+  // esisteva: i token stavano sotto una classe che nessuno applicava. Uno strumento di
+  // verifica che non verifica ciò che dichiara è peggio di nessuno strumento, quindi ora
+  // si registra il colore di fondo reale e a fine giro si confrontano i due temi.
+  const fondo = await tab.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  fondiPerTema.set(`${pagina.percorso}|${misura.nome}|${tema}`, fondo);
 
   // --- 1. Nessun errore al caricamento ------------------------------------------------
   if (messaggi.length) segnala(etichetta, `al caricamento:\n     - ${messaggi.join("\n     - ")}`);
@@ -197,6 +208,22 @@ async function main() {
     }
   } finally {
     await browser.close();
+  }
+
+  // --- Il tema scuro esiste davvero? ---------------------------------------------------
+  // Confronto a posteriori: se chiaro e scuro producono lo stesso colore di fondo, il tema
+  // non è implementato e ogni altro esito su «dark» è privo di significato.
+  for (const pagina of pagine) {
+    for (const misura of LARGHEZZE) {
+      const chiaro = fondiPerTema.get(`${pagina.percorso}|${misura.nome}|light`);
+      const scuro = fondiPerTema.get(`${pagina.percorso}|${misura.nome}|dark`);
+      if (chiaro && scuro && chiaro === scuro) {
+        segnala(
+          `${pagina.percorso} · ${misura.nome}`,
+          `chiaro e scuro rendono lo stesso fondo (${chiaro}): il tema scuro non è applicato`,
+        );
+      }
+    }
   }
 
   if (difetti.length) {

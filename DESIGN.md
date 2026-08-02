@@ -1,0 +1,156 @@
+# DESIGN.md
+
+Registro di design vincolante. I token vivono in `apps/web/src/app/globals.css`.
+Origine: [`docs/03-brief-di-forma.md`](docs/03-brief-di-forma.md), confermato dal committente
+il 2026-08-02. Vetrina di controllo: `/design`.
+
+**Regola non negoziabile: nessun colore, raggio o ombra scritto a mano nei componenti.**
+Se un valore serve e non c'è nei token, si aggiunge ai token.
+
+## Direzione
+
+Uno strumento professionale denso e silenzioso. L'autorevolezza sta nella precisione —
+allineamenti, cifre tabellari, formattazione `it-IT` senza eccezioni — mai nella decorazione.
+
+Riferimenti di ancoraggio: **Attio** per la densità e la tabella, **Stripe Dashboard** per il
+trattamento delle cifre, **il registro catastale** per il registro tipografico. Il terzo non è
+digitale, ed è il punto: tiene il prodotto lontano dal riflesso «strumento tecnico uguale
+scuro».
+
+## Gerarchia del colore
+
+Tre livelli, rigidi. Strategia **Restrained**: neutri tinti, accento sotto il 10%.
+
+| Livello                  | Canale                    | Dove                              |
+| ------------------------ | ------------------------- | --------------------------------- |
+| 1 · Stato della scadenza | rosso · ambra · verde     | **riservato**, mai altrove        |
+| 2 · Dominio              | indaco · prugna · acciaio | **solo dove i tre convivono**     |
+| 3 · Prodotto             | inchiostro                | azioni primarie, selezione, focus |
+
+**L'accento primario è inchiostro, non blu.** Lascia libero il canale cromatico per stato e
+dominio, evita il riflesso «pulsante primario blu», e appartiene al registro dell'inchiostro
+su carta. Nessun pulsante blu in tutto il prodotto.
+
+**Il dominio sparisce dentro il modulo.** Compare nello scadenzario unificato, nel portafoglio
+e nella vista dei reati presupposto. Dentro il modulo 81/08 il dominio è già dato dal
+contesto: ripeterlo è rumore.
+
+**La priorità non usa colore.** Userebbe rosso per «Critica» e competerebbe con «Scaduta». Si
+distingue per peso tipografico e per punti di ampiezza crescente, leggibili anche in bianco e
+nero.
+
+Neutri tinti verso l'inchiostro (hue 262) con croma **sotto 0.01**: oltre, il grigio inizia a
+leggersi come azzurro. Mai `#fff`, mai `#000`.
+
+## Tema
+
+**Chiaro predefinito, scuro disponibile.** La scena che lo forza: _un DPO in studio alle dieci
+del mattino, luce da finestra, due finestre affiancate su un monitor da 24 pollici, che legge
+testo legale denso per sei ore e alla fine stampa una relazione su carta._
+
+Meccanica: `:root` porta i token chiari, `:root[data-theme="dark"]` quelli scuri, e uno script
+sincrono in `layout.tsx` stampa l'attributo **prima del disegno**. La scelta esplicita
+dell'utente vince sempre sulla preferenza di sistema, in entrambe le direzioni.
+
+**Non usare `light-dark()`**: Lightning CSS lo trasforma in un valore non valido quando sta
+dentro una variabile personalizzata, e il risultato è un fondo trasparente. Trovato dal
+cancello visivo, documentato qui perché non si ritenti.
+
+## Tipografia
+
+**IBM Plex Sans** per l'interfaccia, **IBM Plex Mono** per i codici degli adempimenti.
+
+Plex ha cifre tabellari eccellenti, regge le dimensioni piccole senza impastarsi, e porta un
+carattere istituzionale: legge come documento, non come app. Il mono sui codici (`T01`, `M47`,
+`S16`) distingue l'identificatore dal testo e allinea le colonne.
+
+- Scala 1.2, fissa in rem, mai fluida. Nessun font display nell'interfaccia.
+- `font-variant-numeric: tabular-nums` sul `body`, non solo nelle tabelle.
+- Intestazioni di colonna: 11px, 600, `letter-spacing 0.07em`, maiuscolo. È il segnale del
+  registro catastale e costa zero in altezza.
+- Testo lungo entro 70ch. Tabelle e dati possono andare oltre.
+
+**Il documento PDF è l'altro registro**: serif editoriale (Newsreader), margini ampi,
+copertina. Il contrasto fra i due è deliberato ed è il lusso del prodotto.
+
+## Densità
+
+**22 righe visibili a 1440×900** nell'assessment. Se ne entrano otto è una dashboard, se ne
+entrano ventidue è uno strumento. Altezza di riga in `--riga-h` (2.25rem): se cambia, si
+rimisura la tabella.
+
+Filetti sottili fra le righe (`--border-subtle`), **nessuna zebratura**, filetto forte solo
+sotto le intestazioni. Il ritmo varia fra le schermate: il portafoglio respira, il cruscotto
+si stringe verso lo scadenzario, l'assessment è compatto e continuo.
+
+## I due assi
+
+Il momento firmato. Componenti in `src/components/stato.tsx`.
+
+**Lo stato del lavoro è un'etichetta. Lo stato della scadenza è la data stessa.**
+
+```
+LAVORO        SCADENZA
+Completata    23/06/2026  −40gg
+Da fare       20/01/2027  +159gg
+In corso      09/09/2026  +26gg
+Da fare       —
+```
+
+La scadenza non porta una pastiglia: porta la data, colorata, con i giorni residui accanto in
+cifre tabellari. Il colore vive sul dato reale, non su un'etichetta che lo descrive.
+
+Funziona senza legenda perché i due assi hanno **forma diversa oltre che posizione diversa**:
+una parola contro un numero. `—` significa nessuna scadenza da rispettare, e la colonna del
+lavoro distingue fra presidio continuo e mai programmato.
+
+**Provenienza**: un adempimento letto da un altro modulo porta il codice del proprietario con
+la tinta del dominio d'origine. Il codice stesso dice da dove viene, senza icone da
+interpretare.
+
+## Forma, elevazione, movimento
+
+- Raggi contenuti: `--radius-sm` 4px, `--radius` 6px, `--radius-lg` 8px. Il registro è il
+  documento, non la carta di credito.
+- Ombre fredde e discrete. **Mai bagliori colorati.**
+- Le schede si usano solo dove sono l'affordance giusta. **Mai schede annidate.** Per elenchi
+  di clienti o adempimenti si usa la tabella: quaranta clienti in quaranta schede sono
+  quaranta schede da scorrere.
+- Movimento 150-250 ms, solo per cambio di stato. Nessuna coreografia in ingresso.
+  `prefers-reduced-motion` rispettato a livello di `@layer base`.
+
+## Accessibilità
+
+- WCAG 2.1 AA: contrasto minimo 4.5:1 sul testo, in **entrambi** i temi.
+- **Focus sempre visibile**: `outline` 2px su `--ring`, `outline-offset` 2px. Non negoziabile.
+- **Il colore non è mai l'unico canale**: ogni stato porta sempre un'etichetta testuale, anche
+  quando è solo per lettori di schermo (`sr-only` sullo stato della scadenza).
+- I tre accenti di dominio si separano in **tinta e in luminosità**: in deuteranopia le tinte
+  collassano verso il blu, e resta il valore a distinguerli.
+- Numeri, valute e date `it-IT`.
+
+## Divieti
+
+Oltre a quelli generali della skill `impeccable`:
+
+- Nessun **pulsante primario blu**: l'accento è inchiostro.
+- Nessun **bordo laterale colorato** come accento su schede, righe o avvisi.
+- Nessun **testo in gradiente**, nessun **glassmorphism**, nessuna **emoji**.
+- Nessun **grande numero eroico** in scheda: gli indicatori stanno in una banda compatta.
+- Nessuna **griglia di schede identiche** dove serve una tabella.
+- Nessun **dato inventato**: se lo storico non c'è, si mostra un empty state onesto. Mai un
+  andamento generato.
+- Nessun **colore di dominio** dentro il modulo che gli appartiene.
+
+## Verifica
+
+Ogni schermata nuova entra in `apps/web/scripts/pagine.mjs` **nella stessa fase in cui viene
+scritta**, e passa `node scripts/gate-visivo.mjs`: clic su ogni elemento azionabile, console e
+rete sorvegliate, collegamenti interni verificati, focus visibile, 3 larghezze × 2 temi.
+
+Il cancello confronta anche **il fondo dei due temi**: se coincidono, il tema scuro non è
+applicato e boccia. Al primo giro passava verde su una pagina in cui il tema scuro non
+esisteva.
+
+Attributi `data-tour` sugli elementi che i tour guidati indicheranno: **si scrivono insieme al
+componente**, non dopo.
