@@ -16,6 +16,17 @@ const schema = z.object({
   APP_URL: z.url().default("http://localhost:3000"),
 
   /**
+   * Origini aggiuntive ammesse all'autenticazione, separate da virgola.
+   *
+   * Better Auth rifiuta con 403 «Invalid origin» ogni richiesta che non arrivi da
+   * `APP_URL`: è la protezione contro il CSRF e va tenuta. Ma un'istanza dietro Caddy può
+   * rispondere legittimamente su più nomi — il dominio dello studio e il sottodominio di
+   * servizio — e su Vercel il dominio di produzione non coincide con quello del singolo
+   * deploy. Quelle sono eccezioni da DICHIARARE, non da disattivare.
+   */
+  TRUSTED_ORIGINS: z.string().optional(),
+
+  /**
    * Postgres, una stringa sola: su Vercel la inietta l'integrazione Neon (region EU), in
    * produzione arriva dal container dello stack. Serve sia al runtime sia alle migrazioni.
    */

@@ -177,5 +177,29 @@ Il cancello confronta anche **il fondo dei due temi**: se coincidono, il tema sc
 applicato e boccia. Al primo giro passava verde su una pagina in cui il tema scuro non
 esisteva.
 
+Le pagine protette si dichiarano `autenticata: true` e il cancello apre **una sola** sessione
+riusandone i cookie: l'autenticazione ha un limitatore di frequenza, e ventiquattro accessi in
+fila lo fanno scattare. Fra i pulsanti cliccati c'è anche «Esci», che deve funzionare: il
+cancello se ne accorge, rimette i cookie e prosegue.
+
+Dopo il cancello si esegue **`pnpm db:demo-reset`**: cliccare ogni pulsante significa anche
+attivare e disattivare moduli, e i dati della vetrina vanno rimessi come li troverà il
+committente.
+
+## Regole imparate sul campo
+
+Nessuna di queste è teoria: ognuna corrisponde a un difetto che è passato per la build verde.
+
+- **Un modulo azzerato da un errore di validazione è un difetto.** React resetta il form
+  quando l'azione ritorna, anche con un errore: i valori vanno rimandati indietro dall'azione
+  e riletti come `defaultValue`. Senza, chi sbaglia una cifra della partita IVA riscrive tutto.
+- **«In regola» in verde si dice solo quando è vero.** Un'azienda appena creata ha zero
+  scadenze mancate perché non ha ancora nulla di programmato: quella non è conformità, è un
+  presidio mai avviato, e va detto con parole e colore neutri.
+- **L'origine dell'autenticazione va dichiarata.** `APP_URL` deve coincidere con l'origine da
+  cui il browser raggiunge l'istanza, altrimenti la risposta è 403 «Invalid origin». Su Vercel
+  il dominio di produzione non è quello del singolo deploy: entrambi vanno fra le origini
+  attendibili.
+
 Attributi `data-tour` sugli elementi che i tour guidati indicheranno: **si scrivono insieme al
 componente**, non dopo.

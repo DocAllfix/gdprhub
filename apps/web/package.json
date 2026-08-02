@@ -21,7 +21,11 @@
     "font:incorpora": "node scripts/incorpora-font.mjs",
     "font:check": "node scripts/incorpora-font.mjs --check",
     "prototipi": "node scripts/prototipi-pdf.mjs",
-    "pdf:traccia": "node scripts/traccia-pdf.mjs"
+    "pdf:traccia": "node scripts/traccia-pdf.mjs",
+    "db:seed-demo": "tsx --env-file-if-exists=.env.local src/lib/db/seed-demo-cli.ts",
+    "db:demo-reset": "tsx --env-file-if-exists=.env.local src/lib/db/demo-reset-cli.ts",
+    "db:consegna": "tsx --env-file-if-exists=.env.local src/lib/db/consegna-cli.ts",
+    "percorso": "node scripts/percorso.mjs"
   },
   "dependencies": {
     "@gdpr/engine": "workspace:*",

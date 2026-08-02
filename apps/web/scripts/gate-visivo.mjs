@@ -55,6 +55,68 @@ const SELETTORE_AZIONABILI = [
   "[role=tab]",
 ].join(", ");
 
+// --- Sessione ---------------------------------------------------------------------------
+// Le pagine operative stanno dietro il guard. Il cancello apre la sessione chiamando
+// l'endpoint di Better Auth: i cookie finiscono nel contesto, come per un accesso vero.
+//
+// Se le credenziali mancano o l'accesso fallisce, il cancello BOCCIA invece di saltare le
+// pagine: una verifica che si autoesclude in silenzio è il modo migliore per credere di
+// aver controllato qualcosa che nessuno ha guardato.
+// Si entra UNA VOLTA sola e si riusano i cookie. L'autenticazione ha un limitatore di
+// frequenza — giusto che ci sia, protegge da chi prova le password a raffica — e un
+// cancello che apre una sessione per ognuna delle 24 combinazioni di pagina, larghezza e
+// tema lo fa scattare: il primo giro è finito con 24 rifiuti 429 e zero pagine verificate.
+const CREDENZIALI = {
+  email: process.env.GATE_EMAIL ?? process.env.ADMIN_EMAIL,
+  password: process.env.GATE_PASSWORD ?? process.env.ADMIN_PASSWORD,
+};
+
+/** Cookie di una sessione valida, ottenuti una sola volta e riusati da tutti i contesti. */
+let cookieSessione = null;
+
+async function accediUnaVolta(browser) {
+  if (cookieSessione) return true;
+  if (!CREDENZIALI.email || !CREDENZIALI.password) {
+    segnala("sessione", "ADMIN_EMAIL/ADMIN_PASSWORD assenti: impossibile verificare le pagine protette");
+    return false;
+  }
+  const contesto = await browser.newContext();
+  // Il limitatore di tentativi è attivo e va rispettato, non aggirato: se risponde 429 si
+  // aspetta e si riprova, invece di allentare la configurazione di produzione per far
+  // passare un test.
+  let r = null;
+  for (let tentativo = 0; tentativo < 4; tentativo++) {
+    r = await contesto.request.post(new URL("/api/auth/sign-in/email", base).toString(), {
+      data: { email: CREDENZIALI.email, password: CREDENZIALI.password },
+      failOnStatusCode: false,
+    });
+    if (r.ok()) break;
+    if (r.status() !== 429) break;
+    await new Promise((risolvi) => setTimeout(risolvi, 12_000));
+  }
+  if (!r || !r.ok()) {
+    segnala(
+      "sessione",
+      `accesso non riuscito (${r ? r.status() : "nessuna risposta"}): le pagine protette non sono verificabili`,
+    );
+    await contesto.close();
+    return false;
+  }
+  cookieSessione = await contesto.cookies();
+  await contesto.close();
+  return true;
+}
+
+/** Innesta la sessione già aperta in un contesto nuovo, senza ripassare dal login. */
+async function apriSessione(contesto, etichetta) {
+  if (!cookieSessione) {
+    segnala(etichetta, "nessuna sessione disponibile: le pagine protette non sono verificabili");
+    return false;
+  }
+  await contesto.addCookies(cookieSessione);
+  return true;
+}
+
 async function verificaPagina(browser, pagina, misura, tema) {
   const etichetta = `${pagina.percorso} · ${misura.nome} · ${tema}`;
   const contesto = await browser.newContext({
@@ -63,6 +125,12 @@ async function verificaPagina(browser, pagina, misura, tema) {
     locale: "it-IT",
     timezoneId: "Europe/Rome",
   });
+
+  if (pagina.autenticata && !(await apriSessione(contesto, etichetta))) {
+    await contesto.close();
+    return;
+  }
+
   const tab = await contesto.newPage();
 
   const messaggi = [];
@@ -97,6 +165,14 @@ async function verificaPagina(browser, pagina, misura, tema) {
     return;
   }
 
+  // Una pagina protetta che finisce sull'accesso non è stata verificata: il resto del giro
+  // controllerebbe il modulo di login credendo di controllare il portafoglio.
+  if (pagina.autenticata && new URL(tab.url()).pathname.startsWith("/accedi")) {
+    segnala(etichetta, "la sessione non regge: la pagina protetta rimanda all'accesso");
+    await contesto.close();
+    return;
+  }
+
   // Il tema si può pilotare in due modi: la preferenza di sistema e l'attributo che il
   // selettore dell'interfaccia scrive sulla radice. Vanno concordi, o il tema scuro
   // funziona solo per chi ha la preferenza impostata nel sistema operativo.
@@ -120,34 +196,7 @@ async function verificaPagina(browser, pagina, misura, tema) {
   if (risposteRotte.length)
     segnala(etichetta, `richieste fallite:\n     - ${risposteRotte.join("\n     - ")}`);
 
-  // --- 2. Ogni elemento azionabile viene davvero cliccato ------------------------------
-  // Si ricarica fra un clic e l'altro: un clic può smontare il DOM e invalidare gli
-  // handle successivi. Lento, ma è un cancello e deve essere esaustivo.
-  const quantiAzionabili = await tab.locator(SELETTORE_AZIONABILI).count();
-  for (let i = 0; i < quantiAzionabili; i++) {
-    const prima = messaggi.length;
-    const elemento = tab.locator(SELETTORE_AZIONABILI).nth(i);
-    let descrizione = `elemento #${i}`;
-    try {
-      descrizione = await elemento.evaluate((el) => {
-        const testo = (el.textContent ?? "").trim().slice(0, 40);
-        return `<${el.tagName.toLowerCase()}> ${testo || el.getAttribute("aria-label") || "(senza testo)"}`;
-      });
-      if (!(await elemento.isVisible())) continue;
-      await elemento.click({ timeout: 5_000, trial: false });
-      await tab.waitForTimeout(250);
-    } catch (e) {
-      segnala(etichetta, `clic fallito su ${descrizione}: ${e.message.split("\n")[0]}`);
-    }
-    const nuovi = messaggi.slice(prima);
-    if (nuovi.length)
-      segnala(etichetta, `clic su ${descrizione} produce:\n     - ${nuovi.join("\n     - ")}`);
-
-    if (tab.url() !== url) await tab.goto(url, { waitUntil: "networkidle" });
-    else await tab.reload({ waitUntil: "networkidle" });
-  }
-
-  // --- 3. I collegamenti interni portano da qualche parte ------------------------------
+  // --- 2. I collegamenti interni portano da qualche parte ------------------------------
   const href = await tab.$$eval("a[href]", (as) => as.map((a) => a.getAttribute("href")).filter(Boolean));
   const interni = [...new Set(href.filter((h) => h.startsWith("/") && !h.startsWith("//")))];
   for (const h of interni) {
@@ -155,7 +204,7 @@ async function verificaPagina(browser, pagina, misura, tema) {
     if (r.status() >= 400) segnala(etichetta, `collegamento rotto: ${h} risponde ${r.status()}`);
   }
 
-  // --- 4. Il focus da tastiera si vede -------------------------------------------------
+  // --- 3. Il focus da tastiera si vede -------------------------------------------------
   const quantiFocalizzabili = Math.min(
     await tab
       .locator(
@@ -182,22 +231,169 @@ async function verificaPagina(browser, pagina, misura, tema) {
     }
   }
 
+  // --- 4. Ogni elemento azionabile viene cliccato, e l'USCITA per ultima ---------------
+  // Collegamenti e focus si verificano PRIMA: l'ultimo clic chiude la sessione, e dopo
+  // quello si è sulla pagina di accesso. Controllarli dopo avrebbe misurato quella.
+  //
+  // NON SI ITERA PER INDICE. Un clic può togliere di mezzo altri comandi — disattivare un
+  // modulo fa sparire la tabella e i suoi sette pulsanti di ordinamento — e gli indici
+  // calcolati all'inizio puntano nel vuoto. Si raccolgono descrittori stabili e a ogni giro
+  // si ricerca l'elemento: se è sparito per effetto di un clic precedente lo si dice, non lo
+  // si conta come guasto.
+  const bersagli = await tab.locator(SELETTORE_AZIONABILI).evaluateAll((elementi) =>
+    elementi.map((e, i) => ({
+      indice: i,
+      tour: e.dataset.tour ?? null,
+      testo: (e.textContent ?? "").trim().slice(0, 40) || e.getAttribute("aria-label") || "",
+      tag: e.tagName.toLowerCase(),
+    })),
+  );
+
+  // L'USCITA SI CLICCA PER ULTIMA e chiude la sessione condivisa dal cancello: dopo va
+  // riaperta. Cliccarla a metà giro lasciava le pagine successive senza verifica — e il
+  // guasto restava invisibile per cinque minuti, quanto dura la cache del cookie di
+  // sessione, così sembrava che il difetto fosse altrove.
+  const uscita = bersagli.find((b) => b.tour === "esci");
+  const ordinati = uscita ? [...bersagli.filter((b) => b !== uscita), uscita] : bersagli;
+  const quantiAzionabili = ordinati.length;
+  let scomparsi = 0;
+
+  for (const bersaglio of ordinati) {
+    const descrizione = `<${bersaglio.tag}> ${bersaglio.testo || "(senza testo)"}`;
+    const elemento = bersaglio.tour
+      ? tab.locator(`[data-tour="${bersaglio.tour}"]`)
+      : tab.locator(SELETTORE_AZIONABILI).nth(bersaglio.indice);
+
+    if ((await elemento.count()) === 0) {
+      scomparsi += 1;
+      continue;
+    }
+    if (!(await elemento.first().isVisible())) continue;
+
+    const primaConsole = messaggi.length;
+    const primaRete = risposteRotte.length;
+    let cliccato = false;
+    try {
+      await elemento.first().click({ timeout: 5_000, trial: false });
+      cliccato = true;
+      await tab.waitForTimeout(200);
+    } catch (e) {
+      segnala(etichetta, `clic fallito su ${descrizione}: ${e.message.split("\n")[0]}`);
+    }
+
+    // Una richiesta respinta non è di per sé un difetto: premere «Accedi» a modulo vuoto
+    // DEVE produrre un 400, ed è il comportamento corretto. Il difetto è che l'interfaccia
+    // taccia. Quindi 5xx ed eccezioni bocciano sempre; un 4xx boccia solo se dopo il clic
+    // l'utente non vede alcun messaggio.
+    const nuoveRisposte = risposteRotte.slice(primaRete);
+    const nuoviMessaggi = messaggi.slice(primaConsole);
+    const eccezioni = nuoviMessaggi.filter((m) => m.startsWith("eccezione"));
+    const guasti = nuoveRisposte.filter((r) => Number(r.split(" ")[0]) >= 500);
+    const respinte = nuoveRisposte.filter((r) => Number(r.split(" ")[0]) < 500);
+    const avvisoVisibile =
+      respinte.length > 0 && (await tab.locator('[role="alert"]').filter({ hasText: /\S/ }).count()) > 0;
+
+    if (eccezioni.length) segnala(etichetta, `clic su ${descrizione}: ${eccezioni.join(" · ")}`);
+    if (guasti.length) {
+      segnala(etichetta, `clic su ${descrizione}: il server risponde ${guasti.join(" · ")}`);
+    }
+    if (respinte.length && !avvisoVisibile) {
+      segnala(
+        etichetta,
+        `clic su ${descrizione}: richiesta respinta (${respinte.join(" · ")}) e NESSUN messaggio all'utente`,
+      );
+    }
+    const altri = nuoviMessaggi.filter(
+      (m) => !m.startsWith("eccezione") && !/Failed to load resource/i.test(m),
+    );
+    if (altri.length) {
+      segnala(etichetta, `clic su ${descrizione} produce:\n     - ${altri.join("\n     - ")}`);
+    }
+
+    if (bersaglio === uscita && cliccato) {
+      await tab.waitForURL(/\/accedi/, { timeout: 15_000 }).catch(() => {});
+      if (!new URL(tab.url()).pathname.startsWith("/accedi")) {
+        segnala(etichetta, `«Esci» non porta all'accesso: resta su ${new URL(tab.url()).pathname}`);
+      }
+      // La sessione appena chiusa era quella condivisa: si riapre per chi viene dopo.
+      cookieSessione = null;
+      if (!(await accediUnaVolta(browser))) {
+        segnala(etichetta, "dopo l'uscita non è stato possibile riaprire la sessione del cancello");
+      }
+      break;
+    }
+
+    // `domcontentloaded` e non `networkidle`: fra un clic e l'altro serve un DOM fresco,
+    // non l'assenza di traffico. Con `networkidle` su pagine dinamiche il giro completo
+    // passava da minuti a decine di minuti, e un cancello che nessuno ha il tempo di
+    // eseguire smette di essere un cancello.
+    if (tab.url() !== url) await tab.goto(url, { waitUntil: "domcontentloaded" });
+    else await tab.reload({ waitUntil: "domcontentloaded" });
+    await tab.waitForLoadState("load");
+
+    if (pagina.autenticata && new URL(tab.url()).pathname.startsWith("/accedi")) {
+      segnala(etichetta, `dopo «${descrizione}» la sessione è caduta senza che si sia usciti`);
+      break;
+    }
+  }
+
+  if (scomparsi > 0) {
+    console.log(`      ${scomparsi} comandi spariti per effetto di clic precedenti (atteso)`);
+  }
+
   await contesto.close();
   console.log(`  ok  ${etichetta}  (${quantiAzionabili} azionabili, ${interni.length} collegamenti)`);
 }
 
+/**
+ * Risolve i percorsi dinamici leggendo il portafoglio.
+ *
+ * L'identificativo dell'azienda è un UUID generato al seed: scriverlo nell'inventario
+ * significherebbe un cancello che si rompe alla prima riseminatura. Lo si chiede
+ * all'applicazione, e se non c'è nulla da aprire il cancello lo dice invece di saltare
+ * la pagina.
+ */
+async function risolviDinamiche(browser, pagine) {
+  if (!pagine.some((p) => p.dinamica)) return pagine;
+
+  const contesto = await browser.newContext({ locale: "it-IT" });
+  let primaAzienda = null;
+  if (await apriSessione(contesto, "risoluzione dei percorsi dinamici")) {
+    const tab = await contesto.newPage();
+    await tab.goto(new URL("/portafoglio", base).toString(), { waitUntil: "networkidle" });
+    primaAzienda = await tab
+      .locator('a[href^="/azienda/"]')
+      .first()
+      .getAttribute("href")
+      .catch(() => null);
+  }
+  await contesto.close();
+
+  if (!primaAzienda) {
+    segnala(
+      "/azienda/:prima",
+      "nessuna azienda nel portafoglio: la scheda azienda non è verificabile. Esegui `pnpm db:seed-demo`.",
+    );
+    return pagine.filter((p) => !p.dinamica);
+  }
+  return pagine.map((p) => (p.dinamica ? { ...p, percorso: primaAzienda } : p));
+}
+
 async function main() {
-  const pagine = soloPercorso ? PAGINE.filter((p) => p.percorso === soloPercorso) : PAGINE;
-  if (!pagine.length) {
+  const selezionate = soloPercorso ? PAGINE.filter((p) => p.percorso === soloPercorso) : PAGINE;
+  if (!selezionate.length) {
     console.error(`Nessuna pagina da verificare${soloPercorso ? ` per '${soloPercorso}'` : ""}.`);
     process.exit(1);
   }
 
+  rmSync(SCREENSHOT, { recursive: true, force: true });
+  const browser = await chromium.launch();
+  if (selezionate.some((p) => p.autenticata || p.dinamica)) await accediUnaVolta(browser);
+  const pagine = await risolviDinamiche(browser, selezionate);
+
   console.log(`Cancello visivo su ${base}`);
   console.log(`${pagine.length} pagine × ${LARGHEZZE.length} larghezze × ${TEMI.length} temi\n`);
 
-  rmSync(SCREENSHOT, { recursive: true, force: true });
-  const browser = await chromium.launch();
   try {
     for (const pagina of pagine) {
       for (const misura of LARGHEZZE) {

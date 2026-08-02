@@ -48,5 +48,9 @@ Ovviamente man mano che definirai il progetto potrai modificare e aggiornare que
 - `docs/01-analisi-prototipo.md` — analisi del prototipo, moduli di prodotto, schema, direzione di design
 - `docs/02-addendum-modello-per-istanza.md` — rettifica architetturale per il modello per istanza, deploy,
   flotta, tour e blocchi demo
+- `docs/03-brief-di-forma.md` — brief di forma confermato dal committente
+- `docs/04-stato-fasi.md` — **stato corrente**: cosa è chiuso, cosa manca, i difetti trovati dalla verifica
+- `docs/politica-scoring.md` — ogni numero e ogni scostamento dai prototipi, con l'aritmetica
+- `PRODUCT.md` e `DESIGN.md` — registro di prodotto e registro di design, vincolanti
 
 Entrambi **in attesa di validazione**: nessun codice applicativo finché il committente non conferma.

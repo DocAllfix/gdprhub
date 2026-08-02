@@ -20,11 +20,47 @@ import { env } from "@/lib/env";
 //    la scelta di non usare RLS: il giorno che servisse un'istanza condivisa, la struttura
 //    c'è già.
 
+function origini(): string[] {
+  const elenco = [env.APP_URL];
+
+  const dominioProduzione = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (dominioProduzione) elenco.push(`https://${dominioProduzione}`);
+  if (process.env.VERCEL_URL) elenco.push(`https://${process.env.VERCEL_URL}`);
+
+  if (env.TRUSTED_ORIGINS) {
+    elenco.push(
+      ...env.TRUSTED_ORIGINS.split(",")
+        .map((o) => o.trim())
+        .filter(Boolean),
+    );
+  }
+
+  // In sviluppo la porta cambia a ogni collaudo e nessuno ricorda di aggiornare APP_URL:
+  // il carattere jolly vale SOLO qui, e in produzione questo ramo non esiste.
+  if (env.NODE_ENV !== "production") {
+    elenco.push("http://localhost:*", "http://127.0.0.1:*");
+  }
+
+  return [...new Set(elenco)];
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
 
   baseURL: env.APP_URL,
   secret: env.AUTH_SECRET,
+
+  // Better Auth rifiuta con 403 «Invalid origin» tutto ciò che non arriva da `baseURL`, ed
+  // è la protezione giusta contro il CSRF: non si disattiva, si dichiarano le eccezioni.
+  //
+  // Le eccezioni sono reali e sono tre:
+  //   1. Su Vercel il dominio di produzione (gdprhub.vercel.app) NON è quello del singolo
+  //      deploy, che è ciò che `VERCEL_URL` contiene. Senza questa riga l'accesso sulla
+  //      vetrina risponderebbe 403 pur funzionando in locale.
+  //   2. Un'istanza dietro Caddy può rispondere su più nomi legittimi.
+  //   3. In sviluppo la porta cambia di continuo, e `localhost` e `127.0.0.1` sono origini
+  //      diverse per il browser: è così che questo difetto è saltato fuori.
+  trustedOrigins: origini(),
 
   emailAndPassword: {
     enabled: true,
