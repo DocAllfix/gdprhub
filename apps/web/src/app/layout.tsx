@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Geist } from "next/font/google";
 import { PRODOTTO } from "@/lib/brand";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 // IBM Plex: cifre tabellari eccellenti, regge le dimensioni piccole senza impastarsi, e
 // porta un carattere istituzionale che legge come documento e non come app.
@@ -47,7 +50,11 @@ const SCRIPT_TEMA = `
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="it" className={`${plexSans.variable} ${plexMono.variable} h-full`} suppressHydrationWarning>
+    <html
+      lang="it"
+      className={cn("h-full", plexSans.variable, plexMono.variable, "font-sans", geist.variable)}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
       </head>

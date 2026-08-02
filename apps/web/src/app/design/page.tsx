@@ -16,7 +16,10 @@ import {
   templatePerCodice,
   type Dominio,
 } from "@gdpr/engine";
-import { Codice, PastigliaDominio, Priorita, Scadenza, StatoLavoroEtichetta } from "@/components/stato";
+import { Codice, PastigliaDominio, Scadenza } from "@/components/stato";
+import { TabellaAdempimenti, type RigaAdempimento } from "@/components/tabella-adempimenti";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 // Vetrina di controllo del sistema di design. Pagina interna, non raggiungibile dalla
 // navigazione: serve a verificare i token e i componenti in entrambi i temi, e a misurare
@@ -32,6 +35,15 @@ const OGGI = oggiA();
 const risolti = (d: Dominio) =>
   risolviTutti(costruisciDemo(CATALOGHI[d], CLIENTI_DIMOSTRATIVI[d], OGGI), OGGI);
 const tutti = DOMINI.flatMap(risolti);
+
+/** Arricchisce gli adempimenti risolti con i campi che la tabella mostra. */
+function righeDa(adempimenti: readonly ReturnType<typeof risolti>[number][]): RigaAdempimento[] {
+  return adempimenti.map((a) => ({
+    ...a,
+    titolo: templatePerCodice(a.dominio, a.codice)?.titolo ?? a.codice,
+    periodicitaTesto: descriviPeriodicita(a.periodicita),
+  }));
+}
 
 function Sezione({ titolo, nota, children }: { titolo: string; nota?: string; children: React.ReactNode }) {
   return (
@@ -118,91 +130,14 @@ export default function PaginaDesign() {
         titolo="I due assi"
         nota="Il momento firmato. Il lavoro è un'etichetta, la scadenza è la data stessa: una parola contro un numero. Guarda T12, completato e scaduto insieme."
       >
-        <div className="overflow-hidden rounded-md border border-border bg-surface">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border-strong bg-surface-sunken">
-              <tr>
-                <th className="px-3 py-2 text-left">Cod.</th>
-                <th className="px-3 py-2 text-left">Adempimento</th>
-                <th className="px-3 py-2 text-left">Periodicità</th>
-                <th className="px-3 py-2 text-left">Priorità</th>
-                <th className="px-3 py-2 text-left">Lavoro</th>
-                <th className="px-3 py-2 text-left">Scadenza</th>
-              </tr>
-            </thead>
-            <tbody>
-              {gdpr.slice(0, 12).map((a) => (
-                <tr key={a.codice} className="border-b border-border-subtle last:border-0 hover:bg-selected">
-                  <td className="h-riga px-3">
-                    <Codice codice={a.codice} />
-                  </td>
-                  <td className="px-3">{templatePerCodice(a.dominio, a.codice)?.titolo}</td>
-                  <td className="px-3 text-xs text-muted-foreground">{descriviPeriodicita(a.periodicita)}</td>
-                  <td className="px-3">
-                    <Priorita priorita={a.priorita} />
-                  </td>
-                  <td className="px-3">
-                    <StatoLavoroEtichetta stato={a.stato} />
-                  </td>
-                  <td className="px-3">
-                    <Scadenza
-                      data={a.scadenza}
-                      giorni={a.giorniAllaScadenza}
-                      statoScadenza={a.statoScadenza}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <TabellaAdempimenti righe={righeDa(gdpr.slice(0, 12))} />
       </Sezione>
 
       <Sezione
         titolo="Scadenzario unificato · densità reale"
         nota="22 righe a 1440×900 senza scorrere: è il numero che separa uno strumento da una dashboard. Qui i tre domini convivono, quindi la pastiglia del decreto serve."
       >
-        <div className="overflow-hidden rounded-md border border-border bg-surface">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border-strong bg-surface-sunken">
-              <tr>
-                <th className="px-3 py-2 text-left">Modulo</th>
-                <th className="px-3 py-2 text-left">Cod.</th>
-                <th className="px-3 py-2 text-left">Adempimento</th>
-                <th className="px-3 py-2 text-left">Responsabile</th>
-                <th className="px-3 py-2 text-left">Lavoro</th>
-                <th className="px-3 py-2 text-left">Scadenza</th>
-              </tr>
-            </thead>
-            <tbody>
-              {scadenzario.map((v) => (
-                <tr
-                  key={`${v.dominio}-${v.codice}`}
-                  className="border-b border-border-subtle last:border-0 hover:bg-selected"
-                >
-                  <td className="h-riga px-3">
-                    <PastigliaDominio dominio={v.dominio} />
-                  </td>
-                  <td className="px-3">
-                    <Codice codice={v.codice} />
-                  </td>
-                  <td className="max-w-md truncate px-3">{templatePerCodice(v.dominio, v.codice)?.titolo}</td>
-                  <td className="px-3 text-xs text-muted-foreground">{v.ruolo}</td>
-                  <td className="px-3">
-                    <StatoLavoroEtichetta stato={v.stato} />
-                  </td>
-                  <td className="px-3">
-                    <Scadenza
-                      data={v.scadenza}
-                      giorni={v.giorniAllaScadenza}
-                      statoScadenza={v.statoScadenza}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <TabellaAdempimenti righe={righeDa(scadenzario)} mostraDominio />
       </Sezione>
 
       <Sezione
@@ -276,6 +211,23 @@ export default function PaginaDesign() {
               Indice derivato, non una cifra in euro.
             </p>
           </div>
+        </div>
+      </Sezione>
+
+      <Sezione
+        titolo="Componenti"
+        nota="shadcn/ui collegato ai NOSTRI token: la libreria si adatta al sistema di design, non il contrario. Nessun pulsante blu, perché l'accento primario è inchiostro."
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Button>Genera relazione</Button>
+          <Button variant="secondary">Annulla</Button>
+          <Button variant="outline">Filtra</Button>
+          <Button variant="ghost">Dettaglio</Button>
+          <Button variant="destructive">Archivia</Button>
+          <Button size="sm">Compatto</Button>
+          <Badge>Predefinito</Badge>
+          <Badge variant="secondary">Secondario</Badge>
+          <Badge variant="outline">Contorno</Badge>
         </div>
       </Sezione>
 

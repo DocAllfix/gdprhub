@@ -8,7 +8,6 @@ fissa a parole e si verifica sulla pagina `/design`.
 
 **Stato: confermato dal committente il 2026-08-02.** Da qui è nato `DESIGN.md`.
 
-
 ---
 
 ## 1. Cosa stiamo progettando

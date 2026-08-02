@@ -80,6 +80,26 @@
   --d81: oklch(0.565 0.055 232); /* acciaio · chiaro */
   --d81-surface: oklch(0.955 0.017 232);
 
+  /* --- Ponte verso shadcn/ui ------------------------------------------------ */
+  /* I componenti di shadcn consumano un vocabolario proprio. Invece di lasciarli
+     portare la loro palette, li si collega ai NOSTRI token: la libreria si adatta al
+     sistema di design, non il contrario. Se un componente sembra fuori registro, si
+     corregge qui, in un punto solo. */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-sunken);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-sunken);
+  --accent: var(--selected);
+  --accent-foreground: var(--foreground);
+  --input: var(--border);
+  /* «destructive» di shadcn è il rosso delle azioni pericolose. Coincide con il rosso
+     dello stato scaduto ed è corretto che sia lo stesso: è lo stesso significato. */
+  --destructive: var(--scaduta);
+  --destructive-foreground: var(--primary-foreground);
+
   /* --- Forma ed elevazione -------------------------------------------------- */
   /* Raggi contenuti: il registro è il documento, non la carta di credito. */
   --radius-sm: 0.25rem;
@@ -137,6 +157,21 @@
   --d231-surface: oklch(0.28 0.05 342);
   --d81: oklch(0.79 0.055 232);
   --d81-surface: oklch(0.29 0.03 232);
+  /* Il ponte verso shadcn punta ai nostri token, che qui sopra sono gia' cambiati:
+     eredita da solo. Si ridichiarano solo quelli senza corrispondenza diretta. */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-sunken);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-sunken);
+  --accent: var(--selected);
+  --accent-foreground: var(--foreground);
+  --input: var(--border);
+  --destructive: var(--scaduta);
+  --destructive-foreground: var(--primary-foreground);
+
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
   --shadow: 0 1px 3px oklch(0 0 0 / 0.4);
   --shadow-panel: -1px 0 3px oklch(0 0 0 / 0.35);
@@ -144,6 +179,18 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-surface: var(--surface);
   --color-surface-sunken: var(--surface-sunken);
   --color-sidebar: var(--sidebar);
