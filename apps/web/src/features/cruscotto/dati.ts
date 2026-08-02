@@ -25,6 +25,7 @@ import {
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, obligationInstance } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";
+import { inCache } from "@/lib/cache";
 
 // IL CRUSCOTTO UNIFICATO.
 //
@@ -79,12 +80,19 @@ export type Barra = { readonly etichetta: string; readonly quanti: number; reado
  */
 export async function cruscotto(aziendaId?: string) {
   const ctx = await requireStudio();
+  const dati = await inCache(ctx.organizationId, `cruscotto:${aziendaId ?? "portafoglio"}`, () =>
+    calcolaCruscotto(ctx.organizationId, aziendaId),
+  );
+  return dati === null ? null : { ...dati, ctx };
+}
+
+async function calcolaCruscotto(organizationId: string, aziendaId?: string) {
   const oggi = oggiA();
 
   const aziende = await db.query.clientCompany.findMany({
     where: aziendaId
-      ? and(eq(clientCompany.id, aziendaId), eq(clientCompany.organizationId, ctx.organizationId))
-      : and(eq(clientCompany.organizationId, ctx.organizationId), eq(clientCompany.stato, "active")),
+      ? and(eq(clientCompany.id, aziendaId), eq(clientCompany.organizationId, organizationId))
+      : and(eq(clientCompany.organizationId, organizationId), eq(clientCompany.stato, "active")),
   });
   if (aziende.length === 0) return null;
 
@@ -159,7 +167,6 @@ export async function cruscotto(aziendaId?: string) {
   };
 
   return {
-    ctx,
     aziende: aziende.map((a) => ({ id: a.id, nome: a.nome })),
     singola: aziendaId ? (aziende[0] ?? null) : null,
     totale: tutti.length,

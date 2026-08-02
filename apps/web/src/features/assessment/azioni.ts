@@ -6,6 +6,7 @@ import { PRIORITA, STATI_LAVORO, scomponi, type Priorita, type StatoLavoro } fro
 import { db } from "@/lib/db";
 import { assessment, auditLog, instanceHistory, obligationInstance } from "@/lib/db/schema";
 import { assertNotDemo, requireConsulente } from "@/features/auth/guards";
+import { invalidaDati } from "@/lib/cache";
 
 // Le modifiche a un adempimento.
 //
@@ -73,10 +74,15 @@ async function modifica(
   };
 }
 
-function rinfresca(aziendaId: string, dominio: string) {
+function rinfresca(organizationId: string, aziendaId: string, dominio: string) {
+  // Prima la cache dei calcoli, poi le pagine: invertirle rigenererebbe le pagine leggendo
+  // ancora i dati vecchi, e il consulente vedrebbe lo stato di prima.
+  invalidaDati(organizationId);
   revalidatePath(`/azienda/${aziendaId}/${dominio}`);
   revalidatePath(`/azienda/${aziendaId}`);
   revalidatePath("/portafoglio");
+  revalidatePath("/scadenzario");
+  revalidatePath("/cruscotto");
 }
 
 // ============================================================================================
@@ -119,7 +125,7 @@ export async function cambiaStato(
   ]);
   if (!esito) return { ok: false, errore: "Adempimento non trovato." };
 
-  rinfresca(esito.aziendaId, esito.dominio);
+  rinfresca(esito.organizationId, esito.aziendaId, esito.dominio);
   return { ok: true };
 }
 
@@ -151,7 +157,7 @@ export async function impostaUltimaEsecuzione(
   ]);
   if (!esito) return { ok: false, errore: "Adempimento non trovato." };
 
-  rinfresca(esito.aziendaId, esito.dominio);
+  rinfresca(esito.organizationId, esito.aziendaId, esito.dominio);
   return { ok: true };
 }
 
@@ -173,7 +179,7 @@ export async function cambiaPriorita(istanzaId: string, nuova: Priorita): Promis
   ]);
   if (!esito) return { ok: false, errore: "Adempimento non trovato." };
 
-  rinfresca(esito.aziendaId, esito.dominio);
+  rinfresca(esito.organizationId, esito.aziendaId, esito.dominio);
   return { ok: true };
 }
 
@@ -193,7 +199,7 @@ export async function salvaNote(istanzaId: string, note: string): Promise<EsitoM
   const esito = await modifica(istanzaId, { note: valore }, [{ campo: "note", da: istanza.note, a: valore }]);
   if (!esito) return { ok: false, errore: "Adempimento non trovato." };
 
-  rinfresca(esito.aziendaId, esito.dominio);
+  rinfresca(esito.organizationId, esito.aziendaId, esito.dominio);
   return { ok: true };
 }
 

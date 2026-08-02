@@ -15,6 +15,7 @@ import {
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, obligationInstance } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";
+import { inCache } from "@/lib/cache";
 
 // LO SCADENZARIO UNIFICATO — il pezzo che rende la suite più della somma dei tre strumenti.
 //
@@ -72,13 +73,24 @@ function adempimentoDaRiga(riga: typeof obligationInstance.$inferSelect): Adempi
  */
 export async function scadenzario() {
   const ctx = await requireStudio();
+  const dati = await inCache(ctx.organizationId, "scadenzario", () => calcolaScadenzario(ctx.organizationId));
+  return { ...dati, ctx };
+}
+
+async function calcolaScadenzario(organizationId: string) {
   const oggi = oggiA();
 
   const aziende = await db.query.clientCompany.findMany({
-    where: and(eq(clientCompany.organizationId, ctx.organizationId), eq(clientCompany.stato, "active")),
+    where: and(eq(clientCompany.organizationId, organizationId), eq(clientCompany.stato, "active")),
   });
   if (aziende.length === 0) {
-    return { ctx, voci: [] as VoceScadenzario[], senzaData: [] as VoceScadenzario[], aziende: [] };
+    return {
+      voci: [] as VoceScadenzario[],
+      senzaData: [] as VoceScadenzario[],
+      aziende: [] as { id: string; nome: string }[],
+      finestre: { scadute: [], entro7: [], entro30: [], entro90: [] } as ReturnType<typeof finestre>,
+      domini: DOMINI,
+    };
   }
 
   const ids = aziende.map((a) => a.id);
@@ -153,7 +165,6 @@ export async function scadenzario() {
   const tutte = [...perAzienda.values()].flat();
 
   return {
-    ctx,
     voci,
     senzaData,
     aziende: aziende.map((a) => ({ id: a.id, nome: a.nome })),

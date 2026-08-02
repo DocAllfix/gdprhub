@@ -16,6 +16,7 @@ import {
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, obligationInstance } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";
+import { inCache } from "@/lib/cache";
 
 // Lettura del portafoglio. Ogni query parte da `requireStudio()`: l'organizzazione si
 // risolve dalla sessione, mai dall'URL.
@@ -111,16 +112,27 @@ const VUOTO = (dominio: Dominio, attivo: boolean): QuadroModulo => ({
  */
 export async function portafoglio(opzioni: { includiArchiviate?: boolean } = {}) {
   const ctx = await requireStudio();
+  // L'autenticazione resta FUORI dalla cache: è l'unica cosa che non deve mai essere
+  // vecchia. Dentro ci va solo il calcolo, e la chiave porta l'organizzazione.
+  const righe = await inCache(
+    ctx.organizationId,
+    `portafoglio:${opzioni.includiArchiviate ? "tutte" : "attive"}`,
+    () => calcolaPortafoglio(ctx.organizationId, Boolean(opzioni.includiArchiviate)),
+  );
+  return { ctx, righe };
+}
+
+async function calcolaPortafoglio(organizationId: string, includiArchiviate: boolean) {
   const oggi = oggiA();
 
   const aziende = await db.query.clientCompany.findMany({
-    where: opzioni.includiArchiviate
-      ? eq(clientCompany.organizationId, ctx.organizationId)
-      : and(eq(clientCompany.organizationId, ctx.organizationId), eq(clientCompany.stato, "active")),
+    where: includiArchiviate
+      ? eq(clientCompany.organizationId, organizationId)
+      : and(eq(clientCompany.organizationId, organizationId), eq(clientCompany.stato, "active")),
     orderBy: (t, { asc }) => [asc(t.nome)],
   });
 
-  if (aziende.length === 0) return { ctx, righe: [] as RigaPortafoglio[] };
+  if (aziende.length === 0) return [] as RigaPortafoglio[];
 
   const ids = aziende.map((a) => a.id);
 
@@ -204,7 +216,7 @@ export async function portafoglio(opzioni: { includiArchiviate?: boolean } = {})
     };
   });
 
-  return { ctx, righe };
+  return righe;
 }
 
 export type DettaglioAzienda = Awaited<ReturnType<typeof azienda>>;

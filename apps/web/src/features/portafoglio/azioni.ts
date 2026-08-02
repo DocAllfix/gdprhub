@@ -15,6 +15,7 @@ import {
   obligationTemplate,
 } from "@/lib/db/schema";
 import { assertNotDemo, requireAdmin, requireConsulente } from "@/features/auth/guards";
+import { invalidaDati } from "@/lib/cache";
 
 // Le azioni del portafoglio.
 //
@@ -139,7 +140,10 @@ export async function creaAzienda(_precedente: Esito | null, dati: FormData): Pr
   // attivo e zero adempimenti è uno stato che non serve a nessuno.
   for (const dominio of moduli) await apriAssessment(ctx.organizationId, ctx.userId, id, dominio);
 
+  invalidaDati(ctx.organizationId);
   revalidatePath("/portafoglio");
+  revalidatePath("/cruscotto");
+  revalidatePath("/scadenzario");
   return { ok: true, id };
 }
 
@@ -164,7 +168,9 @@ export async function archiviaAzienda(_precedente: Esito | null, dati: FormData)
   await registra(ctx.organizationId, ctx.userId, `azienda.${nuovoStato}`, "client_company", id, {
     nome: trovata.nome,
   });
+  invalidaDati(ctx.organizationId);
   revalidatePath("/portafoglio");
+  revalidatePath("/cruscotto");
   revalidatePath(`/azienda/${id}`);
   return { ok: true, id };
 }
@@ -280,7 +286,10 @@ export async function commutaModulo(_precedente: Esito | null, dati: FormData): 
     { dominio, azienda: trovata.nome },
   );
 
+  invalidaDati(ctx.organizationId);
   revalidatePath("/portafoglio");
+  revalidatePath("/cruscotto");
+  revalidatePath("/scadenzario");
   revalidatePath(`/azienda/${aziendaId}`);
   return { ok: true, id: aziendaId };
 }
