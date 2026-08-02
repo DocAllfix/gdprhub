@@ -121,6 +121,50 @@ export function datiVarianti() {
     matrice: matriceRischio(tutti),
     fasce: FASCE_RISCHIO,
     priorita: PRIORITA,
+
+    /** La cosa peggiore adesso: serve alla scheda che nomina il problema. */
+    peggiore: (() => {
+      const v = agenda(tutti)[0];
+      if (!v) return null;
+      return {
+        dominio: v.dominio,
+        codice: v.codice,
+        titolo: templatePerCodice(v.dominio, v.codice)?.titolo ?? v.codice,
+        giorni: v.giorni,
+        azienda: AZIENDE[0]!.nome,
+        ruolo: v.ruolo,
+      };
+    })(),
+
+    /** Righe dell'assessment 81/08, per l'anteprima della schermata di lavoro. */
+    assessment: perDominio.d81.slice(0, 9).map((a) => ({
+      codice: a.codice,
+      titolo: templatePerCodice("d81", a.codice)?.titolo ?? a.codice,
+      categoria: templatePerCodice("d81", a.codice)?.categoria ?? "",
+      ruolo: a.ruolo,
+      periodicita: descriviPeriodicita(a.periodicita),
+      priorita: a.priorita,
+      stato: a.stato,
+      statoScadenza: a.statoScadenza,
+      scadenza: a.scadenza,
+      giorni: a.giorniAllaScadenza,
+    })),
+
+    /** Distribuzioni per i pannelli secondari del cruscotto. */
+    perCategoria: (() => {
+      const m = new Map<string, { quanti: number; scaduti: number }>();
+      for (const a of tutti) {
+        const k = a.categoria;
+        const v = m.get(k) ?? { quanti: 0, scaduti: 0 };
+        v.quanti += 1;
+        if (a.statoScadenza === "Scaduta") v.scaduti += 1;
+        m.set(k, v);
+      }
+      return [...m.entries()]
+        .map(([etichetta, v]) => ({ etichetta, ...v }))
+        .sort((x, y) => y.scaduti - x.scaduti)
+        .slice(0, 6);
+    })(),
   };
 }
 
