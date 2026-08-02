@@ -4,6 +4,9 @@ import type { NextConfig } from "next";
 
 const radiceMonorepo = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
+/** Il Chromium compresso. Percorso relativo alla cartella dell'applicazione. */
+const CHROMIUM_BIN = "../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**";
+
 const nextConfig: NextConfig = {
   // Il motore è pubblicato come sorgente TypeScript dal workspace: niente passo di build
   // separato, né in sviluppo né su Vercel.
@@ -28,10 +31,15 @@ const nextConfig: NextConfig = {
   //
   // I percorsi sono relativi alla cartella dell'applicazione; con pnpm il pacchetto reale
   // sta sotto `.pnpm/` nella radice del monorepo, quindi si risale di due livelli.
+  //
+  // OGNI ROTTA CHE PRODUCE UN PDF VA ELENCATA QUI. Non è automatico e non lo diventerà:
+  // una chiave `/**` metterebbe cinquanta megabyte di Chromium dentro ogni funzione. La
+  // rete di sicurezza è `node scripts/prototipi-pdf.mjs --base <produzione>`, che ha già
+  // colto questa dimenticanza una volta: i prototipi rispondevano 500 su Vercel e 200 in
+  // locale, perché la rotta nuova non era in questo elenco.
   outputFileTracingIncludes: {
-    "/api/spike-pdf": [
-      "../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**",
-    ],
+    "/api/spike-pdf": [CHROMIUM_BIN],
+    "/prototipi/[documento]": [CHROMIUM_BIN],
   },
 
   poweredByHeader: false,
