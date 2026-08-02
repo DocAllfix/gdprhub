@@ -57,6 +57,11 @@ export function Scheda({
 }) {
   return (
     <section
+      // Appiglio stabile per gli schemi di design: le utility di Tailwind cambiano nome a
+      // ogni ritocco, questo attributo no. Costa due parole e permette a uno schema di
+      // ridisegnare ogni scheda del prodotto senza toccare una sola schermata.
+      data-pezzo="scheda"
+      data-rilievo={rilievo ? "" : undefined}
       className={cn(
         "rounded-xl border bg-surface p-4",
         rilievo ? "border-border-strong bg-surface-raised" : "border-border",
@@ -190,7 +195,11 @@ export function Nastro({ c, altezza = 5 }: { c: Composizione; altezza?: number }
 
 /** Riquadro sollevato DENTRO una scheda: è il terzo livello di profondità. */
 export function Incasso({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("rounded-lg bg-surface-sunken px-3 py-2", className)}>{children}</div>;
+  return (
+    <div data-pezzo="incasso" className={cn("rounded-lg bg-surface-sunken px-3 py-2", className)}>
+      {children}
+    </div>
+  );
 }
 
 export function Pastiglia({ dominio, testo }: { dominio: Dominio; testo: string }) {
