@@ -20,7 +20,7 @@ export default async function PaginaPortafoglio() {
   const moduliAttivi = righe.reduce((n, r) => n + r.moduli.filter((m) => m.attivo).length, 0);
 
   return (
-    <div className="mx-auto max-w-[1600px] px-6 py-8">
+    <div className="mx-auto max-w-[1600px] px-6 py-7">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Portafoglio</p>
@@ -35,7 +35,7 @@ export default async function PaginaPortafoglio() {
 
       {righe.length > 0 ? (
         <div
-          className="mt-6 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-5 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
           data-tour="indicatori-portafoglio"
         >
           <Indicatore
@@ -67,7 +67,7 @@ export default async function PaginaPortafoglio() {
         </div>
       ) : null}
 
-      <div className="mt-6">{righe.length === 0 ? <Vuoto /> : <TabellaPortafoglio righe={righe} />}</div>
+      <div className="mt-3">{righe.length === 0 ? <Vuoto /> : <TabellaPortafoglio righe={righe} />}</div>
     </div>
   );
 }
@@ -84,10 +84,10 @@ function Indicatore({
   tinta?: string | undefined;
 }) {
   return (
-    <div className="bg-surface p-4">
-      <p className={`cifra text-[1.75rem] ${tinta ?? ""}`}>{valore}</p>
-      <p className="text-xs text-muted-foreground">{etichetta}</p>
-      <p className="mt-1.5 text-[10px] text-faint-foreground">{nota}</p>
+    <div className="bg-surface px-4 py-3">
+      <p className={`cifra text-[1.6rem] leading-none ${tinta ?? ""}`}>{valore}</p>
+      <p className="mt-1.5 text-xs text-muted-foreground">{etichetta}</p>
+      <p className="mt-0.5 text-[10px] text-faint-foreground">{nota}</p>
     </div>
   );
 }
