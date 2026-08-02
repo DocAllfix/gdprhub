@@ -1,0 +1,8 @@
+# Cosa NON caricare su Vercel. Il prototipo di partenza e la documentazione di progetto
+# non servono alla build e non devono finire su un host esterno.
+archivio/
+docs/
+screenshot/
+playwright-report/
+test-results/
+.github/

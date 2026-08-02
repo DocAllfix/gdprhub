@@ -35,3 +35,8 @@ deploy/fleet.txt
 .DS_Store
 Thumbs.db
 *.log
+
+# La negazione deve restare l'ULTIMA regola sui .env: vince l'ultima che corrisponde, e
+# `.env.example` è l'unico file d'ambiente che va versionato (non contiene segreti).
+!.env.example
+!**/.env.example

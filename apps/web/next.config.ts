@@ -21,6 +21,19 @@ const nextConfig: NextConfig = {
   // caricato, ma va comunque dichiarato esterno perché la tracciatura lo incontra.
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core", "playwright"],
 
+  // La tracciatura di Next segue gli import JavaScript, non i file di dati. Il Chromium
+  // compresso di @sparticuz vive in una cartella `bin/` che nessuno importa, quindi
+  // restava fuori dalla funzione e la resa falliva con "input directory does not exist".
+  // È il difetto che lo spike della Fase 0 doveva far emergere, e lo ha fatto.
+  //
+  // I percorsi sono relativi alla cartella dell'applicazione; con pnpm il pacchetto reale
+  // sta sotto `.pnpm/` nella radice del monorepo, quindi si risale di due livelli.
+  outputFileTracingIncludes: {
+    "/api/spike-pdf": [
+      "../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**",
+    ],
+  },
+
   poweredByHeader: false,
 };
 
