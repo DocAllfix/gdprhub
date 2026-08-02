@@ -35,6 +35,18 @@ Sono elencati perché ognuno è passato per una build verde.
 | F6   | Il modulo «nuova azienda» si azzera se la validazione fallisce   | alla prima partita IVA sbagliata                  |
 | F6   | Un'azienda appena creata si presentava «in regola» in verde      | mai, ed è il problema: era una bugia rassicurante |
 
+## Dove gira il calcolo
+
+`vercel.json` fissa le funzioni a **`fra1` (Francoforte)**. Non è un dettaglio di
+prestazioni: il database Neon è in `eu-central-1`, e con le funzioni nella regione
+predefinita di Vercel — `iad1`, Washington — **ogni query attraversava l'Atlantico**. Il
+portafoglio impiegava 2,8 secondi a produrre nove kilobyte di HTML: non rendering, latenza
+moltiplicata per una decina di viaggi.
+
+E prima ancora è una questione di sostanza: in un prodotto che vende conformità al GDPR il
+**calcolo** deve stare in Unione Europea, non solo l'archivio. Avere scelto Neon in Europa e
+lasciato le funzioni negli Stati Uniti era un errore che nessun cliente avrebbe accettato.
+
 ## Prossime
 
 - **F7** — assessment: la vista parametrica sul dominio, stato del lavoro modificabile,

@@ -343,9 +343,14 @@ if (!(await p.locator('[data-tour="dettaglio-adempimento"]').isVisible())) {
     .locator('[data-tour="dettaglio-adempimento"]')
     .getByRole("button", { name: "Salva la motivazione" })
     .click();
-  await p.waitForTimeout(3500);
-  const dopoNA = await p.locator('[data-tour="dettaglio-adempimento"]').innerText();
-  if (!/Salvato/.test(dopoNA)) problema("la motivazione non viene salvata");
+  // Si attende la CONFERMA, non un tempo: in produzione la scrittura passa dalla rete e
+  // un'attesa a orologio boccia in remoto cio' che passa in locale.
+  const salvataNA = await p
+    .locator('[data-tour="dettaglio-adempimento"] [role="status"]')
+    .waitFor({ timeout: 30000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!salvataNA) problema("la motivazione non viene salvata");
   else nota("non applicabile CON motivazione → salvato");
 
   await p.locator('[data-tour="stato-completata"]').click();
@@ -360,7 +365,11 @@ if (!(await p.locator('[data-tour="dettaglio-adempimento"]').isVisible())) {
     .locator('[data-tour="dettaglio-adempimento"]')
     .getByRole("button", { name: "Aggiorna", exact: true })
     .click();
-  await p.waitForTimeout(3500);
+  await p
+    .locator('[data-tour="dettaglio-adempimento"] [role="status"]')
+    .waitFor({ timeout: 30000 })
+    .catch(() => {});
+  await p.waitForTimeout(600);
   const dopoData = await p.locator('[data-tour="dettaglio-adempimento"]').innerText();
   if (!/Salvato/.test(dopoData)) problema("l'ultima esecuzione non viene salvata");
   else nota(`ultima esecuzione ${nuovaData} → scadenza ricalcolata dal motore`);
@@ -437,13 +446,24 @@ await p.goto(`${BASE}/impostazioni`, { waitUntil: "networkidle" });
 const nomeStudio = await p.inputValue("#brandNome");
 await p.fill("#brandNome", `${nomeStudio} · collaudo`);
 await p.locator('form[data-tour="marchio"] button[type="submit"]').click();
-await p.waitForTimeout(2500);
+// La barra laterale viene dal layout sul server: si attende che il nome CI SIA, non che
+// siano passati due secondi e mezzo.
+const riflesso = await p
+  .locator("aside p", { hasText: "collaudo" })
+  .first()
+  .waitFor({ timeout: 30000 })
+  .then(() => true)
+  .catch(() => false);
 const barra = await p.locator("aside p").first().textContent();
-if (!barra?.includes("collaudo")) problema(`il marchio non si riflette nella barra laterale: «${barra}»`);
-else nota(`marchio aggiornato e riflesso: «${barra.trim()}»`);
+if (!riflesso) problema(`il marchio non si riflette nella barra laterale: «${barra}»`);
+else nota(`marchio aggiornato e riflesso: «${barra?.trim()}»`);
 await p.fill("#brandNome", nomeStudio);
 await p.locator('form[data-tour="marchio"] button[type="submit"]').click();
-await p.waitForTimeout(2000);
+await p
+  .locator("aside p", { hasText: nomeStudio })
+  .first()
+  .waitFor({ timeout: 30000 })
+  .catch(() => {});
 nota("marchio ripristinato");
 await scatta("10-impostazioni");
 
