@@ -232,6 +232,29 @@ export default function PaginaDesign() {
       </Sezione>
 
       <Sezione
+        titolo="L'altro registro · i documenti"
+        nota="L'applicazione è densa e silenziosa: uno strumento. Il documento è editoriale: serif Newsreader, margini ampi, numerazione a margine, copertina. Il contrasto fra i due è deliberato. I font sono incorporati nel PDF, perché il Chromium serverless non ha caratteri di sistema e il cliente lo aprirà su una macchina che non controlliamo."
+      >
+        <div className="flex flex-wrap gap-2">
+          {[
+            ["relazione", "Relazione integrata", "4 pagine"],
+            ["assessment", "Assessment 81/08", "3 pagine"],
+            ["fascicolo", "Fascicolo ispettivo", "2 pagine"],
+            ["scadenzario", "Scadenzario 90 giorni", "4 pagine"],
+          ].map(([slug, nome, pagine]) => (
+            <a
+              key={slug}
+              href={`/prototipi/${slug}`}
+              className="rounded-md border border-border bg-surface px-3 py-2 text-sm hover:bg-accent"
+            >
+              {nome}
+              <span className="ml-2 font-mono text-xs text-faint-foreground">{pagine}</span>
+            </a>
+          ))}
+        </div>
+      </Sezione>
+
+      <Sezione
         titolo="Tipografia"
         nota="IBM Plex Sans per l'interfaccia, Plex Mono per i codici. Cifre tabellari ovunque: una colonna di numeri che non si allinea è il primo segnale che il prodotto non è preciso."
       >

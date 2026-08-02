@@ -31,6 +31,12 @@ jobs:
       - name: Catalogo allineato al prototipo
         run: pnpm seed:check
 
+      # Stesso principio per i font del documento: se il modulo incorporato non corrisponde
+      # più ai file di @fontsource, il PDF si stamperebbe con un carattere di ripiego sulla
+      # macchina del cliente, e nessuno se ne accorgerebbe fino a quel momento.
+      - name: Font del documento incorporati
+        run: pnpm --filter web font:check
+
       - name: Formattazione
         run: pnpm format
 

@@ -9,3 +9,6 @@ pnpm-lock.yaml
 archivio
 # Generato da scripts/extract-seed.mjs: si rigenera, non si riformatta.
 packages/engine/src/catalog/*.json
+# Generato da apps/web/scripts/incorpora-font.mjs: si rigenera, non si riformatta.
+apps/web/src/lib/documenti/font-incorporati.ts
+apps/web/prototipi-pdf/
