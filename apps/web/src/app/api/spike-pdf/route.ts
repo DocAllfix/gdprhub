@@ -6,10 +6,13 @@ import {
   DOMINI,
   ETICHETTE_DOMINIO,
   TUTTI_I_TEMPLATES,
+  COLLEGAMENTI,
   costruisciDemo,
+  coperturaReati,
   descriviPeriodicita,
   oggiA,
   risolviTutti,
+  templatePerCodice,
 } from "@gdpr/engine";
 
 // SPIKE DELLA FASE 0 — da rimuovere alla Fase 10, quando esisterà il generatore vero.
@@ -93,6 +96,54 @@ function documentoDiProva(): string {
   </table>`;
   }).join("");
 
+  // --- Sezione cross-dominio: è ciò che rende la suite più della somma dei tre moduli ---
+  const tuttiRisolti = DOMINI.flatMap((d) =>
+    risolviTutti(costruisciDemo(CATALOGHI[d], CLIENTI_DIMOSTRATIVI[d], oggi), oggi),
+  );
+
+  const righeReati = coperturaReati(tuttiRisolti, [...DOMINI])
+    .map((c) => {
+      const domini = [...new Set(c.famiglia.presidi.map((p) => ETICHETTE_DOMINIO[p.dominio].breve))].join(
+        " + ",
+      );
+      return `<tr>
+      <td class="mono">${esc(c.famiglia.articolo)}</td>
+      <td>${esc(c.famiglia.titolo)}</td>
+      <td>${esc(domini)}</td>
+      <td class="num">${c.presidiInOrdine}/${c.presidiTotali}</td>
+      <td><span class="pill ${c.copertura === null ? "programmare" : c.copertura >= 60 ? "regolare" : c.copertura > 0 ? "imminente" : "scaduta"}">${c.copertura === null ? "n/d" : c.copertura + "%"}</span></td>
+      <td>${c.famiglia.interdittive ? "sì" : "no"}</td>
+    </tr>`;
+    })
+    .join("");
+
+  const righeLink = COLLEGAMENTI.map((c) => {
+    const da = templatePerCodice(c.da.dominio, c.da.codice);
+    const a = templatePerCodice(c.a.dominio, c.a.codice);
+    return `<tr>
+      <td class="mono">${esc(ETICHETTE_DOMINIO[c.da.dominio].breve)} ${esc(c.da.codice)}</td>
+      <td>${esc(da?.titolo ?? "")}</td>
+      <td class="mono">&rarr; ${esc(ETICHETTE_DOMINIO[c.a.dominio].breve)} ${esc(c.a.codice)}</td>
+      <td>${esc(a?.titolo ?? "")}</td>
+      <td>${esc(c.tipo.replace(/_/g, " "))}</td>
+      <td>${esc(c.riferimento)}</td>
+    </tr>`;
+  }).join("");
+
+  const sezioneSuite = `<h2>Vista integrata &middot; reati presupposto D.Lgs 231/01</h2>
+  <p class="sotto">Copertura misurata sui presidi dei tre decreti insieme</p>
+  <table>
+    <thead><tr><th>Articolo</th><th>Famiglia</th><th>Presidiata da</th><th>In ordine</th><th>Copertura</th><th>Interdittive</th></tr></thead>
+    <tbody>${righeReati}</tbody>
+  </table>
+
+  <h2>Collegamenti fra i moduli</h2>
+  <p class="sotto">Adempimento unico, doppia lettura: chi possiede il dato e chi lo legge</p>
+  <table>
+    <thead><tr><th>Proprietario</th><th>Adempimento</th><th>Letto da</th><th>Adempimento</th><th>Tipo</th><th>Riferimento</th></tr></thead>
+    <tbody>${righeLink}</tbody>
+  </table>`;
+
   return `<!doctype html>
 <html lang="it"><head><meta charset="utf-8"><title>Spike PDF - Suite Compliance</title>
 <style>
@@ -153,6 +204,7 @@ function documentoDiProva(): string {
     <div><div class="e">Totale</div><div class="v">${TUTTI_I_TEMPLATES.length}</div></div>
     ${DOMINI.map((d) => `<div><div class="e">${esc(ETICHETTE_DOMINIO[d].breve)}</div><div class="v">${CATALOGHI[d].length}</div></div>`).join("")}
   </div>
+  ${sezioneSuite}
   ${sezioni}
 </body></html>`;
 }

@@ -20,6 +20,7 @@ export * from "./core/exposure";
 // `prontezza` e `esposizione` vivono entrambe in core/exposure.
 export * from "./core/simulate";
 export * from "./suite/agenda";
+export * from "./suite/links";
 export { costruisciDemo } from "./core/demo";
 export type { StatoDemo, VoceDemo } from "./core/demo";
 
@@ -51,6 +52,8 @@ export {
 } from "./d231/sanction";
 export type { ParametriSanzione231, StimaSanzione231, GravitaFatto, Riduzione } from "./d231/sanction";
 export { esposizioneD81 } from "./d81/sanction";
+export { FAMIGLIE_REATO, coperturaReati, famigliePresidiateDa, presidiRotti } from "./d231/reati";
+export type { FamigliaReato, CoperturaReato } from "./d231/reati";
 export type { EsposizioneD81, FattispecieSanzionatoria, SoggettoResponsabile } from "./d81/sanction";
 
 /**
