@@ -29,7 +29,7 @@ export default async function PaginaImpostazioni() {
     <div className="mx-auto max-w-5xl px-6 py-8">
       <header>
         <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Impostazioni</p>
-        <h1 className="mt-1.5 text-2xl font-semibold tracking-tight">Istanza e studio</h1>
+        <h1 className="titolo mt-1.5 text-[1.7rem]">Istanza e studio</h1>
       </header>
 
       <section className="mt-7">

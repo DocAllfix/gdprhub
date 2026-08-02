@@ -55,7 +55,7 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
 
       <header className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{a.nome}</h1>
+          <h1 className="titolo text-[1.7rem]">{a.nome}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {[a.settore, a.sede, a.piva ? `P.IVA ${a.piva}` : null].filter(Boolean).join(" · ") ||
               "Nessun dato anagrafico registrato."}
@@ -63,7 +63,7 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
         </div>
         {complessiva?.percentuale !== null && complessiva !== null ? (
           <div className="text-right">
-            <p className="text-3xl font-semibold tracking-tight tabular-nums">{complessiva.percentuale}%</p>
+            <p className="cifra text-[2.1rem]">{complessiva.percentuale}%</p>
             <p className="text-xs text-muted-foreground">
               conformità effettiva · {complessiva.numeratore}/{complessiva.applicabili}
             </p>

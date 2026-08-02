@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Il selettore del tema. Tre stati, non due: «sistema» è un valore, non l'assenza di una
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 // accademico — nella scena che ha deciso il tema chiaro il consulente ha DUE FINESTRE
 // AFFIANCATE, e l'evento `storage` fa cambiare tema anche all'altra.
 
-type Scelta = "light" | "dark" | "system";
+type Scelta = "light" | "dark";
 
 const CHIAVE = "tema";
 
@@ -34,28 +34,24 @@ function sottoscrivi(callback: () => void) {
 }
 
 function leggi(): Scelta {
-  const v = localStorage.getItem(CHIAVE);
-  return v === "light" || v === "dark" ? v : "system";
+  // Il predefinito è lo SCURO dichiarato, non la preferenza di sistema: è la casa del
+  // prodotto, e «segui il sistema» rimandava la decisione a chi non l'ha presa.
+  return localStorage.getItem(CHIAVE) === "light" ? "light" : "dark";
 }
 
 /** Sul server la preferenza non è leggibile: si dichiara «sistema» e si corregge al montaggio. */
-const leggiSulServer = (): Scelta => "system";
+const leggiSulServer = (): Scelta => "dark";
 
 function scegli(scelta: Scelta) {
-  if (scelta === "system") localStorage.removeItem(CHIAVE);
-  else localStorage.setItem(CHIAVE, scelta);
-
-  const scuro =
-    scelta === "system" ? window.matchMedia("(prefers-color-scheme: dark)").matches : scelta === "dark";
-  document.documentElement.setAttribute("data-theme", scuro ? "dark" : "light");
+  localStorage.setItem(CHIAVE, scelta);
+  document.documentElement.setAttribute("data-theme", scelta);
 
   for (const notifica of ascoltatori) notifica();
 }
 
 const OPZIONI: readonly { valore: Scelta; etichetta: string; Icona: typeof Sun }[] = [
-  { valore: "light", etichetta: "Chiaro", Icona: Sun },
   { valore: "dark", etichetta: "Scuro", Icona: Moon },
-  { valore: "system", etichetta: "Sistema", Icona: Monitor },
+  { valore: "light", etichetta: "Chiaro", Icona: Sun },
 ];
 
 export function SelettoreTema() {
@@ -63,7 +59,7 @@ export function SelettoreTema() {
 
   return (
     <div
-      className="inline-flex items-center gap-0.5 rounded-md border border-border bg-surface-sunken p-0.5"
+      className="inline-flex items-center gap-0.5 rounded-md border border-sidebar-border p-0.5"
       role="group"
       aria-label="Tema dell'interfaccia"
       data-tour="tema"
@@ -78,8 +74,8 @@ export function SelettoreTema() {
           className={cn(
             "inline-flex size-6 items-center justify-center rounded",
             scelta === valore
-              ? "bg-surface text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground",
+              ? "bg-sidebar-selected text-sidebar-foreground"
+              : "text-sidebar-muted hover:text-sidebar-foreground",
           )}
         >
           <Icona className="size-3.5" aria-hidden />

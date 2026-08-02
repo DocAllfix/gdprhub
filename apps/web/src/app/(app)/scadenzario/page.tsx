@@ -15,7 +15,7 @@ export default async function PaginaScadenzario() {
     <div className="mx-auto max-w-[1600px] px-6 py-8">
       <header>
         <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Scadenzario</p>
-        <h1 className="mt-1.5 text-2xl font-semibold tracking-tight">Cosa scade, su tutto il portafoglio</h1>
+        <h1 className="titolo mt-1.5 text-[1.7rem]">Cosa scade, su tutto il portafoglio</h1>
         <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
           Una lista sola sui tre decreti e su tutte le aziende. Un consulente non pensa «oggi faccio GDPR»:
           pensa «cosa scade questa settimana». Finora doveva aprire tre strumenti e incrociare a mano.
@@ -105,7 +105,7 @@ function Indicatore({
 }) {
   return (
     <div className="bg-surface p-4">
-      <p className={`text-2xl font-semibold tracking-tight tabular-nums ${tinta ?? ""}`}>{valore}</p>
+      <p className={`cifra text-[1.75rem] ${tinta ?? ""}`}>{valore}</p>
       <p className="text-xs text-muted-foreground">{etichetta}</p>
       <p className="mt-1.5 text-[10px] text-faint-foreground">{nota}</p>
     </div>

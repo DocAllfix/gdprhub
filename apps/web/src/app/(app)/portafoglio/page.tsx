@@ -24,7 +24,7 @@ export default async function PaginaPortafoglio() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Portafoglio</p>
-          <h1 className="mt-1.5 text-2xl font-semibold tracking-tight">Aziende assistite</h1>
+          <h1 className="titolo mt-1.5 text-[1.7rem]">Aziende assistite</h1>
           <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
             Una riga per azienda, una colonna per decreto. La percentuale è la conformità effettiva: fatto{" "}
             <em>e</em> ancora valido.
@@ -85,7 +85,7 @@ function Indicatore({
 }) {
   return (
     <div className="bg-surface p-4">
-      <p className={`text-2xl font-semibold tracking-tight tabular-nums ${tinta ?? ""}`}>{valore}</p>
+      <p className={`cifra text-[1.75rem] ${tinta ?? ""}`}>{valore}</p>
       <p className="text-xs text-muted-foreground">{etichetta}</p>
       <p className="mt-1.5 text-[10px] text-faint-foreground">{nota}</p>
     </div>

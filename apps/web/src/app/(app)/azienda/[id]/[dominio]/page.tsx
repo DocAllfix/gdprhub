@@ -49,7 +49,7 @@ export default async function PaginaAssessment({
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
             {etichetta.norma}
           </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">{etichetta.esteso}</h1>
+          <h1 className="titolo mt-1 text-[1.7rem]">{etichetta.esteso}</h1>
         </div>
         {"misure" in dati && dati.misure ? (
           <div className="flex flex-wrap items-end gap-6 text-right">
@@ -123,7 +123,7 @@ function Cifra({
 }) {
   return (
     <div>
-      <p className={`text-xl font-semibold tracking-tight tabular-nums ${tinta ?? ""}`}>{valore}</p>
+      <p className={`cifra text-2xl ${tinta ?? ""}`}>{valore}</p>
       <p className="text-[10px] text-muted-foreground">{etichetta}</p>
       <p className="font-mono text-[10px] text-faint-foreground">{nota}</p>
     </div>

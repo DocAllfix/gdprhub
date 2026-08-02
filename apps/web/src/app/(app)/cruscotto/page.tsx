@@ -34,7 +34,7 @@ export default async function PaginaCruscotto() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Cruscotto</p>
-          <h1 className="mt-1.5 text-2xl font-semibold tracking-tight">
+          <h1 className="titolo mt-1.5 text-[1.7rem]">
             {d.aziende.length} aziende, tre decreti, {d.totale} adempimenti
           </h1>
         </div>

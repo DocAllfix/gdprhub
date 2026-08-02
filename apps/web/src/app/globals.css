@@ -143,65 +143,137 @@
    fondo trasparente. Trovato dal cancello visivo, non leggendo il codice. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --background: oklch(0.185 0.012 262);
-  --surface: oklch(0.225 0.014 262);
-  --surface-sunken: oklch(0.165 0.012 262);
-  --sidebar: oklch(0.155 0.012 258);
-  --sidebar-foreground: oklch(0.93 0.006 262);
-  --sidebar-muted: oklch(0.62 0.01 262);
-  --sidebar-border: oklch(0.27 0.012 262);
-  --sidebar-selected: oklch(0.26 0.018 262);
-  --surface-raised: oklch(1 0 0 / 0.04);
-  --accento: oklch(0.68 0.12 258);
-  --accento-surface: oklch(0.27 0.045 258);
-  --accento-border: oklch(0.38 0.07 258);
-  --foreground: oklch(0.93 0.006 262);
-  --muted-foreground: oklch(0.71 0.007 262);
-  --faint-foreground: oklch(0.58 0.006 262);
-  --border: oklch(0.33 0.012 262);
-  --border-strong: oklch(0.44 0.014 262);
-  --border-subtle: oklch(0.28 0.012 262);
-  --primary: oklch(0.93 0.006 262);
+
+  /* ==========================================================================
+     IL REGISTRO PRIMARIO. Scuro non come alternativa ma come casa.
+     ==========================================================================
+     Metodo preso da Linear: la profondità viene da una SCALA DI SUPERFICI e da
+     filetti, non dalle ombre. Su fondo scuro un'ombra non si vede — non c'è luce
+     da bloccare — e usarla lo stesso produce quell'alone sporco che tradisce
+     un tema chiaro riverniciato. Qui i pannelli si staccano perché sono più
+     chiari del fondo, e il bordo chiude la forma.
+
+     La TINTA non è quella di Linear, che è carbone neutro, e soprattutto NON è
+     il blu-notte: `sistemacommercialisti` — progetto gemello dello stesso
+     committente — sta a hue 250 con accento ottanio, e due strumenti dello
+     stesso studio non devono sembrare lo stesso strumento. Qui la notte è
+     GRAFITE-VIOLA, hue 288, con croma tenuta bassissima: si legge fredda e
+     minerale, non blu.
+
+     Quattro gradini, non due. Fra fondo e pannello ci sono 4 punti di
+     luminosità: prima ce n'erano 3 su cento, e infatti non si staccava nulla. */
+
+  --background: oklch(0.155 0.016 288); /* la notte: il fondo dell'applicazione */
+  --surface: oklch(0.198 0.017 288); /* il pannello: tabelle, riquadri */
+  --surface-sunken: oklch(0.174 0.016 288); /* l'incavo: intestazioni, pozzetti */
+  --surface-raised: oklch(0.232 0.018 288); /* il sollevato: hover, menù, riga attiva */
+
+  /* La barra è PIÙ SCURA del fondo, non più chiara: incornicia il lavoro invece
+     di competerci. */
+  --sidebar: oklch(0.128 0.015 288);
+  --sidebar-foreground: oklch(0.955 0.004 288);
+  --sidebar-muted: oklch(0.63 0.012 288);
+  --sidebar-border: oklch(0.245 0.013 288);
+  --sidebar-selected: oklch(0.245 0.022 292);
+
+  /* Quattro livelli di testo, come i quattro di Linear: titolo, corrente,
+     accompagnamento, marginale. Con tre non si riesce a spegnere abbastanza le
+     etichette senza spegnere anche i dati. */
+  --foreground: oklch(0.958 0.004 288);
+  --muted-foreground: oklch(0.755 0.008 288);
+  --faint-foreground: oklch(0.6 0.009 288);
+
+  /* Filetti su tre gradini. Sul buio un bordo troppo chiaro urla, uno troppo
+     scuro sparisce: servono valori diversi per il pannello, per il campo a
+     fuoco e per la separazione interna. */
+  --border: oklch(0.283 0.014 288);
+  --border-strong: oklch(0.375 0.017 288);
+  --border-subtle: oklch(0.232 0.012 288);
+
+  /* NON C'È UN ACCENTO DECORATIVO, ed è una scelta, non una dimenticanza.
+     Abbiamo già sei colori che significano qualcosa: tre stati della scadenza e
+     tre decreti. Un settimo colore «di marca» competerebbe con tutti e sei, e in
+     una tabella dove il rosso deve dire «scaduta» non ci si può permettere un
+     rosso che dice «premi qui».
+
+     Il primario quindi è LUCE: una pastiglia chiara su fondo notte. Lo fa Vercel,
+     funziona perché è piccola e di raggio stretto, e lascia tutta la croma al
+     dato. È anche ciò che ci distingue dai vicini: Linear ha la lavanda,
+     sistemacommercialisti ha l'ottanio, noi non abbiamo niente — e il colore
+     resta interamente al significato. */
+  --accento: oklch(0.955 0.004 288);
+  --accento-surface: oklch(0.245 0.014 288);
+  --accento-border: oklch(0.36 0.016 288);
+
+  --primary: oklch(0.955 0.004 288);
   --primary-hover: oklch(1 0 0);
-  --primary-foreground: oklch(0.2 0.014 262);
-  --selected: oklch(0.27 0.018 262);
-  --ring: oklch(0.72 0.05 262);
-  --scaduta: oklch(0.72 0.145 26);
-  --scaduta-surface: oklch(0.29 0.055 26);
-  --scaduta-border: oklch(0.4 0.09 26);
-  --imminente: oklch(0.78 0.12 72);
-  --imminente-surface: oklch(0.3 0.05 68);
-  --imminente-border: oklch(0.42 0.08 68);
-  --regolare: oklch(0.73 0.11 152);
-  --regolare-surface: oklch(0.28 0.045 152);
-  --regolare-border: oklch(0.4 0.075 152);
-  --programmare: oklch(0.68 0.011 262);
-  --programmare-surface: oklch(0.26 0.012 262);
-  --programmare-border: oklch(0.36 0.012 262);
-  --gdpr: oklch(0.72 0.115 272);
-  --gdpr-surface: oklch(0.29 0.05 272);
-  --d231: oklch(0.66 0.1 342);
-  --d231-surface: oklch(0.28 0.05 342);
-  --d81: oklch(0.79 0.055 232);
-  --d81-surface: oklch(0.29 0.03 232);
-  /* Il ponte verso shadcn punta ai nostri token, che qui sopra sono gia' cambiati:
-     eredita da solo. Si ridichiarano solo quelli senza corrispondenza diretta. */
+  --primary-foreground: oklch(0.155 0.016 288);
+  --selected: oklch(0.245 0.022 292);
+  --ring: oklch(0.8 0.02 288);
+
+  /* Stato della scadenza. Sul buio si ALZA la luminosità e si abbassa la croma:
+     un rosso saturo su fondo scuro vibra e diventa illeggibile a lungo. */
+  --scaduta: oklch(0.685 0.168 25);
+  --scaduta-surface: oklch(0.27 0.07 25);
+  --scaduta-border: oklch(0.38 0.1 25);
+
+  --imminente: oklch(0.79 0.135 72);
+  --imminente-surface: oklch(0.28 0.06 68);
+  --imminente-border: oklch(0.4 0.09 68);
+
+  --regolare: oklch(0.745 0.128 155);
+  --regolare-surface: oklch(0.265 0.055 155);
+  --regolare-border: oklch(0.38 0.085 155);
+
+  --programmare: oklch(0.62 0.014 288);
+  --programmare-surface: oklch(0.235 0.014 288);
+  --programmare-border: oklch(0.33 0.014 288);
+
+  /* Dominio: separati in tinta E in luminosità anche qui, perché la deuteranopia
+     non cambia col tema. */
+  --gdpr: oklch(0.705 0.13 274);
+  --gdpr-surface: oklch(0.26 0.055 274);
+  --d231: oklch(0.7 0.125 342);
+  --d231-surface: oklch(0.26 0.055 342);
+  --d81: oklch(0.775 0.085 225);
+  --d81-surface: oklch(0.26 0.04 225);
+
   --card: var(--surface);
   --card-foreground: var(--foreground);
-  --popover: var(--surface);
+  --popover: var(--surface-raised);
   --popover-foreground: var(--foreground);
   --secondary: var(--surface-sunken);
   --secondary-foreground: var(--foreground);
   --muted: var(--surface-sunken);
-  --accent: var(--selected);
+  --accent: var(--surface-raised);
   --accent-foreground: var(--foreground);
   --input: var(--border);
   --destructive: var(--scaduta);
-  --destructive-foreground: var(--primary-foreground);
+  --destructive-foreground: oklch(0.985 0.003 288);
 
-  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.3);
-  --shadow: 0 1px 3px oklch(0 0 0 / 0.4);
-  --shadow-panel: -1px 0 3px oklch(0 0 0 / 0.35);
+  /* NIENTE OMBRE SUL BUIO. Restano dichiarate perché i componenti le chiedono,
+     ma valgono zero: la profondità la fanno la scala e i filetti. */
+  --shadow-sm: 0 0 0 0 transparent;
+  --shadow: 0 0 0 0 transparent;
+  --shadow-panel: 0 0 0 0 transparent;
+}
+
+@layer components {
+  /* La firma tipografica: titoli di pagina e cifre grandi in Newsreader.
+     Non è decorazione — è il legame visivo fra la schermata e la perizia che ne
+     esce, che ha lo stesso carattere in copertina. Sotto i 16px non si usa: il
+     serif si impasta e la densità della tabella viene prima della firma. */
+  .titolo {
+    font-family: var(--font-serif), Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .cifra {
+    font-family: var(--font-serif), Georgia, serif;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.02em;
+  }
 }
 
 @theme inline {
@@ -270,6 +342,7 @@
 
   --font-sans: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
+  --font-serif: var(--font-serif);
 
   --spacing-riga: var(--riga-h);
   --spacing-riga-comoda: var(--riga-h-comoda);
