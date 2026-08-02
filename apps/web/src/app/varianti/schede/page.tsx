@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Building2, CalendarClock, FileText, LayoutGrid, Settings } from "lucide-react";
 import { datiVarianti } from "../dati";
-import { Accesso, Assessment, Azienda, Cruscotto, Impostazioni, Portafoglio, Scadenzario } from "./schermate";
+import { Accesso, Azienda, Cruscotto, Impostazioni, Portafoglio } from "./schermate";
+import { AssessmentEvoluto, ScadenzarioEvoluto } from "./due-schermate";
+import { InterruttoreTema } from "./tema";
 
 export const metadata: Metadata = { title: "Schede evolute · tutte le schermate" };
 
@@ -28,7 +30,7 @@ const SCHERMATE = [
     n: 3,
     nome: "Scadenzario",
     icona: CalendarClock,
-    cosa: "Le finestre come primo comando, non come filtro fra tanti. Tre decreti in una lista sola.",
+    cosa: "Un ASSE DEL TEMPO invece di un elenco: la larghezza di ogni fascia è quanto lavoro contiene. Le voci si raggruppano per quando, non per azienda.",
   },
   {
     n: 4,
@@ -40,7 +42,7 @@ const SCHERMATE = [
     n: 5,
     nome: "Assessment",
     icona: FileText,
-    cosa: "La schermata di lavoro: 64 righe raggruppate per categoria, filtri in linea, stato modificabile.",
+    cosa: "Un BANCO DA LAVORO: colonna delle categorie con l'avanzamento a sinistra, righe a destra, e in testa i due assi come matrice — «completata e scaduta» smette di essere una parola e diventa una casella.",
   },
   {
     n: 6,
@@ -56,6 +58,13 @@ export default function PaginaSchede() {
 
   return (
     <main className="mx-auto max-w-[1600px] px-6 py-10">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">
+          Guarda tutto in entrambi i registri: lo scuro è la casa del prodotto, il chiaro la traduzione.
+        </p>
+        <InterruttoreTema />
+      </div>
+
       <header className="max-w-3xl">
         <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
           Direzione scelta · schede evolute
@@ -127,11 +136,11 @@ export default function PaginaSchede() {
               ) : s.n === 2 ? (
                 <Portafoglio d={d} />
               ) : s.n === 3 ? (
-                <Scadenzario d={d} />
+                <ScadenzarioEvoluto d={d} />
               ) : s.n === 4 ? (
                 <Azienda d={d} />
               ) : s.n === 5 ? (
-                <Assessment d={d} />
+                <AssessmentEvoluto d={d} />
               ) : s.n === 6 ? (
                 <Impostazioni d={d} />
               ) : (
