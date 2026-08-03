@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { and, desc, eq } from "drizzle-orm";
 import { registroPerTipo } from "@gdpr/engine";
 import { db } from "@/lib/db";
-import { auditLog, clientCompany, registro } from "@/lib/db/schema";
+import { auditLog, clientCompany, companyModule, registro } from "@/lib/db/schema";
 import { assertNotDemo, requireConsulente } from "@/features/auth/guards";
 import { invalidaDati } from "@/lib/cache";
 
@@ -81,6 +81,16 @@ export async function apriVoce(_precedente: EsitoRegistro | null, dati: FormData
     columns: { id: true },
   });
   if (!azienda) return { ok: false, errore: "Azienda non trovata." };
+
+  // Il controllo sul modulo va rifatto QUI e non solo in lettura. Una pagina che non si
+  // apre non impedisce a nessuno di invocare l'azione: il divieto vale dove si scrive.
+  const modulo = await db.query.companyModule.findFirst({
+    where: and(eq(companyModule.clientCompanyId, aziendaId), eq(companyModule.dominio, def.dominio)),
+    columns: { attivo: true },
+  });
+  if (!modulo?.attivo) {
+    return { ok: false, errore: `Il modulo ${def.dominio.toUpperCase()} non è attivo su questa azienda.` };
+  }
 
   const titolo = String(dati.get("titolo") ?? "").trim();
   if (titolo.length < 3) return { ok: false, errore: "Il titolo è obbligatorio." };

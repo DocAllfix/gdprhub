@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { calcolaTermine } from "./termini";
-import { REGISTRI, registroPerTipo } from "./tipi";
+import { LEGAMI_REGISTRI, REGISTRI, legamiDa, registroPerTipo } from "./tipi";
 
 const ora = (s: string) => new Date(s);
 
@@ -162,5 +162,35 @@ describe("le definizioni sono coerenti", () => {
   it("`registroPerTipo` trova tutto ciò che è dichiarato", () => {
     for (const r of REGISTRI) expect(registroPerTipo(r.tipo)?.nome).toBe(r.nome);
     expect(registroPerTipo("inesistente")).toBeUndefined();
+  });
+});
+
+describe("i legami fra registri di domini diversi", () => {
+  // È la ragione per cui questa è una suite. Se il legame comparisse anche a un'azienda
+  // che non ha un modello 231, sarebbe rumore su un obbligo che quell'azienda non ha — e
+  // il rumore è il modo in cui un avviso utile smette di essere letto.
+  it("una violazione dei dati richiama il flusso all'OdV, se il 231 è attivo", () => {
+    const l = legamiDa("violazione", ["gdpr", "d231"]);
+    expect(l).toHaveLength(1);
+    expect(l[0]?.a).toBe("flusso-odv");
+    expect(l[0]?.norma).toMatch(/art\. 33/);
+  });
+
+  it("ma su un'azienda senza modello 231 non dice niente", () => {
+    expect(legamiDa("violazione", ["gdpr", "d81"])).toHaveLength(0);
+  });
+
+  it("ogni legame punta a registri che esistono davvero", () => {
+    for (const l of LEGAMI_REGISTRI) {
+      expect(registroPerTipo(l.da), `${l.da} non è un registro`).toBeDefined();
+      expect(registroPerTipo(l.a), `${l.a} non è un registro`).toBeDefined();
+      expect(l.avviso.length, `${l.da}→${l.a}: avviso troppo corto per spiegare qualcosa`).toBeGreaterThan(
+        60,
+      );
+    }
+  });
+
+  it("nessun legame punta a sé stesso", () => {
+    for (const l of LEGAMI_REGISTRI) expect(l.da).not.toBe(l.a);
   });
 });

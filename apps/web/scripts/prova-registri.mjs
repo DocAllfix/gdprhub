@@ -346,7 +346,22 @@ async function principale() {
     prova("e ci porta davvero", /\/registro\//.test(tab.url()), tab.url().replace(BASE, ""));
   }
 
-  // ── 9. La console resta pulita ──────────────────────────────────────────────────
+  // ── 9. La prova si porta via il proprio disordine ───────────────────────────────
+  //
+  // Questa istanza è la VETRINA: è la prima cosa che il committente apre. Lasciarci
+  // dentro dodici «Prova automatica 1754…» significa mostrargli un registro pieno di
+  // spazzatura e chiedergli di immaginarsi il prodotto. Una prova che sporca l'ambiente su
+  // cui gira è una prova che si può fare una volta sola.
+  console.log("\n9. La prova ripulisce ciò che ha scritto");
+  const ripulite = await contesto.request.post(new URL("/api/collaudo/registri", BASE).toString(), {
+    data: { azienda: azienda.split("/")[2] },
+    failOnStatusCode: false,
+  });
+  const esitoPulizia = ripulite.ok() ? await ripulite.json() : null;
+  prova("le voci di prova sono state cancellate", Boolean(esitoPulizia), `stato ${ripulite.status()}`);
+  if (esitoPulizia) console.log(`       ${esitoPulizia.cancellate} voci rimosse`);
+
+  // ── 10. La console resta pulita ─────────────────────────────────────────────────
   console.log("\n9. Nessun rumore in console");
   const veri = erroriConsole.filter((e) => !/favicon|ERR_ABORTED/i.test(e));
   prova("nessun errore in console durante tutta la prova", veri.length === 0, veri.slice(0, 3).join(" · "));

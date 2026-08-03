@@ -514,3 +514,64 @@ export const isTipoRegistro = (s: string): s is TipoRegistro =>
   (TIPI_REGISTRO as readonly string[]).includes(s);
 
 export type { DataISO };
+
+// ============================================================================================
+// I collegamenti fra registri di domini diversi
+// ============================================================================================
+
+/**
+ * UN FATTO SOLO CHE RIGUARDA DUE DECRETI.
+ *
+ * È la ragione per cui questa è una suite e non tre strumenti affiancati. Una violazione
+ * dei dati non è solo un adempimento GDPR: se l'ente ha un modello 231, quello stesso
+ * fatto è anche un flusso informativo dovuto all'Organismo di Vigilanza, e i due termini
+ * corrono insieme. Il prototipo del committente lo annotava a mano, «Coordinamento
+ * DPO-OdV 72h»: era una nota su un foglio, e le note su un foglio non avvisano nessuno.
+ *
+ * NON SI CREA NIENTE DA SOLI. Aprire d'ufficio la voce nell'altro registro sarebbe magia:
+ * comparirebbe un atto che nessuno ha scritto, con una data che nessuno ha deciso. Il
+ * prodotto dice che il collegamento esiste e lascia il gesto a chi ne risponde.
+ *
+ * Il collegamento vale solo se ENTRAMBI i moduli sono attivi. Su un'azienda senza modello
+ * 231 la nota sul flusso all'OdV non è un promemoria utile: è rumore su un obbligo che
+ * quell'azienda non ha.
+ */
+export type LegameRegistri = {
+  readonly da: TipoRegistro;
+  readonly a: TipoRegistro;
+  readonly norma: string;
+  /** Cosa dire a chi ha appena registrato il fatto nel registro di partenza. */
+  readonly avviso: string;
+};
+
+export const LEGAMI_REGISTRI: readonly LegameRegistri[] = [
+  {
+    da: "violazione",
+    a: "flusso-odv",
+    norma: "art. 33 GDPR · art. 6.2.d D.Lgs 231/01",
+    avviso:
+      "Una violazione dei dati è anche un flusso informativo dovuto all'Organismo di Vigilanza: i due termini corrono insieme dallo stesso momento, e il DPO e l'OdV devono saperlo entrambi entro le stesse 72 ore.",
+  },
+  {
+    da: "segnalazione",
+    a: "flusso-odv",
+    norma: "D.Lgs 24/2023 · art. 6.2.d D.Lgs 231/01",
+    avviso:
+      "Se la segnalazione riguarda un reato presupposto, l'Organismo di Vigilanza va informato: è il destinatario che il modello indica, e il canale di whistleblowing non lo sostituisce.",
+  },
+  {
+    da: "formazione",
+    a: "flusso-odv",
+    norma: "art. 37 D.Lgs 81/08 · art. 6.2.d D.Lgs 231/01",
+    avviso:
+      "La formazione sulla sicurezza è un presidio dell'art. 30 D.Lgs 81/08, e l'art. 25-septies rende l'infortunio un reato presupposto: l'evidenza serve a entrambi i fascicoli e si carica una volta sola.",
+  },
+];
+
+/** I legami che partono da questo registro, verso registri di moduli effettivamente attivi. */
+export const legamiDa = (tipo: string, moduliAttivi: readonly Dominio[]): readonly LegameRegistri[] =>
+  LEGAMI_REGISTRI.filter((l) => {
+    if (l.da !== tipo) return false;
+    const destinazione = registroPerTipo(l.a);
+    return destinazione ? moduliAttivi.includes(destinazione.dominio) : false;
+  });

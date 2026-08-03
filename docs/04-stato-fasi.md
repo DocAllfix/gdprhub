@@ -69,6 +69,11 @@ Sono elencati perché ognuno è passato per una build verde.
 | F5d  | `overflow: hidden` su un antenato annulla `position: sticky`                       | la barra spariva scorrendo, e io avevo scritto che restava               |
 | F5d  | Il cancello chiedeva `/azienda/<id>/d81/d81`: nove 404                             | il difetto era **nel cancello**, causato dal nuovo collegamento in barra |
 | F5d  | Cancello bocciato tre volte per 401, non per il limitatore                         | un giro di collaudo aveva cambiato le password in banca dati             |
+| F13  | **La CI era rossa da almeno tre spinte e io riferivo «verde»**                     | mai: guardavo typecheck, lint e test senza guardare la CI                |
+| F13  | Il passo Build della CI non poteva riuscire: compilare pretendeva un database      | nascosto dietro il controllo di formattazione, che falliva prima         |
+| F13  | La rotta di esportazione era l'unica senza `force-dynamic`                         | in locale mai: le variabili c'erano e la build passava                   |
+| F13  | Il palette muoveva una selezione annunciata a nessuno (nessun `role`)              | mai da chi vede l'evidenziazione                                         |
+| F13  | La prova leggeva «la prima riga» di un elenco ordinato per data                    | al secondo giro: il primo aveva il registro vuoto                        |
 
 ## Dove gira il calcolo
 
@@ -82,15 +87,74 @@ E prima ancora è una questione di sostanza: in un prodotto che vende conformit�
 **calcolo** deve stare in Unione Europea, non solo l'archivio. Avere scelto Neon in Europa e
 lasciato le funzioni negli Stati Uniti era un errore che nessun cliente avrebbe accettato.
 
+## F13-F16 — i registri di dominio
+
+Fin qui il prodotto censiva **adempimenti**: cose che si fanno a scadenza. I registri sono
+un'altra natura — raccolgono **fatti** che accadono quando accadono. Una violazione dei dati
+non ha una periodicità: ha settantadue ore, e decorrono da quando se n'è saputo.
+
+**Undici registri, una pagina sola.** Le definizioni stanno nel motore (`registri/tipi.ts`)
+con quattro regole di termine — `ore`, `giorni`, `validita`, `anagrafica` — e la schermata si
+costruisce da lì: campi, etichette, opzioni, note e norma. Undici schermate scritte a mano
+sarebbero undici posti in cui il testo di una norma resta indietro rispetto al motore.
+
+| Dominio | Registri                                                                                                                                                            |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GDPR    | violazioni (72h) · richieste degli interessati (30/90gg) · registro dei trattamenti · valutazioni d'impatto · responsabili del trattamento · trasferimenti extra UE |
+| 231     | segnalazioni whistleblowing (7gg/3 mesi) · flussi informativi verso l'OdV                                                                                           |
+| 81/08   | formazione erogata · sorveglianza sanitaria · verifiche periodiche delle attrezzature                                                                               |
+
+**Le quattro decisioni che, sbagliate, producono un registro che sembra giusto e non lo è**,
+ognuna con la propria prova:
+
+- le **72 ore sono ore**, non tre giorni: una violazione saputa venerdì alle 18 scade lunedì
+  alle 18, e arrotondare al giorno regalerebbe sei ore che non esistono;
+- il termine decorre dalla **conoscenza**, non dal fatto: sono due date diverse e spesso
+  distanti, e il campo non si precompila con «adesso» proprio per non farle coincidere per
+  disattenzione;
+- un termine **assolto non scade più**, e un ritardo **resta scritto**: sbiancarlo dopo il
+  fatto sarebbe riscrivere il passato;
+- una validità **non indicata non è «in regola»**: è un dato mancante, e lo dice.
+
+**Chiudere un termine richiede di dire come.** Il server rifiuta un assolvimento senza esito:
+in sede di verifica una spunta senza descrizione vale quanto una casella vuota.
+
+**Il legame fra decreti.** Una violazione dei dati è anche un flusso informativo dovuto
+all'Organismo di Vigilanza: il prototipo del committente lo annotava a margine, «Coordinamento
+DPO-OdV 72h». L'avviso compare solo se **entrambi** i moduli sono attivi, e non apre niente da
+sé — un atto che nessuno ha scritto, con una data che nessuno ha deciso, sarebbe magia.
+
+**L'esportazione.** L'art. 30.3 chiede il registro «in forma scritta, anche in formato
+elettronico»: ogni registro si scarica in CSV, con le colonne costruite dalla definizione.
+
+### Verifica in produzione
+
+`pnpm --filter web prova:registri https://gdprhub.vercel.app` — **26 verifiche, 0 difetti**:
+i tre casi delle 72 ore, il rifiuto di una data futura, il rifiuto di un esito di due
+caratteri, l'assolvimento tardivo che resta tardivo, una voce per ciascuno degli undici
+registri, i numeri di protocollo tutti distinti, il CSV con le colonne dell'art. 30.1, la
+rotta di esportazione che non aggira il guard, ⌘K che trova un registro e ci porta.
+
+### Cosa non è entrato in F13-F16, e va detto
+
+- **mappa dei reati presupposto** (F14): il catalogo `reato_presupposto` previsto dal piano
+  non è stato scritto. Un OdV ragiona per reati, non per attività, e senza quella mappa la
+  relazione 231 resta un elenco di adempimenti;
+- **verbali dell'OdV** come documento proprio: oggi il verbale è un campo di testo sul flusso,
+  non un atto con un numero e una firma;
+- **DUVRI e cantieri** (F15): il DUVRI è un adempimento del catalogo 81/08, non un registro
+  con le imprese e le interferenze;
+- **notifiche** sulle scadenze ricorrenti (F16): nessuna posta, nessun promemoria;
+- **import dai tre prototipi** (F16).
+
 ## Prossime
 
-- **F7** — assessment: la vista parametrica sul dominio, stato del lavoro modificabile,
-  `non_applicabile` con motivazione, ultima esecuzione con scadenza ricalcolata, storico
-  append-only. 171 righe senza degrado.
-- **F8** — scadenzario unificato e collegamenti fra domini: il momento firmato. Chiudere il
-  DVR nell'81/08 aggiorna la lettura del 231 senza duplicare la riga.
-- **F9** — evidenze documentali. **F10** — cruscotti e simulatore. **F11** — tour di
-  onboarding sui `data-tour` già scritti. **F12** — relazioni e PDF veri.
+- **F17** — confezionamento per istanza: Dockerfile multi-stage, `docker-compose.prod.yml`,
+  `Caddyfile`, installazione **da zero su una VPS reale**, backup eseguito e **ripristino
+  provato** su macchina vuota. La pigrizia del client del database, introdotta oggi, serve
+  esattamente a questo: un'immagine si costruisce prima di sapere a quale database parlerà.
+- Le cinque voci rimaste sopra, se il committente le vuole prima del confezionamento.
+- Rimuovere le pagine `/varianti`, che hanno esaurito il loro scopo.
 
 ## Questioni ancora aperte
 

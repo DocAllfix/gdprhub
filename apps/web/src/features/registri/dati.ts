@@ -3,11 +3,12 @@ import {
   calcolaTermine,
   registroPerTipo,
   type DefinizioneRegistro,
+  type Dominio,
   type Termine,
   type TipoRegistro,
 } from "@gdpr/engine";
 import { db } from "@/lib/db";
-import { clientCompany, registro, user } from "@/lib/db/schema";
+import { clientCompany, companyModule, registro, user } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";
 
 // LA LETTURA DEI REGISTRI.
@@ -59,6 +60,20 @@ export async function registroDi(aziendaId: string, tipo: string) {
   });
   if (!azienda) return null;
 
+  // I moduli attivi servono ai legami fra registri: un avviso sul flusso all'OdV mostrato
+  // a un'azienda senza modello 231 è rumore su un obbligo che quell'azienda non ha.
+  const moduli = await db.query.companyModule.findMany({
+    where: eq(companyModule.clientCompanyId, aziendaId),
+  });
+  const moduliAttivi = moduli.filter((m) => m.attivo).map((m) => m.dominio as Dominio);
+
+  // UN REGISTRO DI UN MODULO SPENTO NON ESISTE, per la stessa ragione per cui la scheda
+  // azienda non lo elenca: un'azienda senza modello 231 non deve poter aprire un flusso
+  // verso un Organismo di Vigilanza che non ha. Nasconderlo nell'indice e lasciarlo
+  // raggiungibile scrivendo l'indirizzo sarebbe una coerenza a metà, e la metà che manca è
+  // quella che scrive nel database.
+  if (!moduliAttivi.includes(def.dominio)) return null;
+
   const righe = await db
     .select({
       id: registro.id,
@@ -101,7 +116,7 @@ export async function registroDi(aziendaId: string, tipo: string) {
     ),
   }));
 
-  return { ctx, azienda, def, voci };
+  return { ctx, azienda, def, voci, moduliAttivi };
 }
 
 /** Quante voci richiedono un intervento adesso, per registro. Serve alla scheda azienda. */
