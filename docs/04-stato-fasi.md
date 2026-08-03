@@ -178,13 +178,54 @@ esecuzione, scelti dal committente; la divergenza si annota in `politica-scoring
 - **notifiche** sulle scadenze ricorrenti (F16): nessuna posta, nessun promemoria;
 - **import dai tre prototipi** (F16).
 
+## F17 — confezionamento per istanza
+
+Gli artefatti ci sono. **L'installazione su una VPS reale no**, e finché non c'è questa fase
+non è chiusa: il cancello chiede istanza installata da zero su una macchina vera, flusso
+completo fino al PDF, intestazioni verdi, backup eseguito e **ripristino provato su macchina
+vuota**. Nessuna delle quattro va data per buona perché il file esiste.
+
+| File | Cosa fa |
+| --- | --- |
+| `deploy/Dockerfile` | tre stadi + `strumenti`. Gli strumenti di prima installazione hanno bisogno dei sorgenti e di `tsx`, e non devono pesare sull'immagine che gira sempre |
+| `deploy/docker-compose.prod.yml` | **validato da Docker**. Database senza porte esposte, `preparazione` che finisce prima che `app` parta, volumi separati |
+| `deploy/Caddyfile` | `X-Robots-Tag: noindex` come intestazione, non `robots.txt` |
+| `deploy/backup.sh` | dump + volume delle evidenze + `.env.prod`, cifrati GPG |
+| `deploy/restore-prova.sh` | ripristina in un PostgreSQL effimero e **conta le righe** |
+| `deploy/intestazioni-sicurezza.sh` | verifica che le intestazioni arrivino davvero al browser |
+| `deploy/check-segreti.sh` | **verde**: nessun segreto tracciato da git |
+| `deploy/aggiorna-flotta.sh` | una istanza alla volta, si ferma alla prima che non torna sana |
+| `deploy/RUNBOOK.md` | installazione, aggiornamento, backup, ripristino, diagnosi |
+
+**Ciò che è stato verificato davvero**, e non solo scritto:
+
+- `docker compose config` accetta il compose;
+- il contesto di build è **11,9 MB**, misurato con un'immagine usa e getta che fa `du` del
+  contesto. Era di centinaia di megabyte: il `.dockerignore` stava in `deploy/`, dove Docker
+  non lo cerca. Un `.dockerignore` nel posto sbagliato non dà errore, viene ignorato;
+- `check-segreti.sh` passa;
+- la costruzione dell'immagine è arrivata a compilare l'applicazione **dentro il contenitore**
+  («Compiled successfully in 3.6min») e si è fermata lì: l'ho interrotta io, perché su questa
+  macchina competeva con il cancello visivo. Non è quindi una build portata a termine, e non
+  va contata come tale;
+- la **pigrizia del client del database**, introdotta per la CI, è ciò che rende possibile
+  `docker build` senza un database: un'immagine si costruisce prima di sapere a quale
+  database parlerà, e i segreti di un cliente non entrano in un contesto di build.
+
+**Il perché di due scelte che sembrano ridondanti**:
+
+- le migrazioni girano sia in `preparazione` sia a ogni avvio di `app`. Il caso coperto è
+  l'aggiornamento fatto senza ricordarsi un comando a parte; il costo è una query;
+- `/api/health` **interroga il database**. Rispondeva «ok» col database spento: Docker non
+  avrebbe riavviato niente e un aggiornamento di flotta sarebbe proseguito sulle istanze
+  successive credendo che la prima stesse bene.
+
 ## Prossime
 
-- **F17** — confezionamento per istanza: Dockerfile multi-stage, `docker-compose.prod.yml`,
-  `Caddyfile`, installazione **da zero su una VPS reale**, backup eseguito e **ripristino
-  provato** su macchina vuota. La pigrizia del client del database, introdotta oggi, serve
-  esattamente a questo: un'immagine si costruisce prima di sapere a quale database parlerà.
-- Le cinque voci rimaste sopra, se il committente le vuole prima del confezionamento.
+- **F17, la parte che conta**: installazione da zero su una VPS reale, giro completo fino al
+  PDF, `intestazioni-sicurezza.sh` verde, backup e **ripristino provato su macchina vuota**.
+  Serve una macchina e un dominio.
+- Le cinque voci di F13-F16 rimaste, se il committente le vuole prima del confezionamento.
 - Rimuovere le pagine `/varianti`, che hanno esaurito il loro scopo.
 
 ## Questioni ancora aperte
