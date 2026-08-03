@@ -1,0 +1,55 @@
+# Cosa NON entra nel contesto di build.
+#
+# STA ALLA RADICE E NON IN `deploy/`, dove sarebbe stato più ordinato tenerlo. Docker cerca
+# questo file nella radice del CONTESTO — che qui è la radice del repository, perché la
+# build deve vedere `apps/` e `packages/` — oppure in `deploy/Dockerfile.dockerignore`, che
+# è un nome che nessuno va a cercare. Un `.dockerignore` nel posto sbagliato non dà errore:
+# viene semplicemente ignorato, e ci si accorge del problema solo guardando quanti megabyte
+# trasferisce la prima riga della build.
+#
+# Il contesto è tutto ciò che il demone riceve prima ancora di leggere il Dockerfile: senza
+# questo file la prima riga trasferisce `node_modules`, `.next` e ogni screenshot mai
+# salvato dal cancello — centinaia di megabyte, a ogni tentativo, per file che l'immagine
+# ricostruisce da sé.
+#
+# E soprattutto: **i segreti non entrano in un contesto di build**. Un `.env.local` copiato
+# in uno strato intermedio resta nell'immagine anche se uno strato successivo lo cancella,
+# perché gli strati sono additivi e chiunque abbia l'immagine può leggerli tutti.
+
+node_modules
+**/node_modules
+.git
+.github
+
+# Artefatti di compilazione: l'immagine li ricostruisce, e quelli locali sono compilati per
+# un'altra macchina.
+.next
+**/.next
+dist
+**/dist
+
+# Segreti. Mai.
+.env
+.env.*
+**/.env
+**/.env.local
+deploy/.env.prod
+deploy/fleet.txt
+
+# Esiti dei collaudi e cartelle di lavoro.
+screenshot
+percorso
+prototipi
+scatti
+coverage
+*.log
+
+# Roba di editor e di sistema.
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# I prototipi di partenza e la documentazione: servono all'analisi, non all'applicazione.
+archivio
+docs
