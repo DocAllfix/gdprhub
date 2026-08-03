@@ -136,17 +136,33 @@ class ArchivioBlob implements Archivio {
 
   async scrivi(chiave: string, dati: Buffer, mime: string): Promise<void> {
     const { put } = await this.modulo();
-    // `addRandomSuffix: false` perché la chiave la decidiamo noi e porta l'organizzazione:
-    // un suffisso casuale la renderebbe imprevedibile e quindi non più il confine.
-    await put(chiave, dati, { access: "public", contentType: mime, addRandomSuffix: false });
+    // ACCESSO PRIVATO, ed è l'unica scelta difendibile.
+    //
+    // Il primo giro scriveva `access: "public"` e lo store ha rifiutato — giustamente. Un
+    // blob pubblico ha un indirizzo che chiunque lo conosca può aprire, e sarebbe una porta
+    // di servizio che scavalca il controllo di appartenenza che sta nella rotta. Per un DVR
+    // o un certificato medico è esattamente ciò che non deve esistere: il documento esce
+    // solo da `/api/evidenze/[id]`, dove si riverifica di chi è.
+    //
+    // `addRandomSuffix: false` perché la chiave la decidiamo noi e porta l'organizzazione.
+    await put(chiave, dati, { access: "private", contentType: mime, addRandomSuffix: false });
   }
 
   async leggi(chiave: string): Promise<Buffer> {
-    const { head } = await this.modulo();
-    const info = await head(chiave);
-    const r = await fetch(info.url);
-    if (!r.ok) throw new Error(`archivio: lettura fallita (${r.status})`);
-    return Buffer.from(await r.arrayBuffer());
+    const { get } = await this.modulo();
+    // Su uno store privato non esiste un URL da aprire: si legge dal server, con le
+    // credenziali dell'istanza. È giusto che sia così — il documento arriva all'utente
+    // dalla nostra rotta, che prima riverifica di chi è e ne ricontrolla l'impronta.
+    //
+    // `useCache: false` perché il contenuto di un'evidenza non cambia mai, ma la CDN può
+    // servire una copia di un blob eliminato e ricreato con la stessa chiave: qui si vuole
+    // il byte che sta nell'archivio, non quello che qualcuno ha visto per ultimo.
+    const risultato = await get(chiave, { access: "private", useCache: false });
+    if (!risultato) throw new Error("archivio: documento non trovato");
+    const pezzi: Uint8Array[] = [];
+    // @ts-expect-error — lo stream è un ReadableStream del web, iterabile a runtime su Node.
+    for await (const pezzo of risultato.stream) pezzi.push(pezzo as Uint8Array);
+    return Buffer.concat(pezzi);
   }
 
   async elimina(chiave: string): Promise<void> {
