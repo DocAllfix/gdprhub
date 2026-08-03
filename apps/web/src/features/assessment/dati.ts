@@ -5,6 +5,7 @@ import {
   conformitaEffettiva,
   conformitaLavoro,
   conteggi,
+  incrocio,
   criticiAperti,
   descriviPeriodicita,
   esposizione,
@@ -221,6 +222,10 @@ export async function assessmentDi(aziendaId: string, dominio: Dominio) {
       lavoro: conformitaLavoro(righe),
       scadenze: conteggi(righe).perScadenza,
       lavori: conteggi(righe).perLavoro,
+      // L'incrocio dei due assi: è l'unico modo di sapere quanti sono «completati E
+      // scaduti», che è la situazione più frequente e la più pericolosa. I due conteggi
+      // separati sopra direbbero «28 completate, 12 scadute» senza dire che si sovrappongono.
+      incrocio: incrocio(righe),
       critici: criticiAperti(righe).length,
       esposizione: esposizione(righe),
     },

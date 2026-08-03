@@ -6,6 +6,7 @@ import {
   conformitaPer,
   conformitaScadenze,
   conteggi,
+  incrocio,
   criticiAperti,
   daPresidiare,
   esclusioniDaMotivare,
@@ -169,6 +170,36 @@ describe("conteggi sui due assi", () => {
     expect(Object.values(c.perScadenza).reduce((x, y) => x + y, 0)).toBe(insieme.length);
     expect(c.perLavoro.Completata).toBe(2);
     expect(c.perScadenza.Scaduta).toBe(1);
+  });
+
+  it("l'incrocio isola «completata E scaduta», che i due conteggi separati non sanno dire", () => {
+    const insieme = [
+      inRegola("A"),
+      completatoMaScaduto("B"),
+      a({ codice: "C" }),
+      a({ codice: "D", stato: "Non applicabile" }),
+    ];
+    const g = incrocio(insieme);
+
+    // La cella che conta: fatto, e nondimeno scaduto.
+    expect(g.Completata.Scaduta).toBe(1);
+    // La stessa colonna «Completata» contiene anche il caso sano, ed è il punto: i due
+    // conteggi separati direbbero «2 completate, 1 scaduta» senza dire che si sovrappongono.
+    expect(g.Completata.Regolare).toBe(1);
+
+    // L'incrocio è una partizione: nessun adempimento sta in due celle, nessuno in zero.
+    const somma = Object.values(g)
+      .flatMap((riga) => Object.values(riga))
+      .reduce((x, y) => x + y, 0);
+    expect(somma).toBe(insieme.length);
+
+    // E ogni margine coincide con il conteggio del proprio asse: se divergessero, una delle
+    // due letture della stessa realtà sarebbe sbagliata e non si saprebbe quale.
+    const c = conteggi(insieme);
+    for (const [lavoro, riga] of Object.entries(g)) {
+      const totaleRiga = Object.values(riga).reduce((x, y) => x + y, 0);
+      expect(totaleRiga).toBe(c.perLavoro[lavoro as keyof typeof c.perLavoro]);
+    }
   });
 });
 

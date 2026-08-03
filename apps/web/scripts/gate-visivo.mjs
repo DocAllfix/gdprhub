@@ -361,11 +361,22 @@ async function risolviDinamiche(browser, pagine) {
   if (await apriSessione(contesto, "risoluzione dei percorsi dinamici")) {
     const tab = await contesto.newPage();
     await tab.goto(new URL("/portafoglio", base).toString(), { waitUntil: "networkidle" });
-    primaAzienda = await tab
-      .locator('a[href^="/azienda/"]')
-      .first()
-      .getAttribute("href")
-      .catch(() => null);
+    // SI PRENDE UN COLLEGAMENTO ALLA SCHEDA, NON UN COLLEGAMENTO QUALSIASI SOTTO /azienda.
+    //
+    // Il primo `a[href^="/azienda/"]` della pagina non è più quello della tabella: da
+    // quando la barra laterale porta «Scade adesso», il primo collegamento è
+    // /azienda/<id>/<dominio>, e concatenandoci /d81 il cancello chiedeva
+    // /azienda/<id>/d81/d81 e si prendeva nove 404. Il difetto era nel cancello, non
+    // nell'applicazione — ed è esattamente il genere di cosa per cui il cancello esiste,
+    // solo vista dall'altra parte.
+    const collegamenti = await tab.locator('a[href^="/azienda/"]').evaluateAll((nodi) =>
+      nodi.map((n) => n.getAttribute("href")),
+    );
+    primaAzienda =
+      collegamenti.find((h) => h && /^\/azienda\/[^/]+$/.test(h)) ??
+      // Ripiego: se esistono solo collegamenti profondi, si tronca al primo segmento.
+      collegamenti.find((h) => h)?.split("/").slice(0, 3).join("/") ??
+      null;
   }
   await contesto.close();
 

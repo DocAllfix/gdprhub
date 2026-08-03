@@ -110,6 +110,29 @@ export function conteggi(adempimenti: readonly AdempimentoRisolto[]): {
   return { perLavoro, perScadenza };
 }
 
+/**
+ * L'INCROCIO DEI DUE ASSI: stato del lavoro per stato della scadenza.
+ *
+ * I due `conteggi` separati dicono quanti sono completati e quanti scaduti, ma non quanti
+ * sono completati E scaduti — e quella è la cella che conta. È la situazione più frequente
+ * e la più pericolosa: il documento fu redatto, il ciclo è finito, e il registro dice
+ * ancora «fatto». Nessuno dei tre prototipi sapeva esprimerla, perché tutti e tre
+ * confondevano i due assi in un elenco solo di stati.
+ *
+ * Sta nel motore e non nella schermata perché è aritmetica sui dati, e l'aritmetica di
+ * questo prodotto vive in un posto solo: un numero calcolato dentro una vista è un numero
+ * che nessun test copre e che il giorno dopo diverge da quello della relazione.
+ */
+export function incrocio(
+  adempimenti: readonly AdempimentoRisolto[],
+): Readonly<Record<StatoLavoro, Readonly<Record<StatoScadenza, number>>>> {
+  const griglia = Object.fromEntries(
+    STATI_LAVORO.map((l) => [l, Object.fromEntries(STATI_SCADENZA.map((s) => [s, 0]))]),
+  ) as Record<StatoLavoro, Record<StatoScadenza, number>>;
+  for (const a of adempimenti) griglia[a.stato][a.statoScadenza]++;
+  return griglia;
+}
+
 /** Adempimenti su cui c'è ancora lavoro da fare. */
 export function aperti(adempimenti: readonly AdempimentoRisolto[]): readonly AdempimentoRisolto[] {
   return adempimenti.filter((a) => a.stato !== "Completata" && a.stato !== "Non applicabile");
