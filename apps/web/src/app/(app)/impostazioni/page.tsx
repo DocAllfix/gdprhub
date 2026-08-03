@@ -52,7 +52,7 @@ export default async function PaginaImpostazioni() {
 
       <section className="mt-9">
         <h2 className="text-sm font-semibold tracking-tight">Catalogo</h2>
-        <dl className="mt-3 divide-y divide-border-subtle rounded-md border border-border bg-surface text-sm">
+        <dl className="pannello mt-3 text-sm">
           <Riga voce="Versione attiva" valore={versione?.etichetta ?? "nessuna"} />
           <Riga voce="Adempimenti in catalogo" valore={String(TUTTI_I_TEMPLATES.length)} />
           {DOMINI.map((d) => (
@@ -67,7 +67,7 @@ export default async function PaginaImpostazioni() {
 
       <section className="mt-9">
         <h2 className="text-sm font-semibold tracking-tight">Questa istanza</h2>
-        <dl className="mt-3 divide-y divide-border-subtle rounded-md border border-border bg-surface text-sm">
+        <dl className="pannello mt-3 text-sm">
           <Riga voce="Prodotto" valore={PRODOTTO.nome} />
           <Riga voce="Profilo" valore={ctx.profilo === "consulente" ? "Consulente" : "Azienda singola"} />
           <Riga voce="Modalità" valore={ctx.mode === "full" ? "Completa" : "Dimostrativa"} />

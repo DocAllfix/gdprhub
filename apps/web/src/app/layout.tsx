@@ -1,41 +1,36 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { PRODOTTO } from "@/lib/brand";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-// IBM Plex: cifre tabellari eccellenti, regge le dimensioni piccole senza impastarsi, e
-// porta un carattere istituzionale che legge come documento e non come app.
-// Il mono non è un vezzo: sui codici degli adempimenti (T01, M47, S16) distingue
-// l'identificatore dal testo e allinea le colonne.
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+// GEIST, e il mono fa un lavoro suo.
+//
+// Scelto dal committente confrontando tre registri tipografici sulle stesse schermate.
+// Geist è un neo-grottesco stretto e neutro che regge la tabella da sessantaquattro righe
+// senza impastarsi, e IBM Plex — la scelta precedente — è il carattere di IBM e si
+// riconosce: chi l'ha già visto altrove non lo legge come nostro.
+//
+// IL MONO NON È DECORAZIONE, ed è il pezzo che porta la firma. Ci vanno tre cose e solo
+// quelle: i codici degli adempimenti (T01, M47, S16), dove distingue l'identificatore dal
+// testo e allinea le colonne; le date e i giorni residui, che sono colonne di numeri; e le
+// CIFRE GRANDI al centro di ogni scheda, che in mono dicono «dato misurato» invece di
+// «titolo». Le larghezze fisse fanno il resto: una colonna di numeri si allinea da sola e
+// un valore che cambia non fa ballare la riga accanto.
+//
+// Il serif editoriale è stato provato e scartato: legava bene alla perizia stampata, ma
+// portava un terzo carattere e un registro che con Geist litiga.
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-});
-
-// IL SERIF ENTRA NELL'INTERFACCIA, e non solo nel documento.
-//
-// È la firma tipografica del prodotto e il suo distacco più netto dai vicini:
-// `sistemacommercialisti` è tutto Plex Sans, Linear e Vercel sono grotteschi puri. Un
-// titolo e una cifra in Newsreader su fondo grafite si riconoscono a colpo d'occhio, e
-// legano la schermata alla perizia che ne esce: è lo stesso carattere della copertina.
-//
-// Solo titoli e cifre grandi. Sotto i 16px il serif si impasta e la tabella deve restare
-// Plex: la densità viene prima della firma.
-const newsreader = Newsreader({
-  variable: "--font-serif",
-  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -72,7 +67,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html
       lang="it"
-      className={cn("h-full", plexSans.variable, plexMono.variable, "font-sans", newsreader.variable)}
+      className={cn("h-full", geist.variable, geistMono.variable, "font-sans")}
       suppressHydrationWarning
     >
       <head>

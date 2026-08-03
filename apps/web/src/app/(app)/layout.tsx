@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
+import { sommarioBarra } from "@/features/shell/dati";
 import { Shell } from "@/components/shell/shell";
 
 // Il layout protetto. Tutte le schermate operative stanno sotto questo gruppo di rotte, e
@@ -28,12 +29,17 @@ export default async function LayoutApplicazione({ children }: { children: React
   // fotogramma mostrerebbe sempre la barra aperta e poi la vedresti chiudersi.
   const collassata = (await cookies()).get("barra-collassata")?.value === "1";
 
+  // Il sommario della barra riusa le stesse letture in cache di portafoglio e scadenzario:
+  // non aggiunge query, e su quelle due schermate non costa nulla del tutto.
+  const sommario = await sommarioBarra();
+
   return (
     <Shell
       studio={ctx.studioNome}
       utente={ctx.nome || ctx.email}
       ruolo={ctx.ruolo}
       collassataIniziale={collassata}
+      sommario={sommario}
     >
       {children}
     </Shell>

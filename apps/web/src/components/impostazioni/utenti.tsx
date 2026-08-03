@@ -63,7 +63,7 @@ export function GestioneUtenti({
 
   return (
     <div className="space-y-5" data-tour="utenti">
-      <div className="overflow-x-auto rounded-md border border-border bg-surface">
+      <div className="pannello overflow-x-auto">
         <Table>
           <TableHeader className="bg-surface-sunken">
             <TableRow className="border-b border-border-strong hover:bg-transparent">
@@ -149,7 +149,7 @@ export function GestioneUtenti({
       ) : null}
 
       {modificabile ? (
-        <form action={azioneCrea} className="space-y-3 rounded-md border border-border bg-surface p-4">
+        <form action={azioneCrea} className="pannello space-y-3 p-5">
           <p className="text-xs font-semibold tracking-[0.09em] uppercase">Nuova utenza</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5">

@@ -139,7 +139,7 @@ export function TabellaScadenzario({
       </div>
 
       <div
-        className="overflow-x-auto rounded-md border border-border bg-surface"
+        className="pannello overflow-x-auto"
         data-tour="tabella-scadenzario"
       >
         <Table>

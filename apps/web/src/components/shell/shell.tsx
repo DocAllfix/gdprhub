@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Building2,
   CalendarClock,
+  ChevronDown,
   FileText,
   LayoutGrid,
   LogOut,
@@ -15,6 +16,7 @@ import {
   Settings,
   X,
 } from "lucide-react";
+import type { SommarioBarra } from "@/features/shell/dati";
 import { signOut } from "@/lib/auth/client";
 import { SelettoreTema } from "@/components/shell/tema";
 import { cn } from "@/lib/utils";
@@ -67,6 +69,7 @@ export function Shell({
   utente,
   ruolo,
   collassataIniziale,
+  sommario,
   children,
 }: {
   studio: string;
@@ -74,12 +77,15 @@ export function Shell({
   ruolo: string;
   /** Letta dal cookie sul server: senza, la barra lampeggia aperta e poi si chiude. */
   collassataIniziale: boolean;
+  /** Ciò che rende la colonna un pannello di lavoro invece di un elenco di collegamenti. */
+  sommario: SommarioBarra;
   children: React.ReactNode;
 }) {
   const percorso = usePathname();
   const router = useRouter();
   const [apertaSuMobile, setApertaSuMobile] = useState(false);
   const [collassata, setCollassata] = useState(collassataIniziale);
+  const [elencoAperto, setElencoAperto] = useState(false);
   const [uscendo, setUscendo] = useState(false);
 
   const esci = async () => {
@@ -202,7 +208,117 @@ export function Shell({
             </button>
           </div>
 
-          <div className="mt-5">{navigazione}</div>
+          {/* IL CAMBIO CLIENTE, in cima e non sepolto in un menù.
+              È il comando più usato del prodotto: un consulente passa da un'azienda
+              all'altra decine di volte al giorno. Ogni voce porta la conformità e le
+              scadute accanto al nome, così la scelta si fa guardando invece che
+              ricordando, e l'elenco è ordinato per urgenza e non alfabeticamente —
+              chi lo apre cerca quasi sempre l'azienda che ha un problema. */}
+          {stretta ? null : (
+            <div className="mt-3">
+              <button
+                type="button"
+                data-tour="cambia-azienda"
+                onClick={() => setElencoAperto((v) => !v)}
+                aria-expanded={elencoAperto}
+                className="flex w-full items-center gap-2 rounded-md border border-sidebar-border px-2 py-1.5 text-left hover:bg-sidebar-selected"
+              >
+                <Building2 className="size-3.5 shrink-0 text-sidebar-muted" aria-hidden />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-xs font-medium">
+                    {sommario.quanteAziende === 0
+                      ? "Nessuna azienda"
+                      : `${sommario.quanteAziende} aziende`}
+                  </span>
+                  <span className="block text-[10px] text-sidebar-muted">
+                    {sommario.aziende[0]
+                      ? `${sommario.aziende[0].scadute} scadute su ${sommario.aziende[0].nome}`
+                      : "in carico allo studio"}
+                  </span>
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "size-3.5 shrink-0 text-sidebar-muted transition-transform",
+                    elencoAperto && "rotate-180",
+                  )}
+                  aria-hidden
+                />
+              </button>
+
+              {elencoAperto ? (
+                <ul className="mt-1 space-y-0.5">
+                  {sommario.aziende.map((a) => (
+                    <li key={a.id}>
+                      <Link
+                        href={`/azienda/${a.id}`}
+                        onClick={() => {
+                          setElencoAperto(false);
+                          setApertaSuMobile(false);
+                        }}
+                        className="flex items-baseline gap-2 rounded-md px-2 py-1 text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground"
+                      >
+                        <span className="min-w-0 flex-1 truncate text-[11px]">{a.nome}</span>
+                        {a.scadute > 0 ? (
+                          <span className="shrink-0 font-mono text-[10px] text-scaduta tabular-nums">
+                            {a.scadute}
+                          </span>
+                        ) : null}
+                        <span className="w-8 shrink-0 text-right font-mono text-[10px] tabular-nums">
+                          {a.conformita === null ? "—" : `${a.conformita}%`}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link
+                      href="/portafoglio"
+                      onClick={() => setElencoAperto(false)}
+                      className="block rounded-md px-2 py-1 text-[11px] text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground"
+                    >
+                      Vedi tutto il portafoglio →
+                    </Link>
+                  </li>
+                </ul>
+              ) : null}
+            </div>
+          )}
+
+          <div className="mt-4">{navigazione}</div>
+
+          {/* E la seconda cosa che la colonna si guadagna: dice se c'è da correre prima
+              ancora che si apra lo scadenzario. Tre voci, le più urgenti di tutto il
+              portafoglio. */}
+          {stretta || sommario.prossime.length === 0 ? null : (
+            <div className="mt-5 border-t border-sidebar-border pt-3">
+              <p className="px-1.5 text-[10px] tracking-[0.09em] text-sidebar-muted uppercase">
+                Scade adesso
+              </p>
+              <ul className="mt-1.5 space-y-0.5">
+                {sommario.prossime.map((p) => (
+                  <li key={p.istanzaId}>
+                    <Link
+                      href={`/azienda/${p.aziendaId}/${p.dominio}`}
+                      onClick={() => setApertaSuMobile(false)}
+                      className="block rounded-md px-1.5 py-1 hover:bg-sidebar-selected"
+                    >
+                      <span className="flex items-baseline gap-2">
+                        <span className="min-w-0 flex-1 truncate text-[11px]">{p.titolo}</span>
+                        <span
+                          className={cn(
+                            "shrink-0 font-mono text-[10px] tabular-nums",
+                            p.giorni < 0 ? "text-scaduta" : "text-imminente",
+                          )}
+                        >
+                          {p.giorni > 0 ? `+${p.giorni}` : p.giorni}
+                        </span>
+                      </span>
+                      <span className="block truncate text-[10px] text-sidebar-muted">{p.azienda}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div className="mt-auto space-y-2.5 border-t border-sidebar-border pt-3">
             {stretta ? null : (

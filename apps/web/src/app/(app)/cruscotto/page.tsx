@@ -50,7 +50,7 @@ export default async function PaginaCruscotto() {
       {/* --- Fascia principale: i tre moduli, ciascuno col suo anello ------------------- */}
       <section className="mt-6 grid gap-3 lg:grid-cols-4">
         {d.perDominio.map((m) => (
-          <div key={m.dominio} className="rounded-lg border border-border bg-surface p-4 shadow-sm">
+          <div key={m.dominio} className="pannello p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold" style={{ color: TINTA_DOMINIO[m.dominio] }}>
@@ -239,7 +239,7 @@ export default async function PaginaCruscotto() {
 
 function Riquadro({ titolo, nota, children }: { titolo: string; nota?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-border bg-surface p-4 shadow-sm">
+    <div className="pannello p-5">
       <h2 className="text-sm font-semibold tracking-tight">{titolo}</h2>
       {nota ? <p className="mt-0.5 mb-3 text-[11px] leading-relaxed text-muted-foreground">{nota}</p> : null}
       {children}

@@ -151,7 +151,7 @@ export function TabellaAdempimenti({
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-border bg-surface">
+      <div className="pannello overflow-clip">
         <Table>
           <TableHeader className="bg-surface-sunken">
             {tabella.getHeaderGroups().map((gruppo) => (

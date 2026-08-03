@@ -25,48 +25,71 @@
 :root {
   color-scheme: light;
 
-  /* --- Neutri, tinti verso l'inchiostro ------------------------------------ */
+  /* --- Neutri, tinti verso l'oliva ----------------------------------------- */
   /* Mai #fff, mai #000: ogni neutro porta una traccia della tinta di marca, ma la
-     croma resta sotto 0.01 o il grigio inizia a leggersi come azzurro. */
-  --background: oklch(0.963 0.004 262); /* la scrivania */
-  --surface: oklch(0.995 0.0015 262); /* il foglio */
-  --surface-sunken: oklch(0.947 0.005 262);
-  --surface-raised: oklch(1 0 0 / 0.6); /* velo chiaro su fondo, per le fasce dati */
+     croma resta sotto 0.01 o il grigio inizia a leggersi come colore.
+     LA TINTA È OLIVA, hue 110, e la scelta è documentata sotto in `--sidebar`.
+     La carta che ne esce è avorio, non bianco-azzurro d'ufficio. */
+  --background: oklch(0.96 0.005 110); /* la scrivania */
+  --surface: oklch(0.996 0.002 110); /* il foglio */
+  --surface-sunken: oklch(0.966 0.005 110);
+  --surface-raised: oklch(0.98 0.004 110);
 
-  /* LA BARRA LATERALE È INCHIOSTRO, e il contenuto è carta.
-     È la decisione che cambia la faccia del prodotto più di ogni altra: un pannello
-     scuro accanto a un foglio chiaro legge come uno strumento professionale, due
-     grigi quasi uguali leggono come un abbozzo. Lo fanno Linear, Attio, Vercel — e lo
-     facevano anche i tre prototipi di partenza, che avevano #0f172a in colonna.
-     Qui è la stessa idea senza il resto: nessun gradiente, nessun bagliore. */
-  --sidebar: oklch(0.225 0.019 262);
-  --sidebar-foreground: oklch(0.93 0.006 262);
-  --sidebar-muted: oklch(0.66 0.012 262);
-  --sidebar-border: oklch(0.31 0.016 262);
-  --sidebar-selected: oklch(0.3 0.026 262);
+  /* LA BARRA LATERALE È SCURA, e il contenuto è carta.
+     Un pannello scuro accanto a un foglio chiaro legge come uno strumento
+     professionale, due grigi quasi uguali leggono come un abbozzo. Lo facevano anche
+     i tre prototipi di partenza, che avevano #0f172a in colonna: di quello si prende
+     l'idea, non i gradienti e i bagliori che ci stavano sopra.
 
-  --foreground: oklch(0.24 0.018 262);
-  --muted-foreground: oklch(0.5 0.008 262);
-  --faint-foreground: oklch(0.62 0.006 262);
+     LA TINTA NON È BLU, ED È UNA DECISIONE. Il navy scuro è il riflesso numero uno
+     del gestionale — Linear, Vercel, mezzo settore — e soprattutto è `sistema-
+     commercialisti`, che è dello stesso studio e sta a hue 250. Due strumenti dello
+     stesso committente non devono sembrare lo stesso strumento.
 
-  --border: oklch(0.905 0.005 262);
-  --border-strong: oklch(0.82 0.007 262);
-  --border-subtle: oklch(0.938 0.004 262);
+     Perché hue 110 e non un'altra. Sei tinte sono già impegnate e significano
+     qualcosa: rosso 26, ambra 67, verde 153, acciaio 228, indaco 273, prugna 342.
+     Tagliano il cerchio in sei spicchi, e dentro uno spicchio si può stare solo al
+     centro, perché ai bordi la colonna comincia a somigliare a un segnale. Fra
+     l'ambra e il verde c'è il vuoto più grande di tutti — quarantatré gradi per
+     parte — e al suo centro c'è questo verde-oliva scurissimo: muschio, taccuino da
+     campo, tela di rilegatura.
+
+     IL PREZZO, dichiarato. Il verde in questo prodotto significa già «regolare».
+     Queste due tinte non si confondono — «regolare» sta a croma 0,115 e la colonna a
+     0,030, e sono quaranta gradi più in là — ma è una convivenza permanente: se un
+     giorno si alza la croma della colonna anche di poco, comincia a dire qualcosa
+     che non deve dire. La croma della barra non si tocca senza rifare questa
+     verifica. */
+  --sidebar: oklch(0.272 0.03 112);
+  --sidebar-foreground: oklch(0.945 0.006 110);
+  --sidebar-muted: oklch(0.7 0.014 110);
+  --sidebar-border: oklch(0.355 0.024 112);
+  --sidebar-selected: oklch(0.348 0.036 112);
+
+  --foreground: oklch(0.243 0.013 110);
+  --muted-foreground: oklch(0.503 0.01 110);
+  --faint-foreground: oklch(0.623 0.008 110);
+
+  --border: oklch(0.918 0.006 110);
+  --border-strong: oklch(0.858 0.008 110);
+  --border-subtle: oklch(0.94 0.005 110);
 
   /* --- Prodotto: inchiostro ------------------------------------------------ */
   /* Su fondo scuro l'inchiostro si inverte in chiaro: resta il canale neutro. */
-  --primary: oklch(0.245 0.021 262);
-  --primary-hover: oklch(0.185 0.022 262);
-  --primary-foreground: oklch(0.985 0.002 262);
-  --selected: oklch(0.935 0.018 262);
-  --ring: oklch(0.5 0.13 258);
+  /* Il pulsante pieno è la stessa oliva della colonna. Tenerne due diversi darebbe
+     una pagina con due inchiostri, ed è il difetto che si vede senza saperlo nominare. */
+  --primary: oklch(0.272 0.03 112);
+  --primary-hover: oklch(0.218 0.032 112);
+  --primary-foreground: oklch(0.985 0.004 110);
+  --selected: oklch(0.935 0.02 110);
+  --ring: oklch(0.5 0.09 118);
 
   /* Accento del PRODOTTO, distinto dall'inchiostro dei pulsanti: serve a far vedere
      dove si sta guardando e a colorare le barre dei dati. Blu profondo, lontano dai
      tre colori di stato e dalle tre tinte di dominio. Resta sotto il 10% della pagina. */
-  --accento: oklch(0.5 0.13 258);
-  --accento-surface: oklch(0.955 0.028 258);
-  --accento-border: oklch(0.87 0.07 258);
+  --accento: oklch(0.45 0.075 118);
+  --accento-surface: oklch(0.955 0.024 112);
+  --accento-border: oklch(0.87 0.05 115);
 
   /* --- Stato della scadenza: RISERVATO ------------------------------------- */
   /* Questi tre non compaiono da nessun'altra parte. Se il colore decora, non può
@@ -85,9 +108,9 @@
   --regolare-border: oklch(0.86 0.075 152);
 
   /* «Da programmare» non è un rischio: è un'assenza. Resta neutro apposta. */
-  --programmare: oklch(0.55 0.012 262);
-  --programmare-surface: oklch(0.955 0.004 262);
-  --programmare-border: oklch(0.9 0.005 262);
+  --programmare: oklch(0.55 0.012 110);
+  --programmare-surface: oklch(0.955 0.005 110);
+  --programmare-border: oklch(0.9 0.006 110);
 
   /* --- Dominio: solo dove i tre convivono ---------------------------------- */
   /* Separati in TINTA e in LUMINOSITÀ: in deuteranopia le tinte collassano verso il
@@ -120,15 +143,19 @@
   --destructive-foreground: var(--primary-foreground);
 
   /* --- Forma ed elevazione -------------------------------------------------- */
-  /* Raggi contenuti: il registro è il documento, non la carta di credito. */
-  --radius-sm: 0.25rem;
-  --radius: 0.375rem;
-  --radius-lg: 0.5rem;
+  /* RAGGI LARGHI, e non è vezzo. La forma scelta è «quieto»: il pannello si stacca
+     dal fondo per superficie e non per filetto, e un riquadro senza bordo con angoli
+     stretti sembra una macchia, non un pannello. L'angolo è quello che dice «questa
+     è una cosa» quando la linea non c'è più. */
+  --radius-sm: 0.5rem;
+  --radius: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
 
-  /* Ombre fredde e discrete. Mai bagliori colorati. */
-  --shadow-sm: 0 1px 2px oklch(0.24 0.018 262 / 0.06);
-  --shadow: 0 1px 2px oklch(0.24 0.018 262 / 0.05), 0 4px 12px oklch(0.24 0.018 262 / 0.06);
-  --shadow-panel: -1px 0 3px oklch(0.24 0.018 262 / 0.06);
+  /* Ombre discrete e tinte come tutto il resto. Mai bagliori colorati. */
+  --shadow-sm: 0 1px 2px oklch(0.24 0.014 110 / 0.06);
+  --shadow: 0 1px 2px oklch(0.24 0.014 110 / 0.05), 0 4px 12px oklch(0.24 0.014 110 / 0.06);
+  --shadow-panel: -1px 0 3px oklch(0.24 0.014 110 / 0.06);
 
   /* --- Densità -------------------------------------------------------------- */
   /* 22 righe visibili a 1440×900: è il numero che separa uno strumento da una
@@ -153,42 +180,42 @@
      un tema chiaro riverniciato. Qui i pannelli si staccano perché sono più
      chiari del fondo, e il bordo chiude la forma.
 
-     La TINTA non è quella di Linear, che è carbone neutro, e soprattutto NON è
-     il blu-notte: `sistemacommercialisti` — progetto gemello dello stesso
-     committente — sta a hue 250 con accento ottanio, e due strumenti dello
-     stesso studio non devono sembrare lo stesso strumento. Qui la notte è
-     GRAFITE-VIOLA, hue 288, con croma tenuta bassissima: si legge fredda e
-     minerale, non blu.
+     La TINTA È LA STESSA DEL CHIARO, hue 110: il chiaro non è lo scuro invertito,
+     ma i due sono la stessa famiglia. Con croma tenuta bassissima la notte oliva
+     si legge minerale e appena calda, e soprattutto non è il blu-notte:
+     `sistemacommercialisti` — progetto gemello dello stesso committente — sta a
+     hue 250 con accento ottanio.
 
      Quattro gradini, non due. Fra fondo e pannello ci sono 4 punti di
      luminosità: prima ce n'erano 3 su cento, e infatti non si staccava nulla. */
 
-  --background: oklch(0.155 0.016 288); /* la notte: il fondo dell'applicazione */
-  --surface: oklch(0.198 0.017 288); /* il pannello: tabelle, riquadri */
-  --surface-sunken: oklch(0.174 0.016 288); /* l'incavo: intestazioni, pozzetti */
-  --surface-raised: oklch(0.232 0.018 288); /* il sollevato: hover, menù, riga attiva */
+  --background: oklch(0.152 0.009 110); /* la notte: il fondo dell'applicazione */
+  --surface: oklch(0.2 0.01 110); /* il pannello: tabelle, riquadri */
+  --surface-sunken: oklch(0.176 0.009 110); /* l'incavo: intestazioni, pozzetti */
+  --surface-raised: oklch(0.236 0.011 110); /* il sollevato: hover, menù, riga attiva */
 
   /* La barra è PIÙ SCURA del fondo, non più chiara: incornicia il lavoro invece
-     di competerci. */
-  --sidebar: oklch(0.128 0.015 288);
-  --sidebar-foreground: oklch(0.955 0.004 288);
-  --sidebar-muted: oklch(0.63 0.012 288);
-  --sidebar-border: oklch(0.245 0.013 288);
-  --sidebar-selected: oklch(0.245 0.022 292);
+     di competerci. Sul chiaro fa il contrario ed è la stessa oliva a piena forza:
+     due direzioni opposte, una sola lettura — «questa colonna non è il foglio». */
+  --sidebar: oklch(0.132 0.016 112);
+  --sidebar-foreground: oklch(0.952 0.006 110);
+  --sidebar-muted: oklch(0.64 0.012 110);
+  --sidebar-border: oklch(0.216 0.014 112);
+  --sidebar-selected: oklch(0.235 0.024 112);
 
   /* Quattro livelli di testo, come i quattro di Linear: titolo, corrente,
      accompagnamento, marginale. Con tre non si riesce a spegnere abbastanza le
      etichette senza spegnere anche i dati. */
-  --foreground: oklch(0.958 0.004 288);
-  --muted-foreground: oklch(0.755 0.008 288);
-  --faint-foreground: oklch(0.6 0.009 288);
+  --foreground: oklch(0.958 0.004 110);
+  --muted-foreground: oklch(0.757 0.008 110);
+  --faint-foreground: oklch(0.605 0.008 110);
 
   /* Filetti su tre gradini. Sul buio un bordo troppo chiaro urla, uno troppo
      scuro sparisce: servono valori diversi per il pannello, per il campo a
      fuoco e per la separazione interna. */
-  --border: oklch(0.283 0.014 288);
-  --border-strong: oklch(0.375 0.017 288);
-  --border-subtle: oklch(0.232 0.012 288);
+  --border: oklch(0.243 0.009 110);
+  --border-strong: oklch(0.31 0.011 110);
+  --border-subtle: oklch(0.22 0.008 110);
 
   /* NON C'È UN ACCENTO DECORATIVO, ed è una scelta, non una dimenticanza.
      Abbiamo già sei colori che significano qualcosa: tre stati della scadenza e
@@ -197,19 +224,18 @@
      rosso che dice «premi qui».
 
      Il primario quindi è LUCE: una pastiglia chiara su fondo notte. Lo fa Vercel,
-     funziona perché è piccola e di raggio stretto, e lascia tutta la croma al
-     dato. È anche ciò che ci distingue dai vicini: Linear ha la lavanda,
-     sistemacommercialisti ha l'ottanio, noi non abbiamo niente — e il colore
-     resta interamente al significato. */
-  --accento: oklch(0.955 0.004 288);
-  --accento-surface: oklch(0.245 0.014 288);
-  --accento-border: oklch(0.36 0.016 288);
+     funziona perché è piccola, e lascia tutta la croma al dato. Sul chiaro il
+     primario è invece l'oliva piena: sono due soluzioni allo stesso problema —
+     «il pulsante deve staccare dal fondo» — e la risposta giusta cambia col fondo. */
+  --accento: oklch(0.955 0.005 110);
+  --accento-surface: oklch(0.245 0.012 110);
+  --accento-border: oklch(0.33 0.014 110);
 
-  --primary: oklch(0.955 0.004 288);
+  --primary: oklch(0.955 0.005 110);
   --primary-hover: oklch(1 0 0);
-  --primary-foreground: oklch(0.155 0.016 288);
-  --selected: oklch(0.245 0.022 292);
-  --ring: oklch(0.8 0.02 288);
+  --primary-foreground: oklch(0.152 0.009 110);
+  --selected: oklch(0.235 0.024 112);
+  --ring: oklch(0.78 0.05 115);
 
   /* Stato della scadenza. Sul buio si ALZA la luminosità e si abbassa la croma:
      un rosso saturo su fondo scuro vibra e diventa illeggibile a lungo. */
@@ -225,9 +251,9 @@
   --regolare-surface: oklch(0.265 0.055 155);
   --regolare-border: oklch(0.38 0.085 155);
 
-  --programmare: oklch(0.62 0.014 288);
-  --programmare-surface: oklch(0.235 0.014 288);
-  --programmare-border: oklch(0.33 0.014 288);
+  --programmare: oklch(0.62 0.012 110);
+  --programmare-surface: oklch(0.235 0.011 110);
+  --programmare-border: oklch(0.32 0.012 110);
 
   /* Dominio: separati in tinta E in luminosità anche qui, perché la deuteranopia
      non cambia col tema. */
@@ -249,7 +275,7 @@
   --accent-foreground: var(--foreground);
   --input: var(--border);
   --destructive: var(--scaduta);
-  --destructive-foreground: oklch(0.985 0.003 288);
+  --destructive-foreground: oklch(0.985 0.004 110);
 
   /* NIENTE OMBRE SUL BUIO. Restano dichiarate perché i componenti le chiedono,
      ma valgono zero: la profondità la fanno la scala e i filetti. */
@@ -259,20 +285,43 @@
 }
 
 @layer components {
-  /* La firma tipografica: titoli di pagina e cifre grandi in Newsreader.
-     Non è decorazione — è il legame visivo fra la schermata e la perizia che ne
-     esce, che ha lo stesso carattere in copertina. Sotto i 16px non si usa: il
-     serif si impasta e la densità della tabella viene prima della firma. */
+  /* La firma tipografica: titoli di pagina e cifre grandi in GEIST MONO.
+     Non è decorazione. Il numero grande è il centro di ogni scheda di questo
+     prodotto, e in mono dice una cosa precisa: che è un dato misurato e non un
+     titolo di marketing. Le cifre sono a larghezza fissa per costruzione, quindi
+     una colonna di numeri si allinea da sola e un numero che cambia non fa
+     ballare la riga accanto.
+     Il serif è stato provato e scartato: legava bene alla perizia stampata, ma
+     portava un terzo carattere e un registro editoriale che con Geist litiga. */
   .titolo {
-    font-family: var(--font-serif), Georgia, serif;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-weight: 500;
+    letter-spacing: -0.045em;
   }
   .cifra {
-    font-family: var(--font-serif), Georgia, serif;
-    font-weight: 600;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-weight: 500;
     font-variant-numeric: tabular-nums lining-nums;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.045em;
+  }
+
+  /* IL PANNELLO, e perché non ha bordo.
+     La forma scelta è «quieto»: il pannello si stacca dal fondo per SUPERFICIE, non per
+     filetto. Sul buio i quattro gradini della scala fanno il lavoro da soli e un'ombra
+     non si vedrebbe — non c'è luce da bloccare — mentre sul chiaro serve un'ombra
+     minima, perché carta su carta senza un accenno di rilievo si appiattisce.
+     Le due cose sono la stessa dichiarazione: `--shadow-sm` vale zero sul tema scuro.
+
+     Il raggio è largo apposta. Un riquadro senza bordo e con angoli stretti sembra una
+     macchia; l'angolo è ciò che dice «questa è una cosa» quando la linea non c'è più.
+
+     Chi ha bisogno del filetto — campi, pastiglie, comandi — se lo mette da sé. Questa
+     classe è per i CONTENITORI, e sono quelli che nella prima versione erano tutti
+     bordati e facevano reticolo. */
+  .pannello {
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
   }
 }
 
@@ -339,10 +388,10 @@
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius);
   --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
 
-  --font-sans: var(--font-plex-sans);
-  --font-mono: var(--font-plex-mono);
-  --font-serif: var(--font-serif);
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
 
   --spacing-riga: var(--riga-h);
   --spacing-riga-comoda: var(--riga-h-comoda);
@@ -356,7 +405,7 @@
   body {
     background: var(--background);
     color: var(--foreground);
-    font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
     /* Cifre tabellari ovunque, non solo nelle tabelle: una colonna di numeri che non
        si allinea è il primo segnale che il prodotto non è preciso. */
     font-variant-numeric: tabular-nums;
@@ -370,13 +419,15 @@
     border-radius: var(--radius-sm);
   }
 
-  /* Intestazioni di colonna in maiuscoletto spaziato: è il segnale del registro
-     catastale, e costa zero in altezza. */
+  /* Intestazioni di colonna in tondo, non in maiuscoletto spaziato.
+     Il maiuscoletto è il registro di «filetto», e la forma scelta è «quieto»: in una
+     pagina senza linee e con tanta aria, un maiuscoletto spaziato è l'unica cosa che
+     alza la voce, e si sente. */
   th {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
     color: var(--muted-foreground);
   }
 
