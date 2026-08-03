@@ -324,6 +324,22 @@ async function verificaPagina(browser, pagina, misura, tema) {
     }
     if (!(await elemento.first().isVisible())) continue;
 
+    // SI CHIUDE CIÒ CHE UN CLIC PRECEDENTE HA APERTO.
+    //
+    // Un pannello a scomparsa stende un velo a tutto schermo, e da quel momento ogni clic
+    // successivo finisce sul velo invece che sul comando: la spazzata riporta decine di
+    // «clic fallito» su elementi che funzionano benissimo. È capitato sulla pagina delle
+    // relazioni a larghezza tablet, dove il cassetto della navigazione resta aperto e
+    // copre il pulsante che l'ha aperto.
+    //
+    // Il velo è già un comando di chiusura nel prodotto — si preme fuori per chiudere — e
+    // premerlo qui è esattamente ciò che farebbe una persona.
+    const velo = tab.locator(".fixed.inset-0[aria-label^='Chiudi']");
+    if ((await velo.count()) > 0 && (await velo.first().isVisible())) {
+      await velo.first().click({ timeout: 3_000 }).catch(() => {});
+      await tab.waitForTimeout(150);
+    }
+
     const primaConsole = messaggi.length;
     const primaRete = risposteRotte.length;
     let cliccato = false;
