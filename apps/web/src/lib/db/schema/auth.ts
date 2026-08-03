@@ -1,4 +1,4 @@
-import { boolean, index, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { boolean, index, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 // Tabelle di Better Auth con il plugin `organization` e `twoFactor`.
 //
@@ -18,6 +18,15 @@ export const user = pgTable("user", {
   /** Forzato al primo accesso: le credenziali iniziali arrivano dall'onboarding dell'istanza. */
   mustChangePassword: boolean("must_change_password").default(false).notNull(),
   twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
+  /**
+   * I tour già visti, per chiave di contesto.
+   *
+   * Sul DATABASE e non in `localStorage`, perché il tour deve riprendere dal punto giusto
+   * anche su un altro browser: chi apre il prodotto in ufficio e poi da casa non deve
+   * rivedere l'introduzione, e chi la interrompe a metà deve ritrovarla dov'era. È anche
+   * l'unico modo di sapere, su un'istanza consegnata, se il cliente ha guardato la guida.
+   */
+  tourVisti: jsonb("tour_visti").$type<Record<string, number>>().default({}).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()

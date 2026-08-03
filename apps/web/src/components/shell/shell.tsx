@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Building2, CalendarClock, FileText, LayoutGrid, LogOut, Menu, Settings, X } from "lucide-react";
 import { signOut } from "@/lib/auth/client";
 import { SelettoreTema } from "@/components/shell/tema";
+import { Guida } from "@/components/tour/guida";
 import { cn } from "@/lib/utils";
 
 // La shell. Una sola, per tutte le schermate: passando dal portafoglio al 231 cambia il
@@ -71,11 +72,14 @@ export function Shell({
   studio,
   utente,
   ruolo,
+  tourVisti,
   children,
 }: {
   studio: string;
   utente: string;
   ruolo: string;
+  /** Quali guide questo utente ha già visto, con la versione. */
+  tourVisti: Record<string, number>;
   children: React.ReactNode;
 }) {
   const percorso = usePathname();
@@ -196,6 +200,7 @@ export function Shell({
           <div className="w-full">{navigazione(true)}</div>
 
           <div className="mt-auto flex flex-col items-center gap-2">
+            <Guida visti={tourVisti} />
             <SelettoreTema />
             <span
               className="grid size-7 place-items-center rounded-full bg-sidebar-selected text-[10px] font-semibold"
@@ -253,7 +258,10 @@ export function Shell({
               <p className="text-[10px] text-sidebar-muted capitalize">{ruolo}</p>
             </div>
             <div className="flex items-center justify-between px-1.5">
-              <SelettoreTema />
+              <span className="flex items-center gap-1">
+                <Guida visti={tourVisti} />
+                <SelettoreTema />
+              </span>
               <button
                 type="button"
                 onClick={esci}
