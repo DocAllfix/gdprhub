@@ -24,13 +24,19 @@ const USCITA = join(QUI, "..", "src", "lib", "documenti", "font-incorporati.ts")
 
 // Solo i tagli che il documento usa davvero. Ogni taglio in più sono ~30 KB nel bundle
 // della funzione, e un font che nessuna riga richiama è peso senza resa.
+// I TAGLI SONO CAMBIATI: il documento parla la lingua dell'applicazione.
+//
+// Fino al 2026-08-03 il PDF era l'«altro registro» — serif editoriale, Newsreader in
+// copertina — e il contrasto con la schermata era voluto. Il committente ha chiesto il
+// contrario, e ha ragione lui: un documento che non somiglia allo strumento che l'ha
+// prodotto non si riconosce come suo. Chi lo riceve deve vedere lo stesso prodotto, non
+// due marchi diversi.
 const TAGLI = [
-  { pacchetto: "newsreader", famiglia: "Newsreader", peso: 400, stile: "normal" },
-  { pacchetto: "newsreader", famiglia: "Newsreader", peso: 400, stile: "italic" },
-  { pacchetto: "newsreader", famiglia: "Newsreader", peso: 600, stile: "normal" },
-  { pacchetto: "ibm-plex-sans", famiglia: "IBM Plex Sans", peso: 400, stile: "normal" },
-  { pacchetto: "ibm-plex-sans", famiglia: "IBM Plex Sans", peso: 600, stile: "normal" },
-  { pacchetto: "ibm-plex-mono", famiglia: "IBM Plex Mono", peso: 400, stile: "normal" },
+  { pacchetto: "geist-sans", famiglia: "Geist", peso: 400, stile: "normal" },
+  { pacchetto: "geist-sans", famiglia: "Geist", peso: 500, stile: "normal" },
+  { pacchetto: "geist-sans", famiglia: "Geist", peso: 600, stile: "normal" },
+  { pacchetto: "geist-mono", famiglia: "Geist Mono", peso: 400, stile: "normal" },
+  { pacchetto: "geist-mono", famiglia: "Geist Mono", peso: 500, stile: "normal" },
 ];
 
 /** Risolve la cartella `files` del pacchetto dentro lo store di pnpm. */

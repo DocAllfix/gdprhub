@@ -35,7 +35,7 @@ export type VoceScadenzario = AdempimentoRisolto & {
   readonly giorni: number;
 };
 
-function adempimentoDaRiga(riga: typeof obligationInstance.$inferSelect): Adempimento | null {
+export function adempimentoDaRiga(riga: typeof obligationInstance.$inferSelect): Adempimento | null {
   const template = templatePerCodice(riga.dominio, riga.codice);
   if (!template) return null;
 

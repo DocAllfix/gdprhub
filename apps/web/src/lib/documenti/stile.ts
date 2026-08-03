@@ -1,20 +1,26 @@
 import { FONT_INCORPORATI } from "./font-incorporati";
 
-// Il foglio di stile del DOCUMENTO. È l'altro registro del prodotto.
+// Il foglio di stile del DOCUMENTO, nella lingua del prodotto.
 //
-// L'applicazione è densa, neutra, silenziosa: uno strumento. Il documento è editoriale:
-// serif, margini ampi, numerazione a margine, copertina. Il contrasto fra i due è
-// deliberato, ed è il lusso del prodotto (DESIGN.md, «Due registri»).
+// FINO AL 2026-08-03 ERA L'ALTRO REGISTRO: serif editoriale, Newsreader in copertina, e il
+// contrasto con la schermata era voluto e scritto. Il committente ha chiesto il contrario,
+// e ha ragione lui — un documento che non somiglia allo strumento che l'ha prodotto non si
+// riconosce come suo. Chi riceve la relazione deve vedere lo stesso prodotto, non due
+// marchi diversi. Quindi Geist come nell'applicazione, l'oliva della colonna come tinta di
+// marca, e la stessa gerarchia del colore.
 //
-// TRE SCELTE CHE DISTINGUONO IL DOCUMENTO DALLA SCHERMATA
+// QUATTRO SCELTE CHE RESTANO PROPRIE DEL DOCUMENTO, perché la carta non è uno schermo.
 //
 // 1. Colonna di marginalia. Ogni sezione porta il proprio numero e il proprio riferimento
 //    normativo nel margine sinistro, fuori dalla colonna di testo. È il gesto del registro
-//    catastale e del fascicolo istruttorio, e nell'applicazione non esiste.
+//    catastale, e nell'applicazione non esiste perché lì lo spazio serve ai dati.
 // 2. Impaginazione nostra, non del browser. Ogni pagina è un blocco 210×297mm: nessuna
 //    intestazione di categoria orfana, nessuna riga spezzata a metà, «Pagina 3 di 12»
 //    esatta. Su un atto che si consegna a un'autorità, la paginazione è una garanzia.
 // 3. Il documento è SEMPRE chiaro. Non esiste un PDF in tema scuro: è carta.
+// 4. IL FILETTO TORNA. Nell'applicazione i pannelli non hanno bordo perché la superficie
+//    fa il lavoro; sulla carta non esistono superfici, esiste solo l'inchiostro, e una
+//    tabella senza righe è una tabella che si legge male in fotocopia.
 //
 // Il colore resta il secondo canale, mai il primo: lo stato della scadenza porta sempre
 // anche la parola, perché il consulente stampa in bianco e nero e l'ispettore legge quello.
@@ -37,29 +43,33 @@ ${FONT_INCORPORATI}
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --inchiostro: oklch(0.24 0.018 262);
-  --tenue: oklch(0.5 0.008 262);
-  --debole: oklch(0.62 0.006 262);
-  --filo: oklch(0.86 0.005 262);
-  --filo-sottile: oklch(0.92 0.004 262);
-  --carta: oklch(0.995 0.0015 262);
-  --incavo: oklch(0.972 0.003 262);
+  --inchiostro: oklch(0.243 0.013 110);
+  --tenue: oklch(0.503 0.01 110);
+  --debole: oklch(0.623 0.008 110);
+  --filo: oklch(0.858 0.008 110);
+  --filo-sottile: oklch(0.925 0.006 110);
+  --carta: oklch(0.996 0.002 110);
+  --incavo: oklch(0.966 0.005 110);
 
   --scaduta: oklch(0.46 0.175 26);
   --imminente: oklch(0.47 0.125 62);
-  --regolare: oklch(0.44 0.105 152);
-  --programmare: oklch(0.55 0.012 262);
+  --regolare: oklch(0.45 0.105 168);
+  --programmare: oklch(0.55 0.012 110);
 
   --gdpr: oklch(0.45 0.125 272);
   --d231: oklch(0.375 0.1 342);
   --d81: oklch(0.48 0.055 232);
+
+  /* La tinta di marca, la stessa della colonna dell'applicazione. */
+  --oliva: oklch(0.315 0.078 112);
+  --oliva-tenue: oklch(0.93 0.04 112);
 }
 
 html, body { margin: 0; padding: 0; background: var(--carta); }
 
 body {
-  font-family: "Newsreader", serif;
-  font-size: 10.5pt;
+  font-family: "Geist", sans-serif;
+  font-size: 9.8pt;
   line-height: 1.55;
   color: var(--inchiostro);
   font-variant-numeric: tabular-nums lining-nums;
@@ -86,7 +96,7 @@ body {
 .griglia > .larga { grid-column: 1 / -1; }
 
 .margine {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 6.5pt;
   line-height: 1.35;
   color: var(--debole);
@@ -94,9 +104,9 @@ body {
   padding-top: 0.9mm;
 }
 .margine .num {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "Geist Mono", monospace;
   font-size: 7.5pt;
-  color: var(--inchiostro);
+  color: var(--oliva);
   display: block;
 }
 
@@ -106,7 +116,7 @@ body {
   position: absolute;
   top: 10mm; left: ${PAGINA.sinistra}mm; right: ${PAGINA.destra}mm;
   display: flex; justify-content: space-between; align-items: baseline;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 6.5pt; letter-spacing: 0.07em; text-transform: uppercase;
   color: var(--debole);
   padding-bottom: 2mm;
@@ -117,7 +127,7 @@ body {
   position: absolute;
   bottom: 8mm; left: ${PAGINA.sinistra}mm; right: ${PAGINA.destra}mm;
   display: flex; justify-content: space-between; align-items: baseline;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "Geist Mono", monospace;
   font-size: 6.5pt;
   color: var(--debole);
   padding-top: 2mm;
@@ -128,23 +138,27 @@ body {
 
 /* Doppio filetto: è la segnalazione dell'atto formale, e costa due righe di CSS. */
 .carta-intestata {
-  border-top: 1.6pt solid var(--inchiostro);
+  /* IL FILETTO ALTO È OLIVA, ed è l'unica cosa colorata della copertina.
+     È il colore della colonna dell'applicazione: chi riceve la relazione deve riconoscere
+     lo stesso prodotto. Basta un filetto — su un atto, un blocco di colore pieno sarebbe
+     una brochure. */
+  border-top: 2.4pt solid var(--oliva);
   border-bottom: 0.25pt solid var(--inchiostro);
   padding: 2mm 0 2.4mm;
   display: flex; justify-content: space-between; align-items: baseline;
 }
 .carta-intestata .studio {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 9pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
 }
 .carta-intestata .qualifica {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 6.5pt; letter-spacing: 0.09em; text-transform: uppercase; color: var(--tenue);
 }
 
 .tipo-atto {
   margin-top: 46mm;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 7pt; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--tenue);
 }
@@ -165,7 +179,7 @@ body {
   margin: 0; padding: 2.2mm 0; border-bottom: 0.25pt solid var(--filo-sottile);
 }
 .specchietto dt {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 7pt; letter-spacing: 0.07em; text-transform: uppercase; color: var(--tenue);
   padding-top: 2.9mm;
 }
@@ -177,12 +191,12 @@ body {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm;
   border-top: 0.25pt solid var(--filo);
   padding-top: 2.5mm;
-  font-family: "IBM Plex Mono", monospace; font-size: 6.5pt; line-height: 1.5;
+  font-family: "Geist Mono", monospace; font-size: 6.5pt; line-height: 1.5;
   color: var(--tenue);
 }
 .emissione b {
   display: block; font-weight: 400;
-  font-family: "IBM Plex Sans", sans-serif; font-size: 6pt;
+  font-family: "Geist", sans-serif; font-size: 6pt;
   letter-spacing: 0.09em; text-transform: uppercase; color: var(--debole);
 }
 
@@ -194,7 +208,7 @@ h2.sezione {
 }
 h3.paragrafo {
   margin: 7mm 0 2mm;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 8pt; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
 }
 p { margin: 0 0 3mm; max-width: 68ch; }
@@ -213,18 +227,18 @@ p.occhiello {
 }
 .metodo h4 {
   margin: 0 0 1.6mm;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 6.5pt; font-weight: 600; letter-spacing: 0.11em; text-transform: uppercase;
   color: var(--tenue);
 }
 .metodo p { margin: 0 0 1.8mm; max-width: none; }
 .metodo p:last-child { margin-bottom: 0; }
 
-.mono { font-family: "IBM Plex Mono", monospace; font-size: 0.92em; }
+.mono { font-family: "Geist Mono", monospace; font-size: 0.92em; }
 
 /* ---------- Tabelle ----------------------------------------------------------------- */
 
-table { width: 100%; border-collapse: collapse; font-family: "IBM Plex Sans", sans-serif; }
+table { width: 100%; border-collapse: collapse; font-family: "Geist", sans-serif; }
 
 thead th {
   font-size: 6.5pt; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
@@ -246,8 +260,8 @@ tr.categoria td {
 }
 tr:first-child.categoria td { padding-top: 1mm; }
 
-td.codice { font-family: "IBM Plex Mono", monospace; font-size: 7.5pt; white-space: nowrap; }
-td.data { font-family: "IBM Plex Mono", monospace; font-size: 7.5pt; white-space: nowrap; }
+td.codice { font-family: "Geist Mono", monospace; font-size: 7.5pt; white-space: nowrap; }
+td.data { font-family: "Geist Mono", monospace; font-size: 7.5pt; white-space: nowrap; }
 td.data .giorni { color: var(--debole); font-size: 6.5pt; }
 
 /* Lo stato porta SEMPRE la parola. Il colore è il secondo canale: in bianco e nero il
@@ -271,7 +285,7 @@ td.data .giorni { color: var(--debole); font-size: 6.5pt; }
 .lavoro.fatto { color: var(--inchiostro); }
 
 .dominio {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "Geist Mono", monospace;
   font-size: 6pt; font-weight: 600; letter-spacing: 0.04em;
   padding: 0.4mm 1.1mm; border: 0.25pt solid currentColor; border-radius: 0.6mm;
   white-space: nowrap;
@@ -287,21 +301,21 @@ td.data .giorni { color: var(--debole); font-size: 6.5pt; }
 .prospetto td, .prospetto th { padding: 2.4mm 2mm; }
 .prospetto tbody td { border-bottom: 0.25pt solid var(--filo-sottile); font-size: 9pt; }
 .prospetto .quota {
-  font-family: "IBM Plex Sans", sans-serif; font-size: 15pt; font-weight: 600;
+  font-family: "Geist", sans-serif; font-size: 15pt; font-weight: 600;
   letter-spacing: -0.02em;
 }
 .prospetto .denominatore {
   display: block; font-size: 6.5pt; color: var(--debole);
-  font-family: "IBM Plex Mono", monospace; letter-spacing: 0;
+  font-family: "Geist Mono", monospace; letter-spacing: 0;
 }
 .prospetto tfoot td {
   padding-top: 3mm; border-top: 0.7pt solid var(--inchiostro);
-  font-family: "IBM Plex Sans", sans-serif; font-size: 8pt;
+  font-family: "Geist", sans-serif; font-size: 8pt;
 }
 
 /* La scomposizione dell'indice: l'aritmetica stampata, non un grafico.
    Nessuna barra spessa: una barra nera alta due millimetri legge come una censura. */
-.scomposizione { margin-top: 3mm; font-family: "IBM Plex Mono", monospace; font-size: 7.5pt; }
+.scomposizione { margin-top: 3mm; font-family: "Geist Mono", monospace; font-size: 7.5pt; }
 .scomposizione table { font-family: inherit; table-layout: fixed; }
 .scomposizione td { padding: 1.4mm 3mm 1.4mm 0; border: 0; font-size: 7.5pt; }
 .scomposizione .voce { width: 32mm; white-space: nowrap; }
@@ -322,7 +336,7 @@ td.data .giorni { color: var(--debole); font-size: 6.5pt; }
 /* ---------- Fascicolo: righe di riscontro ------------------------------------------- */
 
 .intestazione-blocco {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 6.5pt; font-weight: 600; letter-spacing: 0.11em; text-transform: uppercase;
   color: var(--tenue); margin: 0 0 1.4mm;
 }
@@ -337,18 +351,18 @@ td.data .giorni { color: var(--debole); font-size: 6.5pt; }
 .riscontro.compatta .voce { padding: 1.5mm 0; }
 .riscontro .voce.intestazione {
   border-bottom: 0.5pt solid var(--filo); padding-top: 0;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Geist", sans-serif;
   font-size: 6.5pt; letter-spacing: 0.09em; text-transform: uppercase; color: var(--tenue);
 }
 .riscontro .voce.intestazione .cod,
 .riscontro .voce.intestazione .tit,
 .riscontro .voce.intestazione .dt { font: inherit; letter-spacing: inherit; }
-.riscontro .voce .cod { font-family: "IBM Plex Mono", monospace; font-size: 7.5pt; }
-.riscontro .voce .tit { font-family: "IBM Plex Sans", sans-serif; font-size: 8.5pt; }
+.riscontro .voce .cod { font-family: "Geist Mono", monospace; font-size: 7.5pt; }
+.riscontro .voce .tit { font-family: "Geist", sans-serif; font-size: 8.5pt; }
 .riscontro .voce .tit em {
-  display: block; font-family: "Newsreader", serif; font-size: 7.5pt; color: var(--tenue);
+  display: block; font-family: "Geist", sans-serif; font-size: 7.5pt; color: var(--tenue);
 }
-.riscontro .voce .dt { font-family: "IBM Plex Mono", monospace; font-size: 7.5pt; }
+.riscontro .voce .dt { font-family: "Geist Mono", monospace; font-size: 7.5pt; }
 
 /* La casella si stampa vuota: è l'ispettore a spuntarla, e per questo il documento è un
    fascicolo e non una stampa di schermata. */
@@ -362,7 +376,61 @@ td.data .giorni { color: var(--debole); font-size: 6.5pt; }
 }
 .firme div { border-top: 0.5pt solid var(--inchiostro); padding-top: 1.8mm; }
 .firme span {
-  font-family: "IBM Plex Sans", sans-serif; font-size: 6.5pt;
+  font-family: "Geist", sans-serif; font-size: 6.5pt;
   letter-spacing: 0.09em; text-transform: uppercase; color: var(--tenue);
+}
+
+/* ---------- Relazione: pezzi propri ---------------------------------------------------
+   Le classi qui sotto le usa il costruttore della relazione. La prima versione le usava senza che
+   esistessero, e il risultato era un documento in cui il denominatore si incollava alla
+   percentuale — «17%7/42» — e la norma al nome del modulo. Le classi inventate non
+   falliscono: rendono male, e si vede solo guardando la carta. */
+
+table.tabella { margin-top: 4mm; }
+table.tabella.fitta tbody td { padding: 1.1mm 2mm; font-size: 7.5pt; }
+
+/* Il rigo secondario di una cella: la norma sotto il modulo, il denominatore sotto la
+   percentuale, il riferimento sotto il titolo. Va A CAPO, sempre. */
+.tabella .sotto {
+  display: block;
+  margin-top: 0.5mm;
+  font-size: 6.5pt;
+  line-height: 1.25;
+  color: var(--debole);
+}
+
+th.num-cella, td.num-cella {
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+td.num-cella { font-family: "Geist Mono", monospace; font-size: 8pt; }
+td.num-cella .sotto { font-family: "Geist Mono", monospace; }
+
+/* Lo stato della scadenza porta il colore E la parola. Il colore è il secondo canale:
+   in fotocopia resta la parola, ed è così che il documento arriva a un ispettore. */
+td.st-scaduta { color: var(--scaduta); }
+td.st-imminente { color: var(--imminente); }
+td.st-regolare { color: var(--regolare); }
+td.st-programmare { color: var(--programmare); }
+.num-cella.st-scaduta { color: var(--scaduta); font-weight: 600; }
+
+p.nota {
+  margin-top: 3mm;
+  font-size: 7.5pt;
+  line-height: 1.45;
+  color: var(--tenue);
+}
+/* Un rilievo non è un avviso colorato: è un blocco che rientra, come una citazione in un
+   atto. Il filetto è oliva perché è il colore del prodotto, non perché segnali un rischio. */
+p.nota.rilievo {
+  border-left: 1.2pt solid var(--oliva);
+  padding: 1.5mm 0 1.5mm 4mm;
+  color: var(--inchiostro);
+}
+
+span.riga-firma {
+  display: block;
+  height: 9mm;
 }
 `;
