@@ -87,9 +87,15 @@
   /* Accento del PRODOTTO, distinto dall'inchiostro dei pulsanti: serve a far vedere
      dove si sta guardando e a colorare le barre dei dati. Blu profondo, lontano dai
      tre colori di stato e dalle tre tinte di dominio. Resta sotto il 10% della pagina. */
-  --accento: oklch(0.45 0.075 118);
-  --accento-surface: oklch(0.955 0.024 112);
-  --accento-border: oklch(0.87 0.05 115);
+  /* L'ACCENTO NON COLORA I DATI, e la croma sta bassa apposta. Con la tinta di prodotto a
+     hue 110 un accento saturo sarebbe verde, e in questo prodotto il verde significa
+     «regolare»: una barra verde accanto a una rossa e una ambra si legge «in regola» anche
+     quando conta adempimenti che scadono fra trenta giorni. Trovato guardando uno
+     screenshot del cancello, non leggendo il codice. Le barre dei dati usano ora i neutri;
+     qui resta ciò che serve a dire «stai guardando questo». */
+  --accento: oklch(0.42 0.03 115);
+  --accento-surface: oklch(0.958 0.012 112);
+  --accento-border: oklch(0.88 0.028 115);
 
   /* --- Stato della scadenza: RISERVATO ------------------------------------- */
   /* Questi tre non compaiono da nessun'altra parte. Se il colore decora, non può

@@ -149,7 +149,11 @@ export default async function PaginaCruscotto() {
             {[
               { e: "Già scadute", n: d.agenda.scadute.length, t: "bg-scaduta", q: "scadute" },
               { e: "Entro 7 giorni", n: d.agenda.entro7.length, t: "bg-imminente", q: "7" },
-              { e: "Entro 30 giorni", n: d.agenda.entro30.length, t: "bg-accento", q: "30" },
+              // Neutro e non `bg-accento`: da quando l'accento è oliva, una barra verde in
+              // mezzo a una rossa e una ambra si legge «in regola», che è l'opposto di
+              // quello che dice — sono adempimenti che scadono entro trenta giorni. Il
+              // colore qui non ha significato, serve solo a distinguere quattro barre.
+              { e: "Entro 30 giorni", n: d.agenda.entro30.length, t: "bg-foreground/45", q: "30" },
               { e: "Entro 90 giorni", n: d.agenda.entro90.length, t: "bg-border-strong", q: "90" },
             ].map((x) => {
               const massimo = Math.max(

@@ -149,8 +149,10 @@ export function Distribuzione({
           </span>
           <span className="col-span-2 flex h-1.5 overflow-hidden rounded-full bg-surface-sunken">
             <span className="bg-scaduta" style={{ width: `${(v.scaduti / massimo) * 100}%` }} aria-hidden />
+            {/* Neutro: questa parte della barra è «il resto», non «la parte in regola», e
+                con l'accento oliva verrebbe letta come il verde dello stato. */}
             <span
-              className="bg-accento/35"
+              className="bg-border-strong"
               style={{ width: `${((v.quanti - v.scaduti) / massimo) * 100}%` }}
               aria-hidden
             />
