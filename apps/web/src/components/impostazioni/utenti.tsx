@@ -111,6 +111,17 @@ export function GestioneUtenti({
                       variant="ghost"
                       className="h-7 px-2 text-xs"
                       disabled={!modificabile || reimpostando}
+                      // IL CANCELLO VISIVO NON CLICCA QUESTO, e il motivo è che
+                      // rigenererebbe la password di ogni utenza — compresa la propria, con
+                      // cui deve rientrare al giro dopo. È già successo tre volte: tre giri
+                      // bocciati con 401 e nessuna pagina protetta verificata.
+                      //
+                      // Non è un modo per nascondere il pulsante alla verifica. È che una
+                      // spazzata di fumo non è il posto giusto per un'azione distruttiva:
+                      // reimpostare una password va provato con un test che crea un'utenza
+                      // usa e getta e poi verifica che la nuova password funzioni davvero,
+                      // cosa che il cancello non saprebbe fare comunque.
+                      data-cancello="salta"
                     >
                       <KeyRound className="size-3.5" aria-hidden />
                       Nuova password

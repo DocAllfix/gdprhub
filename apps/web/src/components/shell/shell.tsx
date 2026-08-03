@@ -3,20 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Building2,
-  CalendarClock,
-  ChevronDown,
-  FileText,
-  LayoutGrid,
-  LogOut,
-  Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Settings,
-  X,
-} from "lucide-react";
-import type { SommarioBarra } from "@/features/shell/dati";
+import { Building2, CalendarClock, FileText, LayoutGrid, LogOut, Menu, Settings, X } from "lucide-react";
 import { signOut } from "@/lib/auth/client";
 import { SelettoreTema } from "@/components/shell/tema";
 import { cn } from "@/lib/utils";
@@ -24,15 +11,29 @@ import { cn } from "@/lib/utils";
 // La shell. Una sola, per tutte le schermate: passando dal portafoglio al 231 cambia il
 // contenuto e l'accento, mai la disposizione. Il consulente impara l'interfaccia una volta.
 //
-// LA BARRA È INCHIOSTRO E IL CONTENUTO È CARTA. È la decisione che cambia la faccia del
-// prodotto più di ogni altra: un pannello scuro accanto a un foglio chiaro legge come uno
-// strumento professionale, due grigi quasi uguali leggono come un abbozzo. È anche ciò che
-// facevano i tre prototipi, che avevano una colonna quasi nera — di quello si prende
-// l'idea, non i gradienti e i bagliori che ci stavano sopra.
+// LA BARRA È UN BINARIO DI ICONE, sempre, e non c'è niente da aprire o chiudere.
 //
-// SI COLLASSA A BINARIO DI ICONE. Chi guarda quaranta clienti su un portatile da tredici
-// pollici vuole quei duecento pixel per la tabella. La scelta resta fra le sessioni: è una
-// preferenza, non uno stato temporaneo.
+// Scelta dal committente confrontando tre costruzioni sulle stesse schermate. La domanda
+// era quanto valgono i pixel della colonna: duecentotrenta su millequattrocento sono il
+// sedici per cento dello schermo, tolti alla tabella per sempre. La risposta del binario è
+// che non li vale, e allora non li prende: sessanta pixel fissi, sole icone, etichetta che
+// esce al passaggio.
+//
+// Il guadagno non è solo lo spazio. Sparisce anche la preferenza da ricordare — prima
+// c'era un cookie `barra-collassata` letto sul server per non far lampeggiare la colonna al
+// primo fotogramma — e con lei un comando in meno da capire, uno stato in meno da salvare
+// e una richiesta in meno per disegnare la pagina.
+//
+// IL COSTO, dichiarato: un binario di sole icone è un indovinello finché non ci si passa
+// sopra, e cinque icone di navigazione documentale si somigliano. Per questo l'etichetta al
+// passaggio non è un vezzo ma la condizione perché la scelta stia in piedi, e per questo il
+// nome esteso resta sempre nell'`aria-label`: chi naviga da tastiera o con un lettore di
+// schermo non ha un passaggio del mouse da fare.
+//
+// LA BARRA È SCURA E IL CONTENUTO È CARTA. Un pannello scuro accanto a un foglio chiaro
+// legge come uno strumento professionale, due grigi quasi uguali leggono come un abbozzo.
+// Lo facevano anche i tre prototipi, che avevano una colonna quasi nera: di quello si
+// prende l'idea, non i gradienti e i bagliori che ci stavano sopra.
 //
 // Gli attributi `data-tour` si scrivono qui, insieme al componente, e non in una passata
 // successiva: un tour che punta a un selettore inventato dopo si rompe al primo refactoring.
@@ -62,30 +63,20 @@ export const MENU: readonly VoceMenu[] = [
   { href: "/impostazioni", etichetta: "Impostazioni", icona: "impostazioni", tour: "impostazioni" },
 ];
 
-const CHIAVE_COLLASSO = "barra-collassata";
-
 export function Shell({
   studio,
   utente,
   ruolo,
-  collassataIniziale,
-  sommario,
   children,
 }: {
   studio: string;
   utente: string;
   ruolo: string;
-  /** Letta dal cookie sul server: senza, la barra lampeggia aperta e poi si chiude. */
-  collassataIniziale: boolean;
-  /** Ciò che rende la colonna un pannello di lavoro invece di un elenco di collegamenti. */
-  sommario: SommarioBarra;
   children: React.ReactNode;
 }) {
   const percorso = usePathname();
   const router = useRouter();
   const [apertaSuMobile, setApertaSuMobile] = useState(false);
-  const [collassata, setCollassata] = useState(collassataIniziale);
-  const [elencoAperto, setElencoAperto] = useState(false);
   const [uscendo, setUscendo] = useState(false);
 
   const esci = async () => {
@@ -95,33 +86,42 @@ export function Shell({
     router.refresh();
   };
 
-  const commutaCollasso = () => {
-    const nuovo = !collassata;
-    setCollassata(nuovo);
-    // Un cookie e non `localStorage`: il server deve saperlo per disegnare la barra già
-    // nella misura giusta. Con `localStorage` il primo fotogramma è sempre quello sbagliato.
-    document.cookie = `${CHIAVE_COLLASSO}=${nuovo ? "1" : "0"}; path=/; max-age=31536000; samesite=lax`;
-  };
-
-  const stretta = collassata && !apertaSuMobile;
-
-  const navigazione = (
+  /** `binario` distingue le due forme: rotaia sul desktop, colonna con le parole sul telefono. */
+  const navigazione = (binario: boolean) => (
     <nav className="flex flex-col gap-0.5" aria-label="Navigazione principale">
       {MENU.map((voce) => {
         const Icona = ICONE[voce.icona];
         const attiva = percorso === voce.href || percorso.startsWith(`${voce.href}/`);
+        const classi = cn(
+          "group relative flex items-center gap-2.5 rounded-md py-2 text-sm transition-colors",
+          binario ? "justify-center px-0" : "px-2.5",
+          voce.futura
+            ? "cursor-not-allowed text-sidebar-muted/60"
+            : attiva
+              ? "bg-sidebar-selected font-medium text-sidebar-foreground"
+              : "text-sidebar-muted hover:bg-sidebar-selected/60 hover:text-sidebar-foreground",
+        );
+
         const contenuto = (
           <>
             <Icona className="size-4 shrink-0" aria-hidden />
-            {stretta ? <span className="sr-only">{voce.etichetta}</span> : voce.etichetta}
-            {!stretta && voce.futura ? (
+            {binario ? null : voce.etichetta}
+            {!binario && voce.futura ? (
               <span className="ml-auto text-[9px] tracking-wide uppercase opacity-70">presto</span>
             ) : null}
+            {/* L'ETICHETTA AL PASSAGGIO, che è la condizione perché il binario funzioni.
+                Senza, cinque icone documentali sono un indovinello. Sta fuori dalla
+                rotaia — `left-full` — quindi nessun antenato deve ritagliarla. */}
+            {binario ? (
+              <span
+                className="pointer-events-none absolute left-full z-50 ml-2 hidden rounded-md bg-sidebar-selected px-2 py-1 text-xs whitespace-nowrap text-sidebar-foreground shadow-md group-hover:block"
+                aria-hidden
+              >
+                {voce.etichetta}
+                {voce.futura ? " · presto" : ""}
+              </span>
+            ) : null}
           </>
-        );
-        const classi = cn(
-          "flex items-center gap-2.5 rounded-md py-1.5 text-sm transition-colors",
-          stretta ? "justify-center px-0" : "px-2.5",
         );
 
         if (voce.futura) {
@@ -130,8 +130,8 @@ export function Shell({
               key={voce.href}
               data-tour={voce.tour}
               aria-disabled="true"
-              title={`${voce.etichetta} · in costruzione`}
-              className={cn(classi, "cursor-not-allowed text-sidebar-muted/60")}
+              aria-label={`${voce.etichetta} · in costruzione`}
+              className={classi}
             >
               {contenuto}
             </span>
@@ -142,15 +142,10 @@ export function Shell({
             key={voce.href}
             href={voce.href}
             data-tour={voce.tour}
-            title={stretta ? voce.etichetta : undefined}
+            aria-label={voce.etichetta}
             aria-current={attiva ? "page" : undefined}
             onClick={() => setApertaSuMobile(false)}
-            className={cn(
-              classi,
-              attiva
-                ? "bg-sidebar-selected font-medium text-sidebar-foreground"
-                : "text-sidebar-muted hover:bg-sidebar-selected/60 hover:text-sidebar-foreground",
-            )}
+            className={classi}
           >
             {contenuto}
           </Link>
@@ -158,6 +153,15 @@ export function Shell({
       })}
     </nav>
   );
+
+  const iniziali = studio.slice(0, 2).toUpperCase();
+  const inizialiUtente =
+    utente
+      .split(/[\s@.]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((p) => p[0]?.toUpperCase() ?? "")
+      .join("") || "?";
 
   return (
     <div className="min-h-dvh bg-background">
@@ -169,200 +173,93 @@ export function Shell({
       </a>
 
       <div className="flex">
-        {/* Chiusa su schermo stretto la barra è `invisible`, non solo spostata fuori campo:
-            `translate-x` da solo la lascia nell'ordine di tabulazione, e chi naviga da
-            tastiera su un telefono attraversa comandi che non vede. */}
+        {/* IL BINARIO, solo da `lg` in su. Sotto, la navigazione entra dal cassetto: una
+            rotaia da sessanta pixel su uno schermo da trecentonovanta è il quindici per
+            cento, e su un telefono quel costo non si giustifica. */}
         <aside
           data-tour="barra-laterale"
+          className="sticky top-0 hidden h-dvh w-15 shrink-0 flex-col items-center gap-4 bg-sidebar px-2 py-3 text-sidebar-foreground lg:flex"
+        >
+          <Link
+            href="/cruscotto"
+            aria-label={studio}
+            title={studio}
+            className="grid size-8 shrink-0 place-items-center rounded-md bg-sidebar-selected text-xs font-semibold"
+          >
+            {iniziali}
+          </Link>
+
+          <div className="w-full">{navigazione(true)}</div>
+
+          <div className="mt-auto flex flex-col items-center gap-2">
+            <SelettoreTema />
+            <span
+              className="grid size-7 place-items-center rounded-full bg-sidebar-selected text-[10px] font-semibold"
+              title={`${utente} · ${ruolo}`}
+            >
+              {inizialiUtente}
+            </span>
+            <button
+              type="button"
+              onClick={esci}
+              disabled={uscendo}
+              data-tour="esci"
+              aria-label="Esci"
+              title="Esci"
+              className="rounded-md p-1.5 text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground disabled:opacity-50"
+            >
+              <LogOut className="size-4" aria-hidden />
+            </button>
+          </div>
+        </aside>
+
+        {/* Il cassetto del telefono. Chiuso è `invisible` e non solo spostato fuori campo:
+            `translate-x` da solo lo lascia nell'ordine di tabulazione, e chi naviga da
+            tastiera attraverserebbe comandi che non vede. */}
+        <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-[transform,width] duration-200 ease-out lg:static lg:visible lg:translate-x-0",
-            stretta ? "w-14 px-2 py-3" : "w-56 px-3 py-4",
+            "fixed inset-y-0 left-0 z-40 flex w-56 shrink-0 flex-col bg-sidebar px-3 py-4 text-sidebar-foreground transition-transform duration-200 ease-out lg:hidden",
             apertaSuMobile ? "translate-x-0" : "invisible -translate-x-full",
           )}
         >
-          <div
-            className={cn("flex items-start gap-2", stretta ? "justify-center" : "justify-between px-1.5")}
-          >
-            {stretta ? (
-              <span
-                className="grid size-8 place-items-center rounded-md bg-sidebar-selected text-xs font-semibold"
-                title={studio}
-              >
-                {studio.slice(0, 2).toUpperCase()}
-              </span>
-            ) : (
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold tracking-tight" title={studio}>
-                  {studio}
-                </p>
-                <p className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</p>
-              </div>
-            )}
+          <div className="flex items-start justify-between gap-2 px-1.5">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold tracking-tight" title={studio}>
+                {studio}
+              </p>
+              <p className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</p>
+            </div>
             <button
               type="button"
               onClick={() => setApertaSuMobile(false)}
-              className="text-sidebar-muted hover:text-sidebar-foreground lg:hidden"
+              className="text-sidebar-muted hover:text-sidebar-foreground"
               aria-label="Chiudi la navigazione"
             >
               <X className="size-4" aria-hidden />
             </button>
           </div>
 
-          {/* IL CAMBIO CLIENTE, in cima e non sepolto in un menù.
-              È il comando più usato del prodotto: un consulente passa da un'azienda
-              all'altra decine di volte al giorno. Ogni voce porta la conformità e le
-              scadute accanto al nome, così la scelta si fa guardando invece che
-              ricordando, e l'elenco è ordinato per urgenza e non alfabeticamente —
-              chi lo apre cerca quasi sempre l'azienda che ha un problema. */}
-          {stretta ? null : (
-            <div className="mt-3">
-              <button
-                type="button"
-                data-tour="cambia-azienda"
-                onClick={() => setElencoAperto((v) => !v)}
-                aria-expanded={elencoAperto}
-                className="flex w-full items-center gap-2 rounded-md border border-sidebar-border px-2 py-1.5 text-left hover:bg-sidebar-selected"
-              >
-                <Building2 className="size-3.5 shrink-0 text-sidebar-muted" aria-hidden />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-medium">
-                    {sommario.quanteAziende === 0
-                      ? "Nessuna azienda"
-                      : `${sommario.quanteAziende} aziende`}
-                  </span>
-                  <span className="block text-[10px] text-sidebar-muted">
-                    {sommario.aziende[0]
-                      ? `${sommario.aziende[0].scadute} scadute su ${sommario.aziende[0].nome}`
-                      : "in carico allo studio"}
-                  </span>
-                </span>
-                <ChevronDown
-                  className={cn(
-                    "size-3.5 shrink-0 text-sidebar-muted transition-transform",
-                    elencoAperto && "rotate-180",
-                  )}
-                  aria-hidden
-                />
-              </button>
-
-              {elencoAperto ? (
-                <ul className="mt-1 space-y-0.5">
-                  {sommario.aziende.map((a) => (
-                    <li key={a.id}>
-                      <Link
-                        href={`/azienda/${a.id}`}
-                        onClick={() => {
-                          setElencoAperto(false);
-                          setApertaSuMobile(false);
-                        }}
-                        className="flex items-baseline gap-2 rounded-md px-2 py-1 text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground"
-                      >
-                        <span className="min-w-0 flex-1 truncate text-[11px]">{a.nome}</span>
-                        {a.scadute > 0 ? (
-                          <span className="shrink-0 font-mono text-[10px] text-scaduta tabular-nums">
-                            {a.scadute}
-                          </span>
-                        ) : null}
-                        <span className="w-8 shrink-0 text-right font-mono text-[10px] tabular-nums">
-                          {a.conformita === null ? "—" : `${a.conformita}%`}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/portafoglio"
-                      onClick={() => setElencoAperto(false)}
-                      className="block rounded-md px-2 py-1 text-[11px] text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground"
-                    >
-                      Vedi tutto il portafoglio →
-                    </Link>
-                  </li>
-                </ul>
-              ) : null}
-            </div>
-          )}
-
-          <div className="mt-4">{navigazione}</div>
-
-          {/* E la seconda cosa che la colonna si guadagna: dice se c'è da correre prima
-              ancora che si apra lo scadenzario. Tre voci, le più urgenti di tutto il
-              portafoglio. */}
-          {stretta || sommario.prossime.length === 0 ? null : (
-            <div className="mt-5 border-t border-sidebar-border pt-3">
-              <p className="px-1.5 text-[10px] tracking-[0.09em] text-sidebar-muted uppercase">
-                Scade adesso
-              </p>
-              <ul className="mt-1.5 space-y-0.5">
-                {sommario.prossime.map((p) => (
-                  <li key={p.istanzaId}>
-                    <Link
-                      href={`/azienda/${p.aziendaId}/${p.dominio}`}
-                      onClick={() => setApertaSuMobile(false)}
-                      className="block rounded-md px-1.5 py-1 hover:bg-sidebar-selected"
-                    >
-                      <span className="flex items-baseline gap-2">
-                        <span className="min-w-0 flex-1 truncate text-[11px]">{p.titolo}</span>
-                        <span
-                          className={cn(
-                            "shrink-0 font-mono text-[10px] tabular-nums",
-                            p.giorni < 0 ? "text-scaduta" : "text-imminente",
-                          )}
-                        >
-                          {p.giorni > 0 ? `+${p.giorni}` : p.giorni}
-                        </span>
-                      </span>
-                      <span className="block truncate text-[10px] text-sidebar-muted">{p.azienda}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div className="mt-5">{navigazione(false)}</div>
 
           <div className="mt-auto space-y-2.5 border-t border-sidebar-border pt-3">
-            {stretta ? null : (
-              <div className="px-1.5">
-                <p className="truncate text-xs font-medium" title={utente}>
-                  {utente}
-                </p>
-                <p className="text-[10px] text-sidebar-muted capitalize">{ruolo}</p>
-              </div>
-            )}
-
-            <div className={cn("flex items-center gap-1.5", stretta ? "flex-col" : "justify-between px-1.5")}>
-              {stretta ? null : <SelettoreTema />}
+            <div className="px-1.5">
+              <p className="truncate text-xs font-medium" title={utente}>
+                {utente}
+              </p>
+              <p className="text-[10px] text-sidebar-muted capitalize">{ruolo}</p>
+            </div>
+            <div className="flex items-center justify-between px-1.5">
+              <SelettoreTema />
               <button
                 type="button"
                 onClick={esci}
                 disabled={uscendo}
-                data-tour="esci"
-                title="Esci"
                 className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground disabled:opacity-50"
               >
                 <LogOut className="size-3.5" aria-hidden />
-                {stretta ? <span className="sr-only">Esci</span> : uscendo ? "Uscita…" : "Esci"}
+                {uscendo ? "Uscita…" : "Esci"}
               </button>
             </div>
-
-            <button
-              type="button"
-              onClick={commutaCollasso}
-              data-tour="collassa"
-              aria-pressed={collassata}
-              title={collassata ? "Espandi la barra" : "Riduci la barra"}
-              className={cn(
-                "hidden w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-sidebar-muted hover:bg-sidebar-selected hover:text-sidebar-foreground lg:flex",
-                stretta && "justify-center px-0",
-              )}
-            >
-              {collassata ? (
-                <PanelLeftOpen className="size-4 shrink-0" aria-hidden />
-              ) : (
-                <PanelLeftClose className="size-4 shrink-0" aria-hidden />
-              )}
-              {stretta ? <span className="sr-only">Espandi la barra</span> : "Riduci"}
-            </button>
           </div>
         </aside>
 

@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
-import { sommarioBarra } from "@/features/shell/dati";
 import { Shell } from "@/components/shell/shell";
 
 // Il layout protetto. Tutte le schermate operative stanno sotto questo gruppo di rotte, e
@@ -25,22 +23,11 @@ export default async function LayoutApplicazione({ children }: { children: React
   // file d'ambiente dell'istanza.
   if (ctx.mustChangePassword) redirect("/primo-accesso");
 
-  // La preferenza sulla barra si legge dal cookie SUL SERVER: con `localStorage` il primo
-  // fotogramma mostrerebbe sempre la barra aperta e poi la vedresti chiudersi.
-  const collassata = (await cookies()).get("barra-collassata")?.value === "1";
-
-  // Il sommario della barra riusa le stesse letture in cache di portafoglio e scadenzario:
-  // non aggiunge query, e su quelle due schermate non costa nulla del tutto.
-  const sommario = await sommarioBarra();
-
+  // La barra è un binario fisso: non c'è più niente da aprire o chiudere, quindi non c'è
+  // più una preferenza da leggere dal cookie né un sommario da caricare. Sono due cose in
+  // meno per disegnare ogni pagina protetta.
   return (
-    <Shell
-      studio={ctx.studioNome}
-      utente={ctx.nome || ctx.email}
-      ruolo={ctx.ruolo}
-      collassataIniziale={collassata}
-      sommario={sommario}
-    >
+    <Shell studio={ctx.studioNome} utente={ctx.nome || ctx.email} ruolo={ctx.ruolo}>
       {children}
     </Shell>
   );

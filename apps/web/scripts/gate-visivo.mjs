@@ -45,6 +45,17 @@ const segnala = (dove, cosa) => difetti.push(`${dove}\n     ${cosa}`);
 const fondiPerTema = new Map();
 
 /** Elementi che l'utente può azionare. I collegamenti si verificano a parte: cliccarli naviga via. */
+// `[data-cancello=salta]` esce dalla spazzata, e ogni esclusione porta il suo perché
+// scritto accanto al componente. L'unica finora: «Nuova password» nelle impostazioni, che
+// rigenera la password di ogni utenza compresa quella con cui il cancello rientra — tre
+// giri bocciati con 401 prima di capirlo.
+//
+// Un'esclusione non è un pulsante che nessuno verifica: è un pulsante che va verificato
+// ALTROVE, con un test che crea un'utenza usa e getta e controlla che la nuova password
+// funzioni davvero. Il cancello non saprebbe farlo comunque.
+//
+// Il conteggio degli esclusi si stampa a ogni giro: un'esclusione che si moltiplica in
+// silenzio diventa il modo per non verificare più niente.
 const SELETTORE_AZIONABILI = [
   "button:not([disabled])",
   "[role=button]:not([aria-disabled=true])",
@@ -53,7 +64,11 @@ const SELETTORE_AZIONABILI = [
   "input[type=radio]:not([disabled])",
   "[role=switch]",
   "[role=tab]",
-].join(", ");
+]
+  .map((s) => `${s}:not([data-cancello=salta])`)
+  .join(", ");
+
+const SELETTORE_ESCLUSI = "[data-cancello=salta]";
 
 // --- Sessione ---------------------------------------------------------------------------
 // Le pagine operative stanno dietro il guard. Il cancello apre la sessione chiamando
@@ -353,7 +368,12 @@ async function verificaPagina(browser, pagina, misura, tema) {
   }
 
   await contesto.close();
-  console.log(`  ok  ${etichetta}  (${quantiAzionabili} azionabili, ${interni.length} collegamenti)`);
+  const esclusi = await tab.locator(SELETTORE_ESCLUSI).count();
+  console.log(
+    `  ok  ${etichetta}  (${quantiAzionabili} azionabili, ${interni.length} collegamenti${
+      esclusi > 0 ? `, ${esclusi} esclusi` : ""
+    })`,
+  );
 }
 
 /**
