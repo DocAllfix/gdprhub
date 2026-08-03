@@ -1,0 +1,119 @@
+# Lo stack di UN cliente: istanza isolata, database isolato, volumi isolati.
+#
+# Si replica per cliente — una cartella, un `.env.prod`, un dominio, i suoi volumi. Non è
+# un SaaS multi-cliente in un contenitore: due studi non condividono niente, nemmeno il
+# processo, e questa è la ragione commerciale per cui il prodotto si vende così.
+#
+#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
+#
+# Si esegue dalla RADICE del repository: il contesto di build deve comprendere `apps/` e
+# `packages/`, e da `deploy/` non li vedrebbe.
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Il confronto fra stringhe decide l'ordine degli elenchi che l'utente legge. Con la
+      # collazione predefinita «Àcme» finisce dopo «Zeta», e un portafoglio ordinato male
+      # è la prima cosa che un consulente nota.
+      LANG: it_IT.utf8
+      POSTGRES_INITDB_ARGS: "--locale=it_IT.utf8 --encoding=UTF8"
+    volumes:
+      - db_dati:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    # IL DATABASE NON ESPONE PORTE. Si raggiunge solo dalla rete interna del compose: una
+    # 5432 aperta su una VPS viene trovata da uno scanner nel giro di ore, e qui dentro ci
+    # sono i dati dei clienti di uno studio legale.
+    restart: unless-stopped
+
+  # Prima installazione: schema, amministratore, catalogo. Gira UNA VOLTA e finisce.
+  #
+  # È un'immagine diversa da quella di servizio perché ha bisogno dei sorgenti e di `tsx`.
+  # `restart: "no"` è esplicito: un servizio che finisce con successo non va riavviato, e
+  # senza questa riga Docker lo rimetterebbe in piedi all'infinito.
+  preparazione:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      target: strumenti
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      AUTH_SECRET: ${AUTH_SECRET}
+      APP_URL: https://${DOMINIO}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_NOME: ${ADMIN_NOME}
+      NOME_STUDIO: ${NOME_STUDIO}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      target: istanza
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      AUTH_SECRET: ${AUTH_SECRET}
+      # L'origine dev'essere quella VERA, non un ripiego: Better Auth respinge le richieste
+      # con «Invalid origin» quando `APP_URL` non coincide con l'indirizzo da cui arrivano.
+      # È il difetto che ha bloccato il committente al primo accesso sulla vetrina.
+      APP_URL: https://${DOMINIO}
+      RICHIEDI_CAMBIO_PASSWORD: ${RICHIEDI_CAMBIO_PASSWORD:-false}
+      ISTANZA_MODO: ${ISTANZA_MODO:-cliente}
+    volumes:
+      # Le evidenze documentali. Un volume, non il filesystem del contenitore: un
+      # aggiornamento dell'immagine non deve portarsi via i documenti di un cliente.
+      - archivio:/dati/archivio
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3000/api/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      db:
+        condition: service_healthy
+      preparazione:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2-alpine
+    environment:
+      DOMINIO: ${DOMINIO}
+      # `interno` mette il certificato locale al posto di Let's Encrypt: serve a provare
+      # l'installazione su una macchina senza DNS pubblico, che è esattamente il caso in
+      # cui si collauda un ripristino da backup.
+      CADDY_TLS: ${CADDY_TLS:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_dati:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  db_dati:
+  archivio:
+  caddy_dati:
+  caddy_config:

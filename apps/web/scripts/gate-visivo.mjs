@@ -596,9 +596,20 @@ async function ripristinaModuli(browser, pagine, quando = "") {
   let riaccesi = 0;
   try {
     await tab.goto(new URL(scheda.percorso, base).toString(), { waitUntil: "networkidle" });
-    // «Attiva» compare solo sui moduli spenti: se non ce ne sono, non c'è nulla da fare.
+
+    // `exact: true`, E NON È PEDANTERIA.
+    //
+    // Qui c'era `button:has-text("Attiva")`, che in Playwright è una corrispondenza per
+    // SOTTOSTRINGA e insensibile alle maiuscole: pesca anche «Disattiva». La funzione che
+    // doveva riaccendere i moduli spenti li spegneva, sei volte per giro, due volte per
+    // corsa — una prima di cominciare e una alla fine. Il commento diceva «"Attiva"
+    // compare solo sui moduli spenti», ed era vero del testo e falso del localizzatore.
+    //
+    // Il costo è stato diciotto difetti in un giro completo: pagine 404 perché il modulo
+    // che dovevano leggere era stato appena spento dal meccanismo che serviva a evitarlo,
+    // e mezz'ora spesa a cercarli nel prodotto. Lo strumento di riparazione era il guasto.
     for (let i = 0; i < 6; i++) {
-      const bottone = tab.locator('button:has-text("Attiva")').first();
+      const bottone = tab.getByRole("button", { name: "Attiva", exact: true }).first();
       if ((await bottone.count()) === 0) break;
       await bottone.click();
       await tab.waitForLoadState("networkidle");

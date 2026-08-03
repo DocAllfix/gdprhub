@@ -1,0 +1,56 @@
+# Il proxy di un'istanza cliente: HTTPS automatico e intestazioni di sicurezza.
+#
+# Un solo dominio per istanza. `{$DOMINIO}` arriva da `.env.prod`; `{$CADDY_TLS}` resta
+# vuoto in produzione — e allora Caddy prende il certificato da Let's Encrypt — mentre vale
+# `internal` quando si collauda l'installazione su una macchina senza DNS pubblico, che è
+# esattamente il caso in cui si prova un ripristino da backup.
+
+{$DOMINIO} {
+	{$CADDY_TLS}
+
+	encode gzip zstd
+
+	reverse_proxy app:3000 {
+		# Next legge questi per costruire gli URL assoluti e per decidere se la richiesta è
+		# arrivata in chiaro. Senza, i reindirizzamenti dopo l'accesso puntano a `http://`
+		# e il browser li rifiuta come contenuto misto.
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+
+	header {
+		# UN'ISTANZA CLIENTE NON DEVE COMPARIRE NEI MOTORI DI RICERCA.
+		#
+		# L'intestazione, non `robots.txt`: un `Disallow` impedisce al bot di LEGGERE la
+		# pagina, quindi di leggere anche il divieto di indicizzarla, e l'indirizzo nudo
+		# resta indicizzabile. Il divieto va detto dove il bot lo può sentire.
+		#
+		# Sulla VETRINA questa riga va tolta: è l'unica differenza fra le due configurazioni,
+		# ed è il motivo per cui sta qui in evidenza e non in fondo a un blocco.
+		X-Robots-Tag "noindex, nofollow"
+
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "same-origin"
+		Cross-Origin-Opener-Policy "same-origin"
+		Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+
+		# Toglie l'annuncio del server: non è sicurezza, è non dare gratis la versione.
+		-Server
+	}
+
+	# I file con impronta nel nome non cambiano mai: si mettono in cache per sempre. Tutto
+	# il resto è reso dal server a ogni richiesta e non si mette in cache DA NESSUNA PARTE —
+	# una pagina di assessment finita in una cache condivisa sarebbe il dato di un cliente
+	# servito a un altro.
+	@statici path /_next/static/* /_next/image*
+	header @statici Cache-Control "public, max-age=31536000, immutable"
+
+	@dinamici not path /_next/static/* /_next/image*
+	header @dinamici Cache-Control "private, no-store"
+
+	# NESSUN REGISTRO DEGLI ACCESSI, come nel riferimento. In un'istanza che tratta dati di
+	# clienti di uno studio legale, un file con indirizzi IP e percorsi visitati è a sua
+	# volta un trattamento da censire: non registrarlo è più semplice che giustificarlo.
+}

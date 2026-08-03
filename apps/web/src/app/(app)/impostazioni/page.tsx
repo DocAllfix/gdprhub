@@ -13,13 +13,21 @@ export const dynamic = "force-dynamic";
 
 export default async function PaginaImpostazioni() {
   const ctx = await requireStudio();
-  const versione = await db.query.catalogVersion.findFirst({ where: eq(catalogVersion.attiva, "si") });
 
-  const membri = await db
-    .select({ id: user.id, nome: user.name, email: user.email, ruolo: member.role })
-    .from(member)
-    .innerJoin(user, eq(user.id, member.userId))
-    .where(eq(member.organizationId, ctx.organizationId));
+  // LE DUE LETTURE NON DIPENDONO L'UNA DALL'ALTRA, e quindi partono insieme.
+  //
+  // Erano in fila, e in fila costano due viaggi a Francoforte invece di uno. Su una pagina
+  // sola non si nota; sotto il carico del cancello — novanta richieste in volo — questa è
+  // l'unica che ha superato i novanta secondi di attesa. Non è la causa di quel caso
+  // isolato, ma è un viaggio che non serviva fare.
+  const [versione, membri] = await Promise.all([
+    db.query.catalogVersion.findFirst({ where: eq(catalogVersion.attiva, "si") }),
+    db
+      .select({ id: user.id, nome: user.name, email: user.email, ruolo: member.role })
+      .from(member)
+      .innerJoin(user, eq(user.id, member.userId))
+      .where(eq(member.organizationId, ctx.organizationId)),
+  ]);
 
   const utenti: RigaUtente[] = membri
     .map((m) => ({ ...m, io: m.id === ctx.userId }))
