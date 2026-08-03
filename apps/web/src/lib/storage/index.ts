@@ -171,10 +171,25 @@ export function archivioIstanza(): Archivio {
   if (archivio) return archivio;
   const suVercel = Boolean(process.env.VERCEL);
   if (suVercel) {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    // DUE MODI DI AUTENTICARSI, ed entrambi vanno accettati.
+    //
+    // Il primo giro pretendeva `BLOB_READ_WRITE_TOKEN` e basta. È sbagliato: collegando uno
+    // store dal pannello, Vercel non crea quella variabile — mette `BLOB_STORE_ID` e la
+    // libreria si autentica con il token OIDC che l'ambiente ha già. Il controllo avrebbe
+    // rifiutato un'istanza configurata correttamente, che è il difetto tipico di una
+    // precondizione scritta su un'assunzione invece che sul comportamento reale.
+    //
+    // Il controllo resta perché la cosa da impedire è un'altra: che su Vercel senza
+    // archivio si ripieghi sul disco. Lì `/tmp` sparisce fra un'invocazione e l'altra, e un
+    // caricamento riuscito con un documento che domani non c'è più è il peggior esito
+    // possibile per un'evidenza.
+    const configurato =
+      Boolean(process.env.BLOB_READ_WRITE_TOKEN) || Boolean(process.env.BLOB_STORE_ID);
+    if (!configurato) {
       throw new Error(
-        "Archivio non configurato: su Vercel serve BLOB_READ_WRITE_TOKEN. " +
-          "Il disco non è scrivibile e un'evidenza salvata in /tmp sparirebbe.",
+        "Archivio non configurato: su Vercel serve uno store Blob collegato al progetto " +
+          "(BLOB_STORE_ID, oppure BLOB_READ_WRITE_TOKEN). Il disco non è scrivibile e " +
+          "un'evidenza salvata in /tmp sparirebbe.",
       );
     }
     archivio = new ArchivioBlob();
