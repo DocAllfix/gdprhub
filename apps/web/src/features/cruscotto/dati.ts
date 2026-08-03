@@ -183,6 +183,45 @@ async function calcolaCruscotto(organizationId: string, aziendaId?: string) {
     fasce: FASCE_RISCHIO,
     priorita: PRIORITA,
     pesi: PESI,
+    /**
+     * IL CARICO DEI PROSSIMI DODICI MESI, impilato per decreto.
+     *
+     * È la domanda che i tre prototipi non sapevano fare e che questo prodotto può
+     * rispondere dal primo giorno. Il loro «trend compliance» guardava indietro e per
+     * farlo inventava — nel 231 con `Math.random()` — perché uno storico non ce
+     * l'avevano. Questo guarda avanti, e non ha bisogno di storico: le scadenze future
+     * si derivano dalle periodicità, che sono nel catalogo.
+     *
+     * Ed è anche più utile della curva che imitava: «come sono andato» è una
+     * constatazione, «quando mi cade addosso il lavoro» è una decisione — se marzo ha
+     * il triplo di febbraio, il consulente sposta il carico adesso.
+     *
+     * Le date del motore sono stringhe ISO e si affettano invece di parsarle: così non
+     * esiste nemmeno la possibilità di un fuso orario di mezzo.
+     */
+    caricoMensile: (() => {
+      const anno = Number(oggi.slice(0, 4));
+      const mese = Number(oggi.slice(5, 7)) - 1;
+      const mesi = Array.from({ length: 12 }, (_, i) => {
+        const assoluto = mese + i;
+        return {
+          chiave: `${anno + Math.floor(assoluto / 12)}-${assoluto % 12}`,
+          mese: assoluto % 12,
+          anno: anno + Math.floor(assoluto / 12),
+          per: Object.fromEntries(DOMINI.map((d) => [d, 0])) as Record<Dominio, number>,
+          totale: 0,
+        };
+      });
+      const indice = new Map(mesi.map((m) => [m.chiave, m]));
+      for (const a of tutti) {
+        if (!a.scadenza) continue;
+        const m = indice.get(`${Number(a.scadenza.slice(0, 4))}-${Number(a.scadenza.slice(5, 7)) - 1}`);
+        if (!m) continue;
+        m.per[a.dominio] += 1;
+        m.totale += 1;
+      }
+      return mesi;
+    })(),
     perCategoria: distribuzione((a) => a.categoria, 10),
     perRuolo: distribuzione((a) => a.ruolo, 8),
     perPeriodicita: distribuzione((a) => descriviPeriodicita(a.periodicita), 8),

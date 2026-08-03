@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, LayoutGrid } from "lucide-react";
-import { ETICHETTE_DOMINIO } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
 import { cruscotto } from "@/features/cruscotto/dati";
 import {
   Anello,
+  CaricoMensile,
+  Ciambella,
   Distribuzione,
   Matrice,
   Nastro,
@@ -104,8 +106,10 @@ export default async function PaginaCruscotto() {
           </div>
         ))}
 
-        {/* Il quadro complessivo, con il peso visivo che merita. */}
-        <div className="rounded-lg border border-border-strong bg-surface p-4 shadow-sm">
+        {/* Il quadro complessivo, con il peso visivo che merita. Nella forma «quieto» il
+            rilievo si fa con la superficie e non con un bordo più marcato: la scheda sale
+            di un gradino invece di alzare la voce con una linea. */}
+        <div className="pannello bg-surface-raised p-5">
           <p className="text-sm font-semibold">Complessivo</p>
           <p className="text-xs text-muted-foreground">sull&apos;insieme unito dei tre decreti</p>
           <div className="mt-3 flex items-center gap-4">
@@ -210,7 +214,43 @@ export default async function PaginaCruscotto() {
         </Riquadro>
       </section>
 
-      {/* --- Terza fascia: dove si perde terreno ---------------------------------------- */}
+      {/* --- Terza fascia: quando cade il lavoro, e di che cosa è fatto -----------------
+          Le due schede rispondono a domande che nessun numero della pagina risponde già.
+          Il carico guarda AVANTI ed è il pezzo che i prototipi non sapevano fare: il loro
+          «trend» guardava indietro e per farlo inventava. La composizione dice in che
+          proporzione stanno i quattro stati, che dai quattro conteggi sparsi si ricava
+          solo facendo le divisioni a mente. */}
+      <section className="mt-3 grid gap-3 lg:grid-cols-3">
+        <div className="pannello p-5 lg:col-span-2">
+          <h2 className="text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+            Carico dei prossimi dodici mesi
+          </h2>
+          <div className="mt-3">
+            <CaricoMensile mesi={d.caricoMensile} domini={DOMINI} etichette={ETICHETTE_DOMINIO} />
+          </div>
+        </div>
+        <Riquadro titolo="Composizione" nota="Di che cosa è fatto il totale, in proporzione.">
+          <Ciambella
+            totale={d.totale}
+            segmenti={[
+              { etichetta: "regolari", quanti: d.complessivo.conteggi.Regolare, colore: "var(--regolare)" },
+              {
+                etichetta: "in scadenza",
+                quanti: d.complessivo.conteggi["In scadenza"],
+                colore: "var(--imminente)",
+              },
+              { etichetta: "scadute", quanti: d.complessivo.conteggi.Scaduta, colore: "var(--scaduta)" },
+              {
+                etichetta: "da programmare",
+                quanti: d.complessivo.conteggi["Da programmare"],
+                colore: "var(--programmare)",
+              },
+            ]}
+          />
+        </Riquadro>
+      </section>
+
+      {/* --- Quarta fascia: dove si perde terreno --------------------------------------- */}
       <section className="mt-3 grid gap-3 lg:grid-cols-3">
         <Riquadro titolo="Per categoria" nota="Ordinate per quante scadenze sono già mancate.">
           <Distribuzione voci={d.perCategoria} />
