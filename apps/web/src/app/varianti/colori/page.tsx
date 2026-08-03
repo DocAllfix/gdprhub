@@ -68,10 +68,7 @@ const SPICCHI = [
 
 function Tessera({ v, scuro, e }: { v: string; scuro?: boolean | undefined; e: string }) {
   return (
-    <div
-      className="flex h-12 items-end rounded-lg border border-border p-1.5"
-      style={{ background: v }}
-    >
+    <div className="flex h-12 items-end rounded-lg border border-border p-1.5" style={{ background: v }}>
       <span
         className="truncate font-mono text-[9px]"
         style={{ color: scuro ? "oklch(0.9 0 0)" : "oklch(0.35 0 0)" }}
@@ -90,8 +87,8 @@ function Mappa() {
       </h2>
       <p className="mt-2 max-w-4xl text-xs leading-relaxed text-muted-foreground">
         Prima di proporne altre tre a caso conviene guardare la mappa, perché lo spazio è meno di quanto
-        sembra. <b className="text-foreground">Sei tinte sono occupate e significano qualcosa</b>: tagliano
-        il cerchio in sei spicchi, e dentro ogni spicchio si può stare solo al centro — ai bordi la colonna
+        sembra. <b className="text-foreground">Sei tinte sono occupate e significano qualcosa</b>: tagliano il
+        cerchio in sei spicchi, e dentro ogni spicchio si può stare solo al centro — ai bordi la colonna
         comincia a somigliare a un segnale.
       </p>
 
@@ -242,8 +239,8 @@ export default function PaginaColori() {
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Questa volta <b className="text-foreground">la forma resta ferma</b>: angoli, spaziatura e righe
           sono quelli di «quieto» in tutte e tre, così l&apos;unica variabile è il colore e non si finisce a
-          scegliere una tinta perché aveva gli angoli più belli. Sotto, la mappa di quanto spazio resta —
-          che è meno di quanto sembra, e vale la pena vederlo prima di scartare anche queste.
+          scegliere una tinta perché aveva gli angoli più belli. Sotto, la mappa di quanto spazio resta — che
+          è meno di quanto sembra, e vale la pena vederlo prima di scartare anche queste.
         </p>
       </header>
 

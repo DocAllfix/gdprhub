@@ -104,8 +104,7 @@ export const REGISTRI: readonly Registro[] = [
     caratteri: ["IBM Plex Sans", "IBM Plex Mono", "Newsreader"],
     perche:
       "Il serif nella cifra lega la schermata al documento che ne esce: è lo stesso carattere della copertina della relazione. Plex ha cifre tabellari che reggono la tabella da sessantaquattro righe senza impastarsi.",
-    contro:
-      "Plex è il carattere di IBM e si riconosce. Chi l'ha già visto altrove non lo legge come tuo.",
+    contro: "Plex è il carattere di IBM e si riconosce. Chi l'ha già visto altrove non lo legge come tuo.",
     vars: {
       "--font-sans": "var(--f-plex-sans)",
       "--font-mono": "var(--f-plex-mono)",

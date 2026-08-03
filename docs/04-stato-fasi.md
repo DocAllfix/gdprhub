@@ -19,7 +19,7 @@ soltanto contro il portatile.
 | **F5b** | `DESIGN.md`, token, shadcn/ui + TanStack Table, `/design`                    | cancello verde in due temi, 21 elementi cliccati per vista                   |
 | **F5c** | Quattro prototipi di documento con font incorporati                          | PDF generati **su Vercel**; nomi dei font letti dentro il file               |
 | **F6**  | Shell, accesso, primo accesso, portafoglio, moduli, impostazioni             | percorso completo con DevTools + cancello sulle pagine protette              |
-| **F5d** | **Rifacimento della forma**: oliva hue 110, Geist, schema «quieto»           | scelto dal committente su anteprime navigabili, non su descrizioni          |
+| **F5d** | **Rifacimento della forma**: oliva hue 110, Geist, schema «quieto»           | scelto dal committente su anteprime navigabili, non su descrizioni           |
 
 ## F5d — come si è arrivati alla forma
 
@@ -34,15 +34,15 @@ significa averne due da riscrivere.
 
 Le anteprime vivono sotto `/varianti` e sono ancora online. La sequenza delle scelte:
 
-| Passo | Alternative mostrate                          | Scelta                     |
-| ----- | --------------------------------------------- | -------------------------- |
-| 1     | Terminale · Schede · Editoriale               | **Schede**                 |
-| 2     | Perizia (Plex+serif) · Console (Geist) · Gazzetta | **Console → Geist**    |
-| 3     | Filetto · Piano · Fascia                      | **Piano**                  |
-| 4     | Quieto · Steso · Inciso                       | **Quieto**                 |
-| 5     | Notte 288 · Carta · Terra 78                  | tutte scartate             |
-| 6     | Grafite · Oliva 110 · Melanzana 307           | **Oliva**                  |
-| 7     | Binario · Contesto · Testata (barra laterale) | **Contesto** _(assunto)_   |
+| Passo | Alternative mostrate                              | Scelta                   |
+| ----- | ------------------------------------------------- | ------------------------ |
+| 1     | Terminale · Schede · Editoriale                   | **Schede**               |
+| 2     | Perizia (Plex+serif) · Console (Geist) · Gazzetta | **Console → Geist**      |
+| 3     | Filetto · Piano · Fascia                          | **Piano**                |
+| 4     | Quieto · Steso · Inciso                           | **Quieto**               |
+| 5     | Notte 288 · Carta · Terra 78                      | tutte scartate           |
+| 6     | Grafite · Oliva 110 · Melanzana 307               | **Oliva**                |
+| 7     | Binario · Contesto · Testata (barra laterale)     | **Contesto** _(assunto)_ |
 
 Il passo 7 è l'unico dedotto e non dichiarato: la risposta è stata «mi piace più oliva
 barra», che corregge il colore rispetto alla mia raccomandazione e non nomina la barra. Ho
@@ -55,20 +55,20 @@ Il ragionamento su ciascuna scelta, con i costi, sta in `DESIGN.md`.
 
 Sono elencati perché ognuno è passato per una build verde.
 
-| Fase | Difetto                                                          | Dove si sarebbe visto                             |
-| ---- | ---------------------------------------------------------------- | ------------------------------------------------- |
-| F0   | Chromium fuori dal bundle serverless                             | primo PDF generato dal cliente                    |
-| F5b  | Tema scuro identico al chiaro, cancello verde                    | subito, ma nessuno guardava                       |
-| F5b  | `light-dark()` distrutto da Lightning CSS: fondo trasparente     | in produzione                                     |
-| F5c  | Pagine riempite al 62% per una calibrazione a occhio             | mai: non è un errore, è sciatteria                |
-| F5c  | Chiave glob `/prototipi/[documento]` che non corrisponde a nulla | 500 in produzione, 200 in locale                  |
-| F6   | `APP_URL` diverso dall'origine reale: 403 «Invalid origin»       | all'accesso del committente sulla vetrina         |
-| F6   | Il modulo «nuova azienda» si azzera se la validazione fallisce   | alla prima partita IVA sbagliata                  |
-| F6   | Un'azienda appena creata si presentava «in regola» in verde      | mai, ed è il problema: era una bugia rassicurante |
-| F5d  | `<title>` dentro un `<svg>`: React 19 lo solleva nella testa e rompe l'idratazione | in produzione, come errore #418 minificato |
-| F5d  | `overflow: hidden` su un antenato annulla `position: sticky`     | la barra spariva scorrendo, e io avevo scritto che restava |
-| F5d  | Il cancello chiedeva `/azienda/<id>/d81/d81`: nove 404           | il difetto era **nel cancello**, causato dal nuovo collegamento in barra |
-| F5d  | Cancello bocciato tre volte per 401, non per il limitatore       | un giro di collaudo aveva cambiato le password in banca dati |
+| Fase | Difetto                                                                            | Dove si sarebbe visto                                                    |
+| ---- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| F0   | Chromium fuori dal bundle serverless                                               | primo PDF generato dal cliente                                           |
+| F5b  | Tema scuro identico al chiaro, cancello verde                                      | subito, ma nessuno guardava                                              |
+| F5b  | `light-dark()` distrutto da Lightning CSS: fondo trasparente                       | in produzione                                                            |
+| F5c  | Pagine riempite al 62% per una calibrazione a occhio                               | mai: non è un errore, è sciatteria                                       |
+| F5c  | Chiave glob `/prototipi/[documento]` che non corrisponde a nulla                   | 500 in produzione, 200 in locale                                         |
+| F6   | `APP_URL` diverso dall'origine reale: 403 «Invalid origin»                         | all'accesso del committente sulla vetrina                                |
+| F6   | Il modulo «nuova azienda» si azzera se la validazione fallisce                     | alla prima partita IVA sbagliata                                         |
+| F6   | Un'azienda appena creata si presentava «in regola» in verde                        | mai, ed è il problema: era una bugia rassicurante                        |
+| F5d  | `<title>` dentro un `<svg>`: React 19 lo solleva nella testa e rompe l'idratazione | in produzione, come errore #418 minificato                               |
+| F5d  | `overflow: hidden` su un antenato annulla `position: sticky`                       | la barra spariva scorrendo, e io avevo scritto che restava               |
+| F5d  | Il cancello chiedeva `/azienda/<id>/d81/d81`: nove 404                             | il difetto era **nel cancello**, causato dal nuovo collegamento in barra |
+| F5d  | Cancello bocciato tre volte per 401, non per il limitatore                         | un giro di collaudo aveva cambiato le password in banca dati             |
 
 ## Dove gira il calcolo
 

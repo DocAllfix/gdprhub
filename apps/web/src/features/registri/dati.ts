@@ -116,9 +116,7 @@ export async function sommarioRegistri(aziendaId: string) {
       dettagli: registro.dettagli,
     })
     .from(registro)
-    .where(
-      and(eq(registro.clientCompanyId, aziendaId), eq(registro.organizationId, ctx.organizationId)),
-    );
+    .where(and(eq(registro.clientCompanyId, aziendaId), eq(registro.organizationId, ctx.organizationId)));
 
   const adesso = new Date();
   const per = new Map<string, { quante: number; daPresidiare: number }>();

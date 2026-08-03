@@ -262,10 +262,6 @@ export function documentoFascicolo(
   };
 }
 
-export function htmlFascicolo(
-  s: Snapshot,
-  chiave: ChiaveOrgano,
-  opzioni: { studio: string },
-): string {
+export function htmlFascicolo(s: Snapshot, chiave: ChiaveOrgano, opzioni: { studio: string }): string {
   return componi(documentoFascicolo(s, chiave, opzioni));
 }

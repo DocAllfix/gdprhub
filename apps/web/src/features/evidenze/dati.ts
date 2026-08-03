@@ -4,7 +4,6 @@ import { evidence, user } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";
 import type { Evidenza } from "./tipi";
 
-
 /**
  * Le evidenze di un adempimento, dalla più recente.
  *
@@ -29,9 +28,7 @@ export async function evidenzeDi(istanzaId: string): Promise<readonly Evidenza[]
     })
     .from(evidence)
     .leftJoin(user, eq(evidence.caricatoDa, user.id))
-    .where(
-      and(eq(evidence.obligationInstanceId, istanzaId), eq(evidence.organizationId, ctx.organizationId)),
-    )
+    .where(and(eq(evidence.obligationInstanceId, istanzaId), eq(evidence.organizationId, ctx.organizationId)))
     .orderBy(desc(evidence.versione));
   return righe;
 }

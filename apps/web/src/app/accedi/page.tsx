@@ -27,7 +27,8 @@ export default async function PaginaAccesso() {
         // occupa meta' schermo, e finora era avorio su avorio: la pagina d'accesso e' la
         // sola che non ha la colonna, quindi era anche la sola dove del marchio non
         // restava traccia. Qui l'oliva fa quello che fa la colonna altrove.
-        className="hidden flex-col justify-between bg-sidebar px-12 py-10 text-sidebar-foreground lg:flex">
+        className="hidden flex-col justify-between bg-sidebar px-12 py-10 text-sidebar-foreground lg:flex"
+      >
         <div className="mx-auto w-full max-w-lg border-t-2 border-b border-sidebar-foreground/70 pt-2 pb-2.5">
           <p className="text-sm font-semibold tracking-widest uppercase">{nome}</p>
         </div>
@@ -54,9 +55,7 @@ export default async function PaginaAccesso() {
                     {ETICHETTE_DOMINIO[d].norma}
                   </span>
                 </dt>
-                <dd className="font-mono text-xs tabular-nums text-sidebar-muted">
-                  {CATALOGHI[d].length}
-                </dd>
+                <dd className="font-mono text-xs tabular-nums text-sidebar-muted">{CATALOGHI[d].length}</dd>
               </div>
             ))}
             <div className="flex items-baseline justify-between gap-4 py-2">

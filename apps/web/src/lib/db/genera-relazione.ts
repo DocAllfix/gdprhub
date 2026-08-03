@@ -14,11 +14,17 @@ mkdirSync(cartella, { recursive: true });
 
 const cfg = await db.query.instanceConfig.findFirst();
 const azienda = await db.query.clientCompany.findFirst({ where: eq(clientCompany.stato, "active") });
-if (!azienda || !cfg) { console.error("nessuna azienda o configurazione"); process.exit(1); }
+if (!azienda || !cfg) {
+  console.error("nessuna azienda o configurazione");
+  process.exit(1);
+}
 
 for (const ambito of ["suite", "d81"] as const) {
   const s = await costruisciSnapshot(cfg.organizationId, azienda.id, ambito);
-  if (!s) { console.log(`${ambito}: nessun dato`); continue; }
+  if (!s) {
+    console.log(`${ambito}: nessun dato`);
+    continue;
+  }
   const impronta = improntaSnapshot(s);
   const html = htmlRelazione(s, { studio: cfg.brandNome ?? "Studio", numero: 1, impronta });
   const pdf = await rendiPdf(html);
@@ -32,7 +38,8 @@ for (const organo of ["ispettorato", "garante"] as const) {
   if (!s2) continue;
   const html = htmlFascicolo(s2, organo, { studio: cfg.brandNome ?? "Studio" });
   const pdf = await rendiPdf(html);
-  const nome = "fascicolo-" + organo + "-" + s2.azienda.nome.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase() + ".pdf";
+  const nome =
+    "fascicolo-" + organo + "-" + s2.azienda.nome.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase() + ".pdf";
   writeFileSync(join(cartella, nome), pdf);
   console.log(nome + " · " + (pdf.length / 1024).toFixed(0) + " KB");
 }

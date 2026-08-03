@@ -38,8 +38,7 @@ import {
 // nulla. Un'evidenza sostituita in silenzio è la cosa che rende una relazione indifendibile.
 
 export type EsitoEvidenza =
-  | { readonly ok: true; readonly nomeFile: string }
-  | { readonly ok: false; readonly errore: string };
+  { readonly ok: true; readonly nomeFile: string } | { readonly ok: false; readonly errore: string };
 
 const ESTENSIONI = TIPI_AMMESSI.map((e) => `.${e}`).join(", ");
 

@@ -99,8 +99,8 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
           Simulatore
         </Link>
         <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
-          Il documento che si consegna. Congela i numeri del giorno in cui è generato: se i dati
-          cambiano non cambia, se ne genera uno nuovo.
+          Il documento che si consegna. Congela i numeri del giorno in cui è generato: se i dati cambiano non
+          cambia, se ne genera uno nuovo.
         </p>
       </div>
 
@@ -119,8 +119,8 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
           <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-sm font-semibold tracking-tight">Registri</h2>
             <p className="max-w-xl text-[11px] leading-relaxed text-muted-foreground">
-              Gli adempimenti si fanno a scadenza; i registri raccolgono fatti che accadono quando
-              accadono. Una violazione dei dati non ha una periodicità: ha 72 ore.
+              Gli adempimenti si fanno a scadenza; i registri raccolgono fatti che accadono quando accadono.
+              Una violazione dei dati non ha una periodicità: ha 72 ore.
             </p>
           </div>
           <IndiceRegistri aziendaId={a.id} attivi={attivi} sommario={registri} />

@@ -43,9 +43,9 @@ export default async function PaginaRelazioni({ params }: { params: Promise<{ id
         </h1>
         <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
           Ogni relazione congela il calcolo del giorno in cui è stata generata. Se i dati cambiano il
-          documento non cambia: se ne genera uno nuovo, e i due restano entrambi con il proprio
-          numero. È così che funziona un protocollo, ed è la ragione per cui la relazione vale
-          qualcosa davanti a un&apos;autorità.
+          documento non cambia: se ne genera uno nuovo, e i due restano entrambi con il proprio numero. È così
+          che funziona un protocollo, ed è la ragione per cui la relazione vale qualcosa davanti a
+          un&apos;autorità.
         </p>
       </header>
 

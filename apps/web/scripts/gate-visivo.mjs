@@ -336,7 +336,10 @@ async function verificaPagina(browser, pagina, misura, tema) {
     // premerlo qui è esattamente ciò che farebbe una persona.
     const velo = tab.locator(".fixed.inset-0[aria-label^='Chiudi']");
     if ((await velo.count()) > 0 && (await velo.first().isVisible())) {
-      await velo.first().click({ timeout: 3_000 }).catch(() => {});
+      await velo
+        .first()
+        .click({ timeout: 3_000 })
+        .catch(() => {});
       await tab.waitForTimeout(150);
     }
 
@@ -483,13 +486,17 @@ async function risolviDinamiche(browser, pagine) {
     // /azienda/<id>/d81/d81 e si prendeva nove 404. Il difetto era nel cancello, non
     // nell'applicazione — ed è esattamente il genere di cosa per cui il cancello esiste,
     // solo vista dall'altra parte.
-    const collegamenti = await tab.locator('a[href^="/azienda/"]').evaluateAll((nodi) =>
-      nodi.map((n) => n.getAttribute("href")),
-    );
+    const collegamenti = await tab
+      .locator('a[href^="/azienda/"]')
+      .evaluateAll((nodi) => nodi.map((n) => n.getAttribute("href")));
     primaAzienda =
       collegamenti.find((h) => h && /^\/azienda\/[^/]+$/.test(h)) ??
       // Ripiego: se esistono solo collegamenti profondi, si tronca al primo segmento.
-      collegamenti.find((h) => h)?.split("/").slice(0, 3).join("/") ??
+      collegamenti
+        .find((h) => h)
+        ?.split("/")
+        .slice(0, 3)
+        .join("/") ??
       null;
   }
   await contesto.close();

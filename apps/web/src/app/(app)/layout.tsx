@@ -32,12 +32,7 @@ export default async function LayoutApplicazione({ children }: { children: React
   const visti = await tourVisti();
 
   return (
-    <Shell
-      studio={ctx.studioNome}
-      utente={ctx.nome || ctx.email}
-      ruolo={ctx.ruolo}
-      tourVisti={visti}
-    >
+    <Shell studio={ctx.studioNome} utente={ctx.nome || ctx.email} ruolo={ctx.ruolo} tourVisti={visti}>
       {children}
     </Shell>
   );

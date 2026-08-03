@@ -359,7 +359,12 @@ export const REGISTRI: readonly DefinizioneRegistro[] = [
         tipo: "scelta",
         opzioni: ["INAIL", "ASL", "Organismo abilitato", "Datore di lavoro"],
       },
-      { chiave: "esitoVerifica", etichetta: "Esito", tipo: "scelta", opzioni: ["Regolare", "Con prescrizioni", "Negativo"] },
+      {
+        chiave: "esitoVerifica",
+        etichetta: "Esito",
+        tipo: "scelta",
+        opzioni: ["Regolare", "Con prescrizioni", "Negativo"],
+      },
       { chiave: "scadenzaVerifica", etichetta: "Prossima verifica entro il", tipo: "data" },
     ],
   },
@@ -445,7 +450,12 @@ export const REGISTRI: readonly DefinizioneRegistro[] = [
         ],
         obbligatorio: true,
       },
-      { chiave: "categorieInteressati", etichetta: "Categorie di interessati", tipo: "testo", obbligatorio: true },
+      {
+        chiave: "categorieInteressati",
+        etichetta: "Categorie di interessati",
+        tipo: "testo",
+        obbligatorio: true,
+      },
       { chiave: "categorieDati", etichetta: "Categorie di dati", tipo: "testo", obbligatorio: true },
       {
         chiave: "conservazione",

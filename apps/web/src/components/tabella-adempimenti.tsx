@@ -116,10 +116,7 @@ export function TabellaAdempimenti({
   const [filtro, setFiltro] = useState("");
   const [ordine, setOrdine] = useState<{ chiave: Chiave; verso: "asc" | "desc" } | null>(null);
 
-  const colonne = useMemo(
-    () => (mostraDominio ? [COLONNA_DOMINIO, ...COLONNE] : COLONNE),
-    [mostraDominio],
-  );
+  const colonne = useMemo(() => (mostraDominio ? [COLONNA_DOMINIO, ...COLONNE] : COLONNE), [mostraDominio]);
 
   const visibili = useMemo(() => {
     const q = filtro.trim().toLowerCase();
@@ -149,11 +146,7 @@ export function TabellaAdempimenti({
 
   const commuta = (chiave: Chiave) =>
     setOrdine((o) =>
-      o?.chiave !== chiave
-        ? { chiave, verso: "asc" }
-        : o.verso === "asc"
-          ? { chiave, verso: "desc" }
-          : null,
+      o?.chiave !== chiave ? { chiave, verso: "asc" } : o.verso === "asc" ? { chiave, verso: "desc" } : null,
     );
 
   return (

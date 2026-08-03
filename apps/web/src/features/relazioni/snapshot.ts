@@ -42,8 +42,17 @@ export type SnapshotModulo = {
   readonly etichetta: { readonly breve: string; readonly esteso: string; readonly norma: string };
   readonly attivo: boolean;
   readonly totale: number;
-  readonly conformitaEffettiva: { readonly percentuale: number | null; readonly numeratore: number; readonly applicabili: number; readonly nonApplicabili: number };
-  readonly conformitaLavoro: { readonly percentuale: number | null; readonly numeratore: number; readonly applicabili: number };
+  readonly conformitaEffettiva: {
+    readonly percentuale: number | null;
+    readonly numeratore: number;
+    readonly applicabili: number;
+    readonly nonApplicabili: number;
+  };
+  readonly conformitaLavoro: {
+    readonly percentuale: number | null;
+    readonly numeratore: number;
+    readonly applicabili: number;
+  };
   readonly scadute: number;
   readonly inScadenza: number;
   readonly regolari: number;
@@ -83,7 +92,12 @@ export type Snapshot = {
   readonly moduli: readonly SnapshotModulo[];
   readonly complessivo: {
     readonly totale: number;
-    readonly conformitaEffettiva: { readonly percentuale: number | null; readonly numeratore: number; readonly applicabili: number; readonly nonApplicabili: number };
+    readonly conformitaEffettiva: {
+      readonly percentuale: number | null;
+      readonly numeratore: number;
+      readonly applicabili: number;
+      readonly nonApplicabili: number;
+    };
     readonly esposizione: { readonly indice: number; readonly giudizio: string } | null;
     readonly scadute: number;
     readonly inScadenza: number;
@@ -94,12 +108,30 @@ export type Snapshot = {
   };
   readonly critiche: readonly VoceCritica[];
   readonly prossimeScadenze: readonly VoceCritica[];
-  readonly esclusioni: readonly { readonly dominio: Dominio; readonly codice: string; readonly titolo: string; readonly motivazione: string }[];
+  readonly esclusioni: readonly {
+    readonly dominio: Dominio;
+    readonly codice: string;
+    readonly titolo: string;
+    readonly motivazione: string;
+  }[];
   /** Distribuzioni per i grafici. Congelate come tutto il resto: il documento non le ricalcola. */
-  readonly perCategoria: readonly { readonly etichetta: string; readonly quanti: number; readonly scaduti: number }[];
-  readonly perRuolo: readonly { readonly etichetta: string; readonly quanti: number; readonly scaduti: number }[];
+  readonly perCategoria: readonly {
+    readonly etichetta: string;
+    readonly quanti: number;
+    readonly scaduti: number;
+  }[];
+  readonly perRuolo: readonly {
+    readonly etichetta: string;
+    readonly quanti: number;
+    readonly scaduti: number;
+  }[];
   /** Dodici mesi di carico futuro, impilati per decreto. */
-  readonly caricoMensile: readonly { readonly mese: number; readonly anno: number; readonly per: Readonly<Record<string, number>>; readonly totale: number }[];
+  readonly caricoMensile: readonly {
+    readonly mese: number;
+    readonly anno: number;
+    readonly per: Readonly<Record<string, number>>;
+    readonly totale: number;
+  }[];
   /** Da dove vengono i numeri: si dichiara, non si fa dedurre. */
   readonly metodo: readonly string[];
 };
@@ -125,7 +157,12 @@ function serializzaStabile(valore: unknown): string {
     .join(",")}}`;
 }
 
-const quota = (q: { percentuale: number | null; numeratore: number; applicabili: number; nonApplicabili?: number }) => ({
+const quota = (q: {
+  percentuale: number | null;
+  numeratore: number;
+  applicabili: number;
+  nonApplicabili?: number;
+}) => ({
   percentuale: q.percentuale,
   numeratore: q.numeratore,
   applicabili: q.applicabili,
@@ -219,9 +256,7 @@ export async function costruisciSnapshot(
       daProgrammare: c?.["Da programmare"] ?? 0,
       criticiAperti: suoi.length > 0 ? criticiAperti(suoi).length : 0,
       esposizione:
-        suoi.length > 0
-          ? { indice: esposizione(suoi).indice, giudizio: esposizione(suoi).giudizio }
-          : null,
+        suoi.length > 0 ? { indice: esposizione(suoi).indice, giudizio: esposizione(suoi).giudizio } : null,
       conEvidenza: indici.filter((i) => conEvidenzaPerIndice[i]).length,
     };
   });
@@ -269,9 +304,7 @@ export async function costruisciSnapshot(
       completatiEScaduti: g.Completata?.Scaduta ?? 0,
       conEvidenza: conEvidenzaPerIndice.filter(Boolean).length,
     },
-    critiche: critici
-      .slice(0, 40)
-      .map((a) => voce(a, indiceDi.get(`${a.dominio}${a.codice}`) ?? -1)),
+    critiche: critici.slice(0, 40).map((a) => voce(a, indiceDi.get(`${a.dominio}${a.codice}`) ?? -1)),
     prossimeScadenze: agenda(tutti)
       .slice(0, 30)
       .map((v) => {

@@ -62,9 +62,7 @@ export function Guscio({ children }: { children: React.ReactNode }) {
           ) : (
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold tracking-tight">Studio Bianchi</p>
-              <p className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">
-                Suite Compliance
-              </p>
+              <p className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</p>
             </div>
           )}
         </div>

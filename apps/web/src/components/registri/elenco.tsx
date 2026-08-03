@@ -3,12 +3,7 @@
 import { useActionState, useState } from "react";
 import { AlertTriangle, Check, ChevronDown, Clock, Plus } from "lucide-react";
 import { formattaIt, type DefinizioneRegistro } from "@gdpr/engine";
-import {
-  apriVoce,
-  assolviVoce,
-  cambiaStatoVoce,
-  type EsitoRegistro,
-} from "@/features/registri/azioni";
+import { apriVoce, assolviVoce, cambiaStatoVoce, type EsitoRegistro } from "@/features/registri/azioni";
 import type { VoceRegistro } from "@/features/registri/dati";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,10 +55,7 @@ export function ElencoRegistro({
     assolviVoce,
     null,
   );
-  const [statoEsito, azioneStato] = useActionState<EsitoRegistro | null, FormData>(
-    cambiaStatoVoce,
-    null,
-  );
+  const [statoEsito, azioneStato] = useActionState<EsitoRegistro | null, FormData>(cambiaStatoVoce, null);
 
   const errore =
     (nuova && !nuova.ok && nuova.errore) ||
@@ -125,7 +117,12 @@ export function ElencoRegistro({
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block">
                 <span className="text-xs font-medium">Oggetto</span>
-                <Input name="titolo" required className="mt-1" placeholder="In due parole, di cosa si tratta" />
+                <Input
+                  name="titolo"
+                  required
+                  className="mt-1"
+                  placeholder="In due parole, di cosa si tratta"
+                />
               </label>
               <label className="block">
                 <span className="text-xs font-medium">{def.etichettaData}</span>
@@ -138,8 +135,8 @@ export function ElencoRegistro({
                 <Input name="conosciutoIl" type="datetime-local" required className="mt-1" />
                 {def.termine.tipo === "ore" ? (
                   <span className="mt-1 block text-[10px] leading-relaxed text-faint-foreground">
-                    Il termine decorre da QUI, non dal momento in cui il fatto è avvenuto: l&apos;art. 33
-                    dice «da quando ne viene a conoscenza».
+                    Il termine decorre da QUI, non dal momento in cui il fatto è avvenuto: l&apos;art. 33 dice
+                    «da quando ne viene a conoscenza».
                   </span>
                 ) : null}
               </label>
@@ -230,8 +227,8 @@ export function ElencoRegistro({
           <Clock className="mx-auto size-6 text-faint-foreground" aria-hidden />
           <h2 className="mt-3 text-sm font-semibold">Registro vuoto</h2>
           <p className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">
-            Un registro vuoto non è un registro in ordine: è un registro che nessuno ha ancora
-            compilato. {def.scopo}
+            Un registro vuoto non è un registro in ordine: è un registro che nessuno ha ancora compilato.{" "}
+            {def.scopo}
           </p>
         </div>
       ) : (
@@ -276,9 +273,7 @@ export function ElencoRegistro({
 
               {aperta === v.id ? (
                 <div className="mt-3 space-y-3 border-t border-border-subtle pt-3">
-                  {v.descrizione ? (
-                    <p className="text-sm leading-relaxed">{v.descrizione}</p>
-                  ) : null}
+                  {v.descrizione ? <p className="text-sm leading-relaxed">{v.descrizione}</p> : null}
 
                   <dl className="grid gap-x-6 gap-y-1.5 text-[11px] sm:grid-cols-2">
                     {def.campi.map((c) => {
@@ -297,8 +292,7 @@ export function ElencoRegistro({
 
                   {v.assoltoIl ? (
                     <p className="rounded-lg bg-surface-sunken p-3 text-[11px] leading-relaxed">
-                      <b>{def.termine.obbligo}</b> ·{" "}
-                      {formattaIt(v.assoltoIl.toISOString().slice(0, 10))}
+                      <b>{def.termine.obbligo}</b> · {formattaIt(v.assoltoIl.toISOString().slice(0, 10))}
                       <span className="mt-1 block text-muted-foreground">{v.esito}</span>
                     </p>
                   ) : modificabile ? (
@@ -314,8 +308,8 @@ export function ElencoRegistro({
                           className="mt-1 w-full rounded-md border border-border bg-surface px-2.5 py-2 text-sm"
                         />
                         <span className="mt-1 block text-[10px] text-faint-foreground">
-                          Una spunta senza descrizione non è dimostrabile: in sede di verifica vale
-                          quanto una casella vuota.
+                          Una spunta senza descrizione non è dimostrabile: in sede di verifica vale quanto una
+                          casella vuota.
                         </span>
                       </label>
                       <Button type="submit" size="sm" disabled={chiudendo} className="h-8 text-xs">

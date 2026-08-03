@@ -22,8 +22,18 @@ import { cn } from "@/lib/utils";
 // tasto. Senza, digitare «ferrarini» manderebbe nove richieste, otto delle quali per
 // risultati che nessuno leggerà. Con un ritardo più lungo la palette sembra lenta.
 
-const ICONA = { azienda: Building2, adempimento: FileText, registro: BookMarked, schermata: LayoutGrid } as const;
-const ETICHETTA_TIPO = { azienda: "Azienda", adempimento: "Adempimento", registro: "Registro", schermata: "Vai a" } as const;
+const ICONA = {
+  azienda: Building2,
+  adempimento: FileText,
+  registro: BookMarked,
+  schermata: LayoutGrid,
+} as const;
+const ETICHETTA_TIPO = {
+  azienda: "Azienda",
+  adempimento: "Adempimento",
+  registro: "Registro",
+  schermata: "Vai a",
+} as const;
 
 export function Palette() {
   const router = useRouter();

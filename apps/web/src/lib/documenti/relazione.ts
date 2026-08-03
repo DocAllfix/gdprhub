@@ -17,19 +17,7 @@ const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ot
 // risultano scaduti, di cui dodici su presidi che il registro dà per chiusi» è una frase
 // che dice qualcosa. Dove il dato cambia il significato, cambia anche la frase.
 
-const NUMERI = [
-  "nessun",
-  "un",
-  "due",
-  "tre",
-  "quattro",
-  "cinque",
-  "sei",
-  "sette",
-  "otto",
-  "nove",
-  "dieci",
-];
+const NUMERI = ["nessun", "un", "due", "tre", "quattro", "cinque", "sei", "sette", "otto", "nove", "dieci"];
 /** Sotto dieci si scrive in lettere: è come si scrive un atto, non un cruscotto. */
 const inLettere = (n: number) => (n <= 10 ? (NUMERI[n] ?? String(n)) : String(n));
 
@@ -476,7 +464,11 @@ export function documentoRelazione(
   opzioni: { studio: string; numero: number; impronta: string },
 ): Documento {
   const pagine: Pagina[] = [
-    { corpo: copertina(s, opzioni.studio, opzioni.numero, opzioni.impronta), nuda: true, classe: "copertina" },
+    {
+      corpo: copertina(s, opzioni.studio, opzioni.numero, opzioni.impronta),
+      nuda: true,
+      classe: "copertina",
+    },
     { corpo: oggettoEMetodo(s) },
     { corpo: quadro(s) },
     { corpo: composizione(s) },

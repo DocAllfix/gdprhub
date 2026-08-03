@@ -200,8 +200,7 @@ export const TOUR: readonly Tour[] = [
   },
 ];
 
-export const tourPerChiave = (chiave: string): Tour | undefined =>
-  TOUR.find((t) => t.chiave === chiave);
+export const tourPerChiave = (chiave: string): Tour | undefined => TOUR.find((t) => t.chiave === chiave);
 
 /** Tutti gli ancoraggi usati, per il test che verifica che esistano davvero. */
 export const ANCORE_USATE: readonly string[] = [

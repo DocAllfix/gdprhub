@@ -67,8 +67,5 @@ export const report = pgTable(
     generataIl: timestamp("generata_il", { withTimezone: true }).defaultNow().notNull(),
     pubblicataIl: timestamp("pubblicata_il", { withTimezone: true }),
   },
-  (t) => [
-    index("report_org_idx").on(t.organizationId),
-    index("report_azienda_idx").on(t.clientCompanyId),
-  ],
+  (t) => [index("report_org_idx").on(t.organizationId), index("report_azienda_idx").on(t.clientCompanyId)],
 );

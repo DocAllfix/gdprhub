@@ -200,13 +200,7 @@ function Binario({ children }: { children: React.ReactNode }) {
 // B · CONTESTO — la colonna si guadagna i pixel
 // ============================================================================================
 
-function Contesto({
-  children,
-  prossime,
-}: {
-  children: React.ReactNode;
-  prossime: readonly Scadenza[];
-}) {
+function Contesto({ children, prossime }: { children: React.ReactNode; prossime: readonly Scadenza[] }) {
   const [attiva, setAttiva] = useState("Cruscotto");
   const [stretta, setStretta] = useState(false);
 
@@ -253,9 +247,7 @@ function Contesto({
         {/* E il secondo pezzo: la colonna porta lavoro, non solo collegamenti. */}
         {stretta ? null : (
           <div className="mt-5 border-t border-sidebar-border pt-3">
-            <p className="px-1.5 text-[10px] tracking-[0.09em] text-sidebar-muted uppercase">
-              Scade adesso
-            </p>
+            <p className="px-1.5 text-[10px] tracking-[0.09em] text-sidebar-muted uppercase">Scade adesso</p>
             <ul className="mt-1.5 space-y-0.5">
               {prossime.slice(0, 3).map((s) => (
                 <li key={s.titolo}>
@@ -323,9 +315,7 @@ function Testata({ children }: { children: React.ReactNode }) {
           SB
         </span>
         <span className="text-sm font-semibold tracking-tight">Studio Bianchi</span>
-        <span className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">
-          Suite Compliance
-        </span>
+        <span className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</span>
         <span className="mx-auto flex h-7 w-80 items-center gap-2 rounded-lg border border-sidebar-border px-2.5 text-xs text-sidebar-muted">
           <Search className="size-3.5" aria-hidden />
           Cerca aziende, adempimenti, scadenze

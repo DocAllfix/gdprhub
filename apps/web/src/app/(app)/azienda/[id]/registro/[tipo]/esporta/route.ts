@@ -61,8 +61,7 @@ export async function GET(
     v.termine.descrizione,
   ]);
 
-  const corpo =
-    CSV_BOM + [intestazioni, ...righe].map((r) => r.map(cella).join(";")).join("\r\n") + "\r\n";
+  const corpo = CSV_BOM + [intestazioni, ...righe].map((r) => r.map(cella).join(";")).join("\r\n") + "\r\n";
 
   const nome = `${azienda.nome} - ${def.nome} - ${new Date().toISOString().slice(0, 10)}.csv`.replaceAll(
     /[^\p{L}\p{N} .\-]/gu,

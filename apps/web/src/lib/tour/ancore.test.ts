@@ -48,10 +48,9 @@ describe("gli ancoraggi del tour", () => {
 
   it("ogni passo di ogni tour punta a un `data-tour` che esiste nel prodotto", () => {
     const mancanti = ANCORE_USATE.filter((a) => !ANCORE_NEL_CODICE.has(a));
-    expect(
-      mancanti,
-      `ancoraggi citati dal tour ma non presenti nel codice: ${mancanti.join(", ")}`,
-    ).toEqual([]);
+    expect(mancanti, `ancoraggi citati dal tour ma non presenti nel codice: ${mancanti.join(", ")}`).toEqual(
+      [],
+    );
   });
 
   it("nessun tour è vuoto e nessuna chiave è ripetuta", () => {

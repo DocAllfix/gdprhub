@@ -133,12 +133,12 @@ export default function PaginaPiano() {
         </p>
         <h1 className="titolo mt-2 text-3xl">Se non c&apos;è la linea, cosa tiene insieme le righe?</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Piano è deciso, e la faccia è giusta. Resta un nodo solo, ed è quello che ti ho dichiarato
-          quando l&apos;ho proposto: la calma si paga in righe visibili. Tre risposte, tre compromessi
-          diversi fra la calma e la densità, misurabili in righe che stanno nello schermo. La barra
-          laterale è dentro l&apos;anteprima e{" "}
-          <b className="text-foreground">si collassa davvero: cliccala in fondo alla colonna</b> e guarda
-          come cambia la proporzione. Tutto su entrambi i temi, con numeri propri per ciascuno.
+          Piano è deciso, e la faccia è giusta. Resta un nodo solo, ed è quello che ti ho dichiarato quando
+          l&apos;ho proposto: la calma si paga in righe visibili. Tre risposte, tre compromessi diversi fra la
+          calma e la densità, misurabili in righe che stanno nello schermo. La barra laterale è dentro
+          l&apos;anteprima e{" "}
+          <b className="text-foreground">si collassa davvero: cliccala in fondo alla colonna</b> e guarda come
+          cambia la proporzione. Tutto su entrambi i temi, con numeri propri per ciascuno.
         </p>
       </header>
 
@@ -148,8 +148,8 @@ export default function PaginaPiano() {
         </h2>
         <p className="mt-2 max-w-4xl text-xs leading-relaxed text-muted-foreground">
           I prototipi ne avevano quattro e tre erano giusti. Li ho rifatti tutti a mano in SVG, senza
-          librerie: il prototipo 231 si portava dietro 641 KB di Recharts per quattro grafici, ed è una
-          delle ragioni per cui era lento. La regola è una e non ammette eccezioni:{" "}
+          librerie: il prototipo 231 si portava dietro 641 KB di Recharts per quattro grafici, ed è una delle
+          ragioni per cui era lento. La regola è una e non ammette eccezioni:{" "}
           <b className="text-foreground">
             ogni grafico risponde a una domanda che i numeri accanto non rispondono già
           </b>
@@ -181,15 +181,16 @@ export default function PaginaPiano() {
           ))}
         </ul>
         <p className="mt-3 max-w-4xl rounded-lg bg-surface-sunken p-3 text-xs leading-relaxed text-muted-foreground">
-          <b className="text-foreground">Il quarto grafico dei prototipi non l&apos;ho rifatto, e ti dico
-          perché.</b>{" "}
+          <b className="text-foreground">
+            Il quarto grafico dei prototipi non l&apos;ho rifatto, e ti dico perché.
+          </b>{" "}
           Il «trend compliance» a sei mesi era generato da{" "}
-          <code className="font-mono text-[11px] text-faint-foreground">62 + i*5 + random()*3</code>: la
-          curva saliva sempre perché era scritto che salisse. Un numero inventato dentro una relazione che
-          un ispettore può leggere non è un difetto estetico. Il trend vero si disegna dallo storico
-          append-only, e finché non c&apos;è storico la scheda dice che non c&apos;è. Al suo posto ho messo
-          la domanda che si può rispondere dal primo giorno, ed è anche la più utile delle due: non «come
-          sono andato», ma «quando arriva il lavoro».
+          <code className="font-mono text-[11px] text-faint-foreground">62 + i*5 + random()*3</code>: la curva
+          saliva sempre perché era scritto che salisse. Un numero inventato dentro una relazione che un
+          ispettore può leggere non è un difetto estetico. Il trend vero si disegna dallo storico append-only,
+          e finché non c&apos;è storico la scheda dice che non c&apos;è. Al suo posto ho messo la domanda che
+          si può rispondere dal primo giorno, ed è anche la più utile delle due: non «come sono andato», ma
+          «quando arriva il lavoro».
         </p>
       </section>
 
@@ -202,8 +203,8 @@ export default function PaginaPiano() {
       </div>
 
       <footer className="mt-16 border-t border-border pt-5 text-xs leading-relaxed text-muted-foreground">
-        Dimmi quale dei tre, in quale tema, e se la barra ti convince aperta o ridotta come stato normale.
-        Poi lo porto sul prodotto vero: schermate reali, dati dal database, e i grafici dentro il cruscotto.
+        Dimmi quale dei tre, in quale tema, e se la barra ti convince aperta o ridotta come stato normale. Poi
+        lo porto sul prodotto vero: schermate reali, dati dal database, e i grafici dentro il cruscotto.
       </footer>
     </main>
   );

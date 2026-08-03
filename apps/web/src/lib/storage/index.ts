@@ -89,7 +89,11 @@ export function improntaSha256(dati: Buffer): string {
  * dove è un dato come gli altri.
  */
 export function chiaveEvidenza(organizationId: string, evidenzaId: string, estensione: string): string {
-  const pulita = estensione.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 8) || "bin";
+  const pulita =
+    estensione
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")
+      .slice(0, 8) || "bin";
   return `evidenze/${organizationId}/${evidenzaId}.${pulita}`;
 }
 
@@ -199,8 +203,7 @@ export function archivioIstanza(): Archivio {
     // archivio si ripieghi sul disco. Lì `/tmp` sparisce fra un'invocazione e l'altra, e un
     // caricamento riuscito con un documento che domani non c'è più è il peggior esito
     // possibile per un'evidenza.
-    const configurato =
-      Boolean(process.env.BLOB_READ_WRITE_TOKEN) || Boolean(process.env.BLOB_STORE_ID);
+    const configurato = Boolean(process.env.BLOB_READ_WRITE_TOKEN) || Boolean(process.env.BLOB_STORE_ID);
     if (!configurato) {
       throw new Error(
         "Archivio non configurato: su Vercel serve uno store Blob collegato al progetto " +

@@ -114,16 +114,16 @@ export default function PaginaBarra() {
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
               Non per gusto, per un motivo che si può difendere. In questo prodotto{" "}
               <b className="text-foreground">il verde è già occupato</b>: dice «regolare», e lo dice in ogni
-              riga di ogni tabella. Oliva è bellissima e ha quarantatré gradi di margine, ma mette un
-              secondo verde in una pagina dove il primo verde è un segnale — e quella vicinanza non è un
-              controllo da fare una volta, è una convivenza permanente, ovunque.
+              riga di ogni tabella. Oliva è bellissima e ha quarantatré gradi di margine, ma mette un secondo
+              verde in una pagina dove il primo verde è un segnale — e quella vicinanza non è un controllo da
+              fare una volta, è una convivenza permanente, ovunque.
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              Melanzana confina con la prugna del 231, ma quella è una vicinanza di un tipo diverso: due
-              cose distanti trentacinque gradi, con un terzo della croma, di dimensioni e luminosità
-              opposte — una lastra scura larga duecento pixel contro una pastiglia di testo. È un
-              controllo da fare una volta, e poi è fatto. E hue 307 non significa niente nel sistema,
-              mentre 110 flirta con qualcosa che significa.
+              Melanzana confina con la prugna del 231, ma quella è una vicinanza di un tipo diverso: due cose
+              distanti trentacinque gradi, con un terzo della croma, di dimensioni e luminosità opposte — una
+              lastra scura larga duecento pixel contro una pastiglia di testo. È un controllo da fare una
+              volta, e poi è fatto. E hue 307 non significa niente nel sistema, mentre 110 flirta con qualcosa
+              che significa.
             </p>
           </div>
           <div>
@@ -131,18 +131,17 @@ export default function PaginaBarra() {
               Sulla barra: <b className="titolo">contesto</b>, con una riserva.
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              È l&apos;unica delle tre che <b className="text-foreground">risponde alla domanda</b> invece
-              di aggirarla. Binario e testata riducono il costo della colonna; contesto le fa fruttare i
-              pixel. Il cambio cliente è il comando che un consulente usa più di ogni altro — venti volte
-              al giorno — e in questi strumenti sta quasi sempre in un menù sepolto: è l&apos;errore più
-              comune del settore, e qui si può non farlo.
+              È l&apos;unica delle tre che <b className="text-foreground">risponde alla domanda</b> invece di
+              aggirarla. Binario e testata riducono il costo della colonna; contesto le fa fruttare i pixel.
+              Il cambio cliente è il comando che un consulente usa più di ogni altro — venti volte al giorno —
+              e in questi strumenti sta quasi sempre in un menù sepolto: è l&apos;errore più comune del
+              settore, e qui si può non farlo.
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
               La riserva: la ricerca globale di «testata» è un pezzo troppo buono per perderlo, e non
-              c&apos;entra niente con il resto.{" "}
-              <b className="text-foreground">Le due si possono sommare</b> — colonna di contesto più la
-              ricerca in una testata sottile sopra il contenuto — e quella, se me lo chiedi, è la
-              disposizione che porterei sul prodotto vero.
+              c&apos;entra niente con il resto. <b className="text-foreground">Le due si possono sommare</b> —
+              colonna di contesto più la ricerca in una testata sottile sopra il contenuto — e quella, se me
+              lo chiedi, è la disposizione che porterei sul prodotto vero.
             </p>
           </div>
         </div>

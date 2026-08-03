@@ -33,15 +33,12 @@ export default async function PaginaSimulatore({ params }: { params: Promise<{ i
       </Link>
 
       <header className="mt-3">
-        <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-          Simulatore
-        </p>
+        <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Simulatore</p>
         <h1 className="titolo mt-1.5 text-[1.7rem]">Da dove conviene cominciare</h1>
         <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
-          «Ci sono trentanove adempimenti scaduti» è una constatazione, e chi la ascolta la sapeva
-          già. «Con questi cinque interventi l&apos;esposizione scende da {partenza.esposizione} a
-          quarantotto» è una frase su cui si decide un budget. Questa schermata serve a costruire
-          la seconda.
+          «Ci sono trentanove adempimenti scaduti» è una constatazione, e chi la ascolta la sapeva già. «Con
+          questi cinque interventi l&apos;esposizione scende da {partenza.esposizione} a quarantotto» è una
+          frase su cui si decide un budget. Questa schermata serve a costruire la seconda.
         </p>
       </header>
 

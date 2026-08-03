@@ -56,9 +56,7 @@ export function datiVarianti() {
     readonly AdempimentoRisolto[]
   >;
   const tutti = DOMINI.flatMap((d) => perDominio[d]);
-  const tuttoIlPortafoglio = AZIENDE.flatMap((_, i) =>
-    DOMINI.flatMap((d) => variato(perDominio[d], i * 3)),
-  );
+  const tuttoIlPortafoglio = AZIENDE.flatMap((_, i) => DOMINI.flatMap((d) => variato(perDominio[d], i * 3)));
 
   const righe = AZIENDE.map((az, i) => {
     const suoi = DOMINI.map((d) => ({ dominio: d, adempimenti: variato(perDominio[d], i * 3) }));

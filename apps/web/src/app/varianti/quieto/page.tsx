@@ -50,10 +50,7 @@ const RISERVATI = [
 function Tessera({ v, scuro, e }: { v: string; scuro?: boolean | undefined; e: string }) {
   return (
     <div className="min-w-0">
-      <div
-        className="flex h-12 items-end rounded-lg border border-border p-1.5"
-        style={{ background: v }}
-      >
+      <div className="flex h-12 items-end rounded-lg border border-border p-1.5" style={{ background: v }}>
         <span
           className="truncate font-mono text-[9px]"
           style={{ color: scuro ? "oklch(0.9 0 0)" : "oklch(0.35 0 0)" }}
@@ -74,9 +71,9 @@ function Tavolozza() {
       <p className="mt-2 max-w-4xl text-xs leading-relaxed text-muted-foreground">
         Quello che vedi nella colonna è <code className="font-mono">oklch(0.245 0.021 262)</code>: hue 262,
         blu-navy. Sta in due posti, non uno — la barra sul tema chiaro e{" "}
-        <b className="text-foreground">ogni pulsante pieno</b> («Salva», «Aprilo», «Nuova azienda»,
-        «Accedi»). Cambiarlo solo nella barra darebbe una pagina con due inchiostri diversi, quindi qui si
-        cambia in tutti e due.
+        <b className="text-foreground">ogni pulsante pieno</b> («Salva», «Aprilo», «Nuova azienda», «Accedi»).
+        Cambiarlo solo nella barra darebbe una pagina con due inchiostri diversi, quindi qui si cambia in
+        tutti e due.
       </p>
       <p className="mt-2 max-w-4xl text-xs leading-relaxed text-muted-foreground">
         <b className="text-foreground">Hai ragione anche sul perché.</b> Il navy scuro è il riflesso numero
@@ -109,9 +106,9 @@ function Tavolozza() {
 
       <div className="mt-4 border-t border-border pt-3">
         <p className="text-[11px] leading-relaxed text-muted-foreground">
-          <b className="text-foreground">Il vincolo che nessuna delle tre può rompere.</b> Sei colori sono
-          già impegnati e significano qualcosa. Un settimo che compete con loro rompe il sistema: in una
-          tabella dove il rosso deve dire «scaduta» non ci si può permettere un rosso che dice «premi qui».
+          <b className="text-foreground">Il vincolo che nessuna delle tre può rompere.</b> Sei colori sono già
+          impegnati e significano qualcosa. Un settimo che compete con loro rompe il sistema: in una tabella
+          dove il rosso deve dire «scaduta» non ci si può permettere un rosso che dice «premi qui».
         </p>
         <div className="mt-2.5 flex flex-wrap gap-x-5 gap-y-2">
           {RISERVATI.map((r) => (
@@ -221,9 +218,9 @@ export default function PaginaQuieto() {
         <h1 className="titolo mt-2 text-3xl">Tre risposte a un blu che non convince</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Tre quieto interi, non tre ritocchi. Ognuno risolve il colore in un modo diverso e sposta{" "}
-          <b className="text-foreground">tutta la famiglia dei neutri</b> insieme a lui: se si cambia la
-          tinta della colonna e si lasciano i grigi dov&apos;erano, la colonna sembra incollata sopra una
-          pagina di qualcun altro. La barra si collassa anche qui, in fondo alla colonna.
+          <b className="text-foreground">tutta la famiglia dei neutri</b> insieme a lui: se si cambia la tinta
+          della colonna e si lasciano i grigi dov&apos;erano, la colonna sembra incollata sopra una pagina di
+          qualcun altro. La barra si collassa anche qui, in fondo alla colonna.
         </p>
       </header>
 
@@ -239,8 +236,8 @@ export default function PaginaQuieto() {
 
       <footer className="mt-16 border-t border-border pt-5 text-xs leading-relaxed text-muted-foreground">
         Guardale soprattutto sul chiaro: è lì che l&apos;inchiostro si vede, e sullo scuro le tre si
-        somigliano di più. Se nessuna convince del tutto, si possono anche incrociare — la tinta di una e
-        gli angoli di un&apos;altra sono due righe.
+        somigliano di più. Se nessuna convince del tutto, si possono anche incrociare — la tinta di una e gli
+        angoli di un&apos;altra sono due righe.
       </footer>
     </main>
   );

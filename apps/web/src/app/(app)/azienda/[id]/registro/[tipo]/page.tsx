@@ -8,11 +8,7 @@ import { ElencoRegistro } from "@/components/registri/elenco";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ tipo: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ tipo: string }> }): Promise<Metadata> {
   const { tipo } = await params;
   return { title: registroPerTipo(tipo)?.nome ?? "Registro" };
 }
@@ -24,11 +20,7 @@ export async function generateMetadata({
 // testo di una norma resta indietro rispetto al motore, e la norma è l'unica cosa che qui
 // non può essere approssimativa.
 
-export default async function PaginaRegistro({
-  params,
-}: {
-  params: Promise<{ id: string; tipo: string }>;
-}) {
+export default async function PaginaRegistro({ params }: { params: Promise<{ id: string; tipo: string }> }) {
   const { id, tipo } = await params;
   const dati = await registroDi(id, tipo);
   if (!dati) notFound();
@@ -47,9 +39,7 @@ export default async function PaginaRegistro({
 
       <header className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-            Registro
-          </p>
+          <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Registro</p>
           <h1 className="titolo mt-1.5 text-[1.7rem]">{def.nome}</h1>
         </div>
         {/* L'art. 30.3 chiede il registro «in forma scritta, anche in formato elettronico»:
@@ -66,12 +56,7 @@ export default async function PaginaRegistro({
       </header>
 
       <div className="mt-6">
-        <ElencoRegistro
-          aziendaId={id}
-          def={def}
-          voci={voci}
-          modificabile={ctx.ruolo !== "viewer"}
-        />
+        <ElencoRegistro aziendaId={id} def={def} voci={voci} modificabile={ctx.ruolo !== "viewer"} />
       </div>
     </div>
   );

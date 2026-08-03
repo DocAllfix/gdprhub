@@ -82,17 +82,12 @@ export function Simulatore({
             /* Sull'esposizione scendere è un guadagno. */
             miglioraScendendo
           />
-          <Misura
-            etichetta="conformità effettiva"
-            prima={partenza.conformita}
-            dopo={confDopo}
-            suffisso="%"
-          />
+          <Misura etichetta="conformità effettiva" prima={partenza.conformita} dopo={confDopo} suffisso="%" />
           <p className="text-xs text-muted-foreground">
             {scelti.length === 0 ? (
               <>
-                Spunta gli adempimenti che pensi di chiudere. Il calcolo è lo stesso del cruscotto e
-                della relazione: nessuna stima a parte.
+                Spunta gli adempimenti che pensi di chiudere. Il calcolo è lo stesso del cruscotto e della
+                relazione: nessuna stima a parte.
               </>
             ) : (
               <>
@@ -127,10 +122,9 @@ export function Simulatore({
         </div>
 
         <p className="mt-4 border-t border-border-subtle pt-3 text-[11px] leading-relaxed text-faint-foreground">
-          È una proiezione e non si salva: chiudere un adempimento davvero si fa
-          dall&apos;assessment, registrando l&apos;ultima esecuzione. Tenere memoria di uno scenario
-          significherebbe non poter più distinguere ciò che è stato fatto da ciò che era stato
-          ipotizzato.
+          È una proiezione e non si salva: chiudere un adempimento davvero si fa dall&apos;assessment,
+          registrando l&apos;ultima esecuzione. Tenere memoria di uno scenario significherebbe non poter più
+          distinguere ciò che è stato fatto da ciò che era stato ipotizzato.
         </p>
       </section>
 
@@ -138,9 +132,8 @@ export function Simulatore({
         <div className="border-b border-border px-5 py-3">
           <h2 className="text-sm font-semibold tracking-tight">Da dove conviene cominciare</h2>
           <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
-            Ordinati per rischio pesato, che è il criterio con cui l&apos;esposizione è costruita. La
-            colonna «resa» è misurata simulando davvero la chiusura di quel solo adempimento, non
-            stimata.
+            Ordinati per rischio pesato, che è il criterio con cui l&apos;esposizione è costruita. La colonna
+            «resa» è misurata simulando davvero la chiusura di quel solo adempimento, non stimata.
           </p>
         </div>
 
@@ -162,26 +155,21 @@ export function Simulatore({
                     className="size-4 shrink-0 accent-primary"
                     aria-label={`Includi ${v.codice} nella proiezione`}
                   />
-                  <span className="w-12 shrink-0 font-mono text-xs text-muted-foreground">
-                    {v.codice}
-                  </span>
+                  <span className="w-12 shrink-0 font-mono text-xs text-muted-foreground">{v.codice}</span>
                   <span className="w-20 shrink-0">
                     <PastigliaDominio dominio={v.dominio} />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm">{v.titolo}</span>
                     <span className="block text-[10px] text-muted-foreground">
-                      {v.ruolo} · {v.periodicita} ·{" "}
-                      {v.scadenza ? formattaIt(v.scadenza) : "mai programmato"}
+                      {v.ruolo} · {v.periodicita} · {v.scadenza ? formattaIt(v.scadenza) : "mai programmato"}
                     </span>
                   </span>
                   <span className="hidden w-24 shrink-0 sm:block">
                     <Priorita priorita={v.priorita as "Critica" | "Alta" | "Media" | "Bassa"} />
                   </span>
                   <span className="w-16 shrink-0 text-right">
-                    <span className="block font-mono text-sm font-medium tabular-nums">
-                      −{v.guadagno}
-                    </span>
+                    <span className="block font-mono text-sm font-medium tabular-nums">−{v.guadagno}</span>
                     <span className="block text-[10px] text-faint-foreground">resa</span>
                   </span>
                 </label>

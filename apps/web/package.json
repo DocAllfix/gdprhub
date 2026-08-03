@@ -26,7 +26,8 @@
     "db:demo-reset": "tsx --env-file-if-exists=.env.local src/lib/db/demo-reset-cli.ts",
     "db:consegna": "tsx --env-file-if-exists=.env.local src/lib/db/consegna-cli.ts",
     "percorso": "node scripts/percorso.mjs",
-    "db:collaudatori": "tsx --env-file-if-exists=.env.local src/lib/db/collaudatori-cli.ts"
+    "db:collaudatori": "tsx --env-file-if-exists=.env.local src/lib/db/collaudatori-cli.ts",
+    "prova:registri": "node scripts/prova-registri.mjs"
   },
   "dependencies": {
     "@fontsource/geist-mono": "^5.3.0",

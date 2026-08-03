@@ -108,11 +108,7 @@ export function Ciambella({ d }: { d: DatiVarianti }) {
         <dl className="min-w-40 flex-1 space-y-1.5 text-xs">
           {fette.map((f) => (
             <div key={f.e} className="flex items-center gap-2">
-              <span
-                className="size-2 shrink-0 rounded-[2px]"
-                style={{ background: f.t }}
-                aria-hidden
-              />
+              <span className="size-2 shrink-0 rounded-[2px]" style={{ background: f.t }} aria-hidden />
               <dt className="text-muted-foreground">{f.e}</dt>
               <dd className={`ml-auto ${NUMERI} text-sm`}>{f.n}</dd>
               <dd className={`w-9 text-right ${NUMERI} text-faint-foreground`}>
@@ -314,9 +310,7 @@ export function BarrePerRuolo({ d }: { d: DatiVarianti }) {
 
   return (
     <Scheda>
-      <TitoloScheda nota="Ordinati per carico. La parte rossa è già scaduta.">
-        Per responsabile
-      </TitoloScheda>
+      <TitoloScheda nota="Ordinati per carico. La parte rossa è già scaduta.">Per responsabile</TitoloScheda>
       <ul className="space-y-2">
         {dati.map((x) => (
           <li key={x.etichetta}>
@@ -356,12 +350,9 @@ export function TrendOnesto() {
           <p className="font-medium text-foreground">Il trend comincia dal primo cambiamento registrato.</p>
           <p className="mt-1">
             Nei prototipi questa curva saliva sempre, perché era generata da{" "}
-            <code className="font-mono text-[10px] text-faint-foreground">
-              62 + i*5 + random()*3
-            </code>
-            . Un numero inventato dentro una relazione che un ispettore può leggere non è un difetto
-            estetico. Qui la curva si disegna dallo storico vero, che è append-only: finché non c&apos;è,
-            non c&apos;è.
+            <code className="font-mono text-[10px] text-faint-foreground">62 + i*5 + random()*3</code>. Un
+            numero inventato dentro una relazione che un ispettore può leggere non è un difetto estetico. Qui
+            la curva si disegna dallo storico vero, che è append-only: finché non c&apos;è, non c&apos;è.
           </p>
         </div>
       </div>

@@ -35,10 +35,30 @@ export type Risultato = {
 
 /** Le schermate raggiungibili, che non stanno nel database. */
 const SCHERMATE: readonly Risultato[] = [
-  { tipo: "schermata", titolo: "Cruscotto", sottotitolo: "come stiamo, sui tre decreti", percorso: "/cruscotto" },
-  { tipo: "schermata", titolo: "Portafoglio", sottotitolo: "tutte le aziende assistite", percorso: "/portafoglio" },
-  { tipo: "schermata", titolo: "Scadenzario", sottotitolo: "cosa scade, su tutto il portafoglio", percorso: "/scadenzario" },
-  { tipo: "schermata", titolo: "Impostazioni", sottotitolo: "marchio, catalogo, utenze", percorso: "/impostazioni" },
+  {
+    tipo: "schermata",
+    titolo: "Cruscotto",
+    sottotitolo: "come stiamo, sui tre decreti",
+    percorso: "/cruscotto",
+  },
+  {
+    tipo: "schermata",
+    titolo: "Portafoglio",
+    sottotitolo: "tutte le aziende assistite",
+    percorso: "/portafoglio",
+  },
+  {
+    tipo: "schermata",
+    titolo: "Scadenzario",
+    sottotitolo: "cosa scade, su tutto il portafoglio",
+    percorso: "/scadenzario",
+  },
+  {
+    tipo: "schermata",
+    titolo: "Impostazioni",
+    sottotitolo: "marchio, catalogo, utenze",
+    percorso: "/impostazioni",
+  },
 ];
 
 type VoceIndice = Risultato & { readonly cerca: string };
@@ -56,7 +76,10 @@ async function costruisciIndice(organizationId: string): Promise<VoceIndice[]> {
     columns: { id: true, nome: true, settore: true, sede: true },
   });
 
-  const voci: VoceIndice[] = SCHERMATE.map((s) => ({ ...s, cerca: `${s.titolo} ${s.sottotitolo}`.toLowerCase() }));
+  const voci: VoceIndice[] = SCHERMATE.map((s) => ({
+    ...s,
+    cerca: `${s.titolo} ${s.sottotitolo}`.toLowerCase(),
+  }));
 
   for (const a of aziende) {
     voci.push({
@@ -148,24 +171,26 @@ export async function cerca(query: string): Promise<readonly Risultato[]> {
   // L'ordine dei tipi non è alfabetico: chi cerca digita quasi sempre il nome di un'azienda
   // o un codice, e le schermate sono il caso raro. Metterle in cima le farebbe scorrere.
   const peso = { azienda: 0, registro: 1, adempimento: 2, schermata: 3 } as const;
-  return trovati
-    .sort((a, b) => {
-      const p = peso[a.tipo] - peso[b.tipo];
-      if (p !== 0) return p;
-      // A parità di tipo, prima ciò che comincia con il termine: «S16» prima di «… S16 …».
-      const primo = termini[0] ?? "";
-      const ai = a.titolo.toLowerCase().startsWith(primo) ? 0 : 1;
-      const bi = b.titolo.toLowerCase().startsWith(primo) ? 0 : 1;
-      return ai - bi || a.titolo.localeCompare(b.titolo, "it");
-    })
-    .slice(0, 20)
-    // La chiave di ricerca non esce: serve a trovare, non a essere mostrata.
-    .map((v): Risultato => ({
-      tipo: v.tipo,
-      titolo: v.titolo,
-      sottotitolo: v.sottotitolo,
-      percorso: v.percorso,
-      ...(v.dominio ? { dominio: v.dominio } : {}),
-      ...(v.codice ? { codice: v.codice } : {}),
-    }));
+  return (
+    trovati
+      .sort((a, b) => {
+        const p = peso[a.tipo] - peso[b.tipo];
+        if (p !== 0) return p;
+        // A parità di tipo, prima ciò che comincia con il termine: «S16» prima di «… S16 …».
+        const primo = termini[0] ?? "";
+        const ai = a.titolo.toLowerCase().startsWith(primo) ? 0 : 1;
+        const bi = b.titolo.toLowerCase().startsWith(primo) ? 0 : 1;
+        return ai - bi || a.titolo.localeCompare(b.titolo, "it");
+      })
+      .slice(0, 20)
+      // La chiave di ricerca non esce: serve a trovare, non a essere mostrata.
+      .map((v): Risultato => ({
+        tipo: v.tipo,
+        titolo: v.titolo,
+        sottotitolo: v.sottotitolo,
+        percorso: v.percorso,
+        ...(v.dominio ? { dominio: v.dominio } : {}),
+        ...(v.codice ? { codice: v.codice } : {}),
+      }))
+  );
 }

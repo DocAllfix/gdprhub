@@ -114,8 +114,7 @@ export function calcolaTermine(
       scadeIl: voce.validoFinoA,
       oreResidue: ore,
       obbligo: r.obbligo,
-      descrizione:
-        ore < 0 ? `scaduto da ${frasiOre(ore)}` : `valido ancora ${frasiOre(ore)}`,
+      descrizione: ore < 0 ? `scaduto da ${frasiOre(ore)}` : `valido ancora ${frasiOre(ore)}`,
     };
   }
 

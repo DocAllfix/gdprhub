@@ -67,10 +67,7 @@ function dettagliDa(tipo: string, dati: FormData): { valori: Record<string, unkn
   return { valori, mancanti };
 }
 
-export async function apriVoce(
-  _precedente: EsitoRegistro | null,
-  dati: FormData,
-): Promise<EsitoRegistro> {
+export async function apriVoce(_precedente: EsitoRegistro | null, dati: FormData): Promise<EsitoRegistro> {
   const ctx = await requireConsulente();
   await assertNotDemo("apri una voce di registro");
 
@@ -124,7 +121,10 @@ export async function apriVoce(
       tipo,
       numero: n,
       titolo: titolo.slice(0, 300),
-      descrizione: String(dati.get("descrizione") ?? "").trim().slice(0, 4000) || null,
+      descrizione:
+        String(dati.get("descrizione") ?? "")
+          .trim()
+          .slice(0, 4000) || null,
       conosciutoIl,
       avvenutoIl: avvenuto ? new Date(avvenuto) : null,
       dettagli: valori,
@@ -145,10 +145,7 @@ export async function apriVoce(
   return { ok: true, id, numero };
 }
 
-export async function assolviVoce(
-  _precedente: EsitoRegistro | null,
-  dati: FormData,
-): Promise<EsitoRegistro> {
+export async function assolviVoce(_precedente: EsitoRegistro | null, dati: FormData): Promise<EsitoRegistro> {
   const ctx = await requireConsulente();
   await assertNotDemo("chiudi una voce di registro");
 

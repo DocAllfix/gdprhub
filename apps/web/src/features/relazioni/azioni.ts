@@ -115,10 +115,7 @@ export async function pubblicaRelazione(
   // Lo snapshot NON si tocca in questo momento: il trigger lo rifiuterebbe, ed è giusto —
   // firmare cambiando il contenuto significherebbe firmare un documento diverso da quello
   // riletto. Si scrive solo lo stato e la data.
-  await db
-    .update(report)
-    .set({ stato: "pubblicata", pubblicataIl: new Date() })
-    .where(eq(report.id, id));
+  await db.update(report).set({ stato: "pubblicata", pubblicataIl: new Date() }).where(eq(report.id, id));
 
   await db.insert(auditLog).values({
     organizationId: ctx.organizationId,
@@ -148,7 +145,8 @@ export async function eliminaBozza(
     // il perché invece di vedere un errore del database.
     return {
       ok: false,
-      errore: "Una relazione pubblicata non si elimina: è un atto consegnato. Se i dati sono cambiati, generane una nuova.",
+      errore:
+        "Una relazione pubblicata non si elimina: è un atto consegnato. Se i dati sono cambiati, generane una nuova.",
     };
   }
 

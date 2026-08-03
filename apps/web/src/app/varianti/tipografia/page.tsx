@@ -26,17 +26,13 @@ function Campionario({ r }: { r: Registro }) {
           Cifra · {r.caratteri[2]}
         </p>
         <p className="cifra mt-1 text-[2.6rem] leading-none">44%</p>
-        <p className="mt-1.5 text-xs text-muted-foreground">
-          Il numero grande al centro di ogni scheda.
-        </p>
+        <p className="mt-1.5 text-xs text-muted-foreground">Il numero grande al centro di ogni scheda.</p>
       </div>
       <div>
         <p className="text-[10px] tracking-[0.09em] text-faint-foreground uppercase">
           Testo · {r.caratteri[0]}
         </p>
-        <p className="mt-1.5 text-sm leading-snug">
-          Valutazione dei rischi e aggiornamento del documento
-        </p>
+        <p className="mt-1.5 text-sm leading-snug">Valutazione dei rischi e aggiornamento del documento</p>
         <p className="mt-1 text-[11px] text-muted-foreground">
           Datore di Lavoro · 12 mesi · priorità critica
         </p>
@@ -147,9 +143,9 @@ export default function PaginaTipografia() {
       </div>
 
       <footer className="mt-16 border-t border-border pt-5 text-xs leading-relaxed text-muted-foreground">
-        Dimmi quale, e in quale tema l&apos;hai guardato. Poi lo porto sul prodotto vero in un colpo solo:
-        i caratteri stanno in un file, e le tre variabili che cambiano con loro stanno in dieci righe di
-        foglio di stile.
+        Dimmi quale, e in quale tema l&apos;hai guardato. Poi lo porto sul prodotto vero in un colpo solo: i
+        caratteri stanno in un file, e le tre variabili che cambiano con loro stanno in dieci righe di foglio
+        di stile.
       </footer>
     </main>
   );

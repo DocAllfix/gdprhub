@@ -21,10 +21,10 @@ scuro».
 
 Tre livelli, rigidi. Strategia **Restrained**: neutri tinti, accento sotto il 10%.
 
-| Livello                  | Canale                    | Dove                              |
-| ------------------------ | ------------------------- | --------------------------------- |
-| 1 · Stato della scadenza | rosso · ambra · verde     | **riservato**, mai altrove        |
-| 2 · Dominio              | indaco · prugna · acciaio | **solo dove i tre convivono**     |
+| Livello                  | Canale                    | Dove                                              |
+| ------------------------ | ------------------------- | ------------------------------------------------- |
+| 1 · Stato della scadenza | rosso · ambra · verde     | **riservato**, mai altrove                        |
+| 2 · Dominio              | indaco · prugna · acciaio | **solo dove i tre convivono**                     |
 | 3 · Prodotto             | **oliva, hue 110**        | barra laterale, azioni primarie, selezione, focus |
 
 **Il colore del prodotto è oliva, hue 110, e la scelta è stata fatta guardando.** Fino al
@@ -39,14 +39,14 @@ qualcosa: rosso 26, ambra 67, verde 153, acciaio 228, indaco 273, prugna 342. Ta
 cerchio in sei spicchi, e dentro uno spicchio si può stare solo al centro, perché ai bordi la
 colonna comincia a somigliare a un segnale. Gli spicchi utilizzabili sono tre soli:
 
-| Fra       | Centro          | Esito                                                        |
-| --------- | --------------- | ------------------------------------------------------------ |
-| 67 → 153  | **110, oliva**  | 43° per parte: il più largo del cerchio. **Scelto.**          |
-| 273 → 342 | 307, melanzana  | 34° per parte. Valido, scartato dal committente.              |
-| 342 → 26  | 4, bordeaux     | 22° per parte: troppo stretto per convivere con «scaduta».    |
-| 153 → 228 | 190, ottanio    | è l'accento di `sistemacommercialisti`. Bruciato in partenza. |
-| 228 → 273 | 250, navy       | il colore rifiutato.                                          |
-| 26 → 67   | 46, arancio     | troppo vicino all'ambra.                                      |
+| Fra       | Centro         | Esito                                                         |
+| --------- | -------------- | ------------------------------------------------------------- |
+| 67 → 153  | **110, oliva** | 43° per parte: il più largo del cerchio. **Scelto.**          |
+| 273 → 342 | 307, melanzana | 34° per parte. Valido, scartato dal committente.              |
+| 342 → 26  | 4, bordeaux    | 22° per parte: troppo stretto per convivere con «scaduta».    |
+| 153 → 228 | 190, ottanio   | è l'accento di `sistemacommercialisti`. Bruciato in partenza. |
+| 228 → 273 | 250, navy      | il colore rifiutato.                                          |
+| 26 → 67   | 46, arancio    | troppo vicino all'ambra.                                      |
 
 **Il prezzo, e va tenuto d'occhio.** In questo prodotto il verde significa già «regolare», e
 lo dice in ogni riga di ogni tabella. Le due tinte non si confondono — la colonna sta a croma

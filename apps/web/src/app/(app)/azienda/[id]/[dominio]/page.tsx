@@ -128,11 +128,7 @@ export default async function PaginaAssessment({
  * La cella si evidenzia solo se contiene qualcosa: un rosso acceso su uno zero insegnerebbe
  * a ignorare il rosso.
  */
-function DueAssi({
-  griglia,
-}: {
-  griglia: Readonly<Record<string, Readonly<Record<string, number>>>>;
-}) {
+function DueAssi({ griglia }: { griglia: Readonly<Record<string, Readonly<Record<string, number>>>> }) {
   const colonne = ["Regolare", "In scadenza", "Scaduta", "Da programmare"] as const;
   const righe = ["Completata", "In corso", "Da fare", "Non applicabile"] as const;
   const critica = griglia.Completata?.Scaduta ?? 0;
@@ -143,8 +139,8 @@ function DueAssi({
         <div className="max-w-md">
           <h2 className="text-sm font-semibold tracking-tight">I due assi</h2>
           <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-            Lo stato del lavoro lo decidi tu; lo stato della scadenza lo decide la data. Sono due cose
-            diverse e vanno lette insieme.
+            Lo stato del lavoro lo decidi tu; lo stato della scadenza lo decide la data. Sono due cose diverse
+            e vanno lette insieme.
           </p>
           {critica > 0 ? (
             <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">

@@ -14,13 +14,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-  DIMENSIONE_MASSIMA,
-  archivioSuDisco,
-  chiaveEvidenza,
-  improntaSha256,
-  tipoReale,
-} from "./index";
+import { DIMENSIONE_MASSIMA, archivioSuDisco, chiaveEvidenza, improntaSha256, tipoReale } from "./index";
 
 const radice = await mkdtemp(join(tmpdir(), "archivio-prova-"));
 const archivio = archivioSuDisco(radice);

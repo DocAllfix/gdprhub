@@ -164,10 +164,7 @@ export function TabellaScadenzario({
         </span>
       </div>
 
-      <div
-        className="pannello overflow-x-auto"
-        data-tour="tabella-scadenzario"
-      >
+      <div className="pannello overflow-x-auto" data-tour="tabella-scadenzario">
         <Table>
           <TableHeader className="bg-surface-sunken">
             <TableRow className="border-b border-border-strong hover:bg-transparent">
@@ -251,7 +248,12 @@ export function TabellaScadenzario({
             Ne vedi <b className="tabular-nums">{disegnate.length}</b> di{" "}
             <b className="tabular-nums">{visibili.length}</b>. Restringi con i filtri, oppure
           </p>
-          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setTetto((t) => t + PASSO)}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => setTetto((t) => t + PASSO)}
+          >
             Mostra altre {Math.min(PASSO, visibili.length - disegnate.length)}
           </Button>
         </div>

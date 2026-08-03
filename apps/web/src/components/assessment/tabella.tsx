@@ -133,10 +133,7 @@ export function TabellaAssessment({
         </span>
       </div>
 
-      <div
-        className="pannello overflow-x-auto"
-        data-tour="tabella-assessment"
-      >
+      <div className="pannello overflow-x-auto" data-tour="tabella-assessment">
         <Table>
           <TableHeader className="bg-surface-sunken">
             <TableRow className="border-b border-border-strong hover:bg-transparent">

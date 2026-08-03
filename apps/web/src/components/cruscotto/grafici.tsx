@@ -304,14 +304,11 @@ export function Ciambella({
   // mappa: il compilatore di React rifiuta una riassegnazione durante il rendering, e ha
   // ragione — un rendering che dipende dall'ordine in cui gli elementi vengono valutati è
   // un rendering che si rompe il giorno in cui qualcosa li valuta due volte.
-  const archi = vive.reduce<{ s: (typeof vive)[number]; quota: number; scarto: number }[]>(
-    (acc, s) => {
-      const scarto = acc.reduce((t, a) => t + a.quota, 0);
-      acc.push({ s, quota: s.quanti / totale, scarto });
-      return acc;
-    },
-    [],
-  );
+  const archi = vive.reduce<{ s: (typeof vive)[number]; quota: number; scarto: number }[]>((acc, s) => {
+    const scarto = acc.reduce((t, a) => t + a.quota, 0);
+    acc.push({ s, quota: s.quanti / totale, scarto });
+    return acc;
+  }, []);
 
   return (
     <div className="flex flex-wrap items-center gap-5">
@@ -362,11 +359,7 @@ export function Ciambella({
       <dl className="min-w-40 flex-1 space-y-1.5 text-xs">
         {vive.map((s) => (
           <div key={s.etichetta} className="flex items-center gap-2">
-            <span
-              className="size-2 shrink-0 rounded-[2px]"
-              style={{ background: s.colore }}
-              aria-hidden
-            />
+            <span className="size-2 shrink-0 rounded-[2px]" style={{ background: s.colore }} aria-hidden />
             <dt className="text-muted-foreground">{s.etichetta}</dt>
             <dd className="ml-auto font-mono text-sm tabular-nums">{s.quanti}</dd>
             <dd className="w-9 text-right font-mono text-[10px] text-faint-foreground tabular-nums">
@@ -419,8 +412,8 @@ export function CaricoMensile({
     return (
       <p className="text-xs leading-relaxed text-muted-foreground">
         Nei prossimi dodici mesi non cade nessuna scadenza ricorrente. Succede quando gli adempimenti sono
-        tutti senza ultima esecuzione: la scadenza si calcola da quella, e finché manca non c&apos;è una
-        data da collocare.
+        tutti senza ultima esecuzione: la scadenza si calcola da quella, e finché manca non c&apos;è una data
+        da collocare.
       </p>
     );
   }
@@ -437,9 +430,7 @@ export function CaricoMensile({
         <div className="flex gap-4 text-right">
           <p>
             <span className="cifra block text-xl leading-none">{picco.totale}</span>
-            <span className="text-[10px] text-muted-foreground">
-              picco · {MESI_BREVI[picco.mese]}
-            </span>
+            <span className="text-[10px] text-muted-foreground">picco · {MESI_BREVI[picco.mese]}</span>
           </p>
           <p>
             <span className="cifra block text-xl leading-none text-muted-foreground">{media}</span>

@@ -75,7 +75,10 @@ describe("la relazione pubblicata è congelata dal database", () => {
     });
 
     await expect(
-      db.update(report).set({ snapshot: { prova: 2 } }).where(eq(report.id, idBozza)),
+      db
+        .update(report)
+        .set({ snapshot: { prova: 2 } })
+        .where(eq(report.id, idBozza)),
     ).resolves.toBeDefined();
 
     const dopo = await db.query.report.findFirst({ where: eq(report.id, idBozza) });
@@ -100,7 +103,10 @@ describe("la relazione pubblicata è congelata dal database", () => {
     // Il caso che conta: cambiare il numero dentro un documento già consegnato.
     expect(
       await messaggioDelDatabase(
-        db.update(report).set({ snapshot: { conformita: 99 } }).where(eq(report.id, idPubblicata)),
+        db
+          .update(report)
+          .set({ snapshot: { conformita: 99 } })
+          .where(eq(report.id, idPubblicata)),
       ),
     ).toMatch(/congelato/i);
 

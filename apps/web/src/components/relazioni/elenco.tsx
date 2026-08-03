@@ -94,8 +94,8 @@ export function ElencoRelazioni({
             {generando ? "Generazione…" : "Genera bozza"}
           </Button>
           <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
-            La bozza congela i numeri di oggi e si rifà quante volte serve. Pubblicandola diventa un
-            atto: da quel momento il contenuto non si tocca più, nemmeno dal database.
+            La bozza congela i numeri di oggi e si rifà quante volte serve. Pubblicandola diventa un atto: da
+            quel momento il contenuto non si tocca più, nemmeno dal database.
           </p>
         </form>
       ) : null}
@@ -112,10 +112,9 @@ export function ElencoRelazioni({
           Fascicolo ispettivo
         </h2>
         <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-muted-foreground">
-          Si genera sul momento e riporta lo stato di oggi. Elenca gli adempimenti ordinati per
-          articolo di norma — non per categoria interna — con la casella di riscontro stampata
-          vuota e lo spazio per le annotazioni: chi verifica non vuole essere convinto, vuole
-          controllare.
+          Si genera sul momento e riporta lo stato di oggi. Elenca gli adempimenti ordinati per articolo di
+          norma — non per categoria interna — con la casella di riscontro stampata vuota e lo spazio per le
+          annotazioni: chi verifica non vuole essere convinto, vuole controllare.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {ORGANI_ELENCO.map((o) => (
@@ -142,8 +141,8 @@ export function ElencoRelazioni({
           <FileText className="mx-auto size-6 text-faint-foreground" aria-hidden />
           <h2 className="mt-3 text-sm font-semibold">Nessuna relazione</h2>
           <p className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">
-            La relazione è ciò che il cliente porta a un&apos;ispezione. Generane una: fotografa i
-            numeri di oggi e resta valida anche quando i dati cambiano.
+            La relazione è ciò che il cliente porta a un&apos;ispezione. Generane una: fotografa i numeri di
+            oggi e resta valida anche quando i dati cambiano.
           </p>
         </div>
       ) : (
