@@ -59,7 +59,11 @@ export const MENU: readonly VoceMenu[] = [
   { href: "/cruscotto", etichetta: "Cruscotto", icona: "cruscotto", tour: "cruscotto" },
   { href: "/portafoglio", etichetta: "Portafoglio", icona: "portafoglio", tour: "portafoglio" },
   { href: "/scadenzario", etichetta: "Scadenzario", icona: "scadenzario", tour: "scadenzario" },
-  { href: "/relazioni", etichetta: "Relazioni", icona: "relazioni", tour: "relazioni", futura: true },
+  // LE RELAZIONI NON HANNO UNA VOCE PROPRIA, ed è una decisione. Vivono per azienda —
+  // nessuno cerca «tutte le relazioni», cerca quelle di un cliente — e una voce che porta
+  // al portafoglio sarebbe un secondo ingresso allo stesso posto: due comandi che fanno la
+  // stessa cosa insegnano che l'interfaccia non sa cosa vuole. Si raggiungono dalla scheda
+  // dell'azienda, che è il contesto in cui esistono.
   { href: "/impostazioni", etichetta: "Impostazioni", icona: "impostazioni", tour: "impostazioni" },
 ];
 

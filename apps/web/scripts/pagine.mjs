@@ -55,6 +55,14 @@ export const PAGINE = [
     atteso: "[data-tour=tabella-assessment]",
   },
   {
+    percorso: "/azienda/:prima/relazioni",
+    nome: "Relazioni dell'azienda",
+    fase: 12,
+    autenticata: true,
+    dinamica: true,
+    atteso: "[data-tour=relazioni]",
+  },
+  {
     percorso: "/scadenzario",
     nome: "Scadenzario unificato",
     fase: 8,

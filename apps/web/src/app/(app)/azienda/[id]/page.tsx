@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import {
   DOMINI,
   ETICHETTE_DOMINIO,
@@ -75,6 +75,24 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
           </div>
         ) : null}
       </header>
+
+      {/* LE RELAZIONI STANNO QUI e non nella barra: vivono per azienda, e questo è il
+          contesto in cui esistono. È anche il gesto finale del prodotto — tutto il resto
+          serve a produrre il documento che il cliente porta a un'ispezione. */}
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <Link
+          href={`/azienda/${id}/relazioni`}
+          data-tour="vai-relazioni"
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-hover"
+        >
+          <FileText className="size-4" aria-hidden />
+          Relazioni
+        </Link>
+        <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
+          Il documento che si consegna. Congela i numeri del giorno in cui è generato: se i dati
+          cambiano non cambia, se ne genera uno nuovo.
+        </p>
+      </div>
 
       <section className="mt-7">
         <h2 className="mb-2.5 text-sm font-semibold tracking-tight">Moduli</h2>

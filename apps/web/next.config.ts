@@ -44,6 +44,10 @@ const nextConfig: NextConfig = {
     // u, m, e, n, t», quindi non corrisponde a nulla e la cartella non viene inclusa.
     // La build resta verde e la rotta risponde 500 solo in produzione.
     "/prototipi/**": [CHROMIUM_BIN],
+    // La relazione vera segue la stessa regola: glob con `**`, mai le parentesi quadre.
+    // È lo stesso difetto che ha fatto rispondere 500 alla rotta dei prototipi in
+    // produzione mentre in locale funzionava, e si ripeterebbe identico.
+    "/api/relazioni/**": [CHROMIUM_BIN],
   },
 
   poweredByHeader: false,
