@@ -77,6 +77,12 @@ export const TOUR: readonly Tour[] = [
           "Una PMI senza modello 231 non deve vedere sessantacinque adempimenti che non la riguardano e un cruscotto perennemente rosso: il primo effetto è che smette di fidarsi dei numeri. Disattivare non cancella niente — l'assessment e le evidenze restano, e riattivando si ritrovano.",
       },
       {
+        ancora: "vai-simulatore",
+        titolo: "Il simulatore serve a chiedere un budget",
+        testo:
+          "«Ci sono trentanove adempimenti scaduti» è una constatazione, e chi la ascolta la sapeva già. «Con questi cinque interventi l'esposizione scende da 71 a 48» è una frase su cui si decide. Il calcolo è lo stesso del cruscotto: nessuna stima a parte.",
+      },
+      {
         ancora: "vai-relazioni",
         titolo: "La relazione è il documento che si consegna",
         testo:

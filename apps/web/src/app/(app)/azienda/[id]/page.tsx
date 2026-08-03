@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, SlidersHorizontal } from "lucide-react";
 import {
   DOMINI,
   ETICHETTE_DOMINIO,
@@ -87,6 +87,14 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
         >
           <FileText className="size-4" aria-hidden />
           Relazioni
+        </Link>
+        <Link
+          href={`/azienda/${id}/simulatore`}
+          data-tour="vai-simulatore"
+          className="inline-flex items-center gap-2 rounded-md border border-border px-3.5 py-2 text-sm hover:bg-accent"
+        >
+          <SlidersHorizontal className="size-4" aria-hidden />
+          Simulatore
         </Link>
         <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
           Il documento che si consegna. Congela i numeri del giorno in cui è generato: se i dati

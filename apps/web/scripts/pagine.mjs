@@ -63,6 +63,14 @@ export const PAGINE = [
     atteso: "[data-tour=relazioni]",
   },
   {
+    percorso: "/azienda/:prima/simulatore",
+    nome: "Simulatore what-if",
+    fase: 10,
+    autenticata: true,
+    dinamica: true,
+    atteso: "[data-tour=proiezione]",
+  },
+  {
     percorso: "/scadenzario",
     nome: "Scadenzario unificato",
     fase: 8,
