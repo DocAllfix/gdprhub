@@ -367,8 +367,12 @@ async function verificaPagina(browser, pagina, misura, tema) {
     console.log(`      ${scomparsi} comandi spariti per effetto di clic precedenti (atteso)`);
   }
 
-  await contesto.close();
+  // Si conta PRIMA di chiudere il contesto: interrogare una pagina già chiusa solleva, e
+  // con il giro che ora cattura gli errori per pagina l'effetto era quarantotto difetti
+  // identici e nemmeno un «ok» stampato. Il cancello funzionava; ero io a chiedergli una
+  // cosa dopo avergli tolto il tavolo da sotto.
   const esclusi = await tab.locator(SELETTORE_ESCLUSI).count();
+  await contesto.close();
   console.log(
     `  ok  ${etichetta}  (${quantiAzionabili} azionabili, ${interni.length} collegamenti${
       esclusi > 0 ? `, ${esclusi} esclusi` : ""
