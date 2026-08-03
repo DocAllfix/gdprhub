@@ -62,6 +62,15 @@ const schema = z.object({
     .transform((v) => v === "true"),
   /** Nome dello studio proprietario dell'istanza. */
   STUDIO_NOME: z.string().default("Studio"),
+  /**
+   * Dove finiscono le evidenze quando l'istanza gira su una macchina propria.
+   *
+   * Vuoto significa `.archivio` accanto all'applicazione, che va bene per lo sviluppo. In
+   * produzione su VPS va puntato a un volume che il backup comprende: un'evidenza che non
+   * finisce nel salvataggio è un documento che esiste finché non serve.
+   * Su Vercel questa variabile non si guarda: lì l'archivio è a oggetti.
+   */
+  ARCHIVIO_RADICE: z.string().optional(),
 
   /**
    * Dove finiscono le evidenze documentali.

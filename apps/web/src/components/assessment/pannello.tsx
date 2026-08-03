@@ -16,6 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Codice, Scadenza, StatoLavoroEtichetta } from "@/components/stato";
+import { Evidenze } from "@/components/assessment/evidenze";
+import { elencoEvidenze } from "@/features/evidenze/azioni";
+import type { Evidenza } from "@/features/evidenze/tipi";
 
 // Il pannello di dettaglio di un adempimento.
 //
@@ -66,6 +69,7 @@ function Corpo({
   const [note, setNote] = useState(riga.note ?? "");
   const [data, setData] = useState(riga.ultimaEsecuzione ?? "");
   const [voci, setVoci] = useState<Voce[] | null>(null);
+  const [evidenze, setEvidenze] = useState<readonly Evidenza[] | null>(null);
   // L'INTENZIONE, non lo stato salvato. Il campo della motivazione deve comparire appena si
   // preme «Non applicabile», non dopo che il salvataggio è riuscito: legandolo allo stato
   // già scritto si creava un vicolo cieco — il sistema chiedeva una motivazione e non dava
@@ -82,6 +86,11 @@ function Corpo({
     void storico(id).then((s) => {
       if (vivo) setVoci(s as Voce[]);
     });
+    // Le evidenze seguono la stessa regola dello storico: si leggono all'apertura, non per
+    // tutte le righe.
+    void elencoEvidenze(id).then((e) => {
+      if (vivo) setEvidenze(e);
+    });
     return () => {
       vivo = false;
     };
@@ -95,6 +104,7 @@ function Corpo({
       if (esito.ok) {
         setSalvato(cosa);
         void storico(riga.id).then((s) => setVoci(s as Voce[]));
+        void elencoEvidenze(riga.id).then(setEvidenze);
       } else setErrore(esito.errore);
     });
   };
@@ -320,6 +330,8 @@ function Corpo({
               Salvato · {salvato}
             </p>
           ) : null}
+
+          <Evidenze istanzaId={riga.id} elenco={evidenze ?? []} modificabile={scrivibile} />
 
           {/* --- Storico ------------------------------------------------------------- */}
           <section className="space-y-2 border-t border-border pt-4">
