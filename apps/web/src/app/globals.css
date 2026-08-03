@@ -54,17 +54,22 @@
      parte — e al suo centro c'è questo verde-oliva scurissimo: muschio, taccuino da
      campo, tela di rilegatura.
 
-     IL PREZZO, dichiarato. Il verde in questo prodotto significa già «regolare».
-     Queste due tinte non si confondono — «regolare» sta a croma 0,115 e la colonna a
-     0,030, e sono quaranta gradi più in là — ma è una convivenza permanente: se un
-     giorno si alza la croma della colonna anche di poco, comincia a dire qualcosa
-     che non deve dire. La croma della barra non si tocca senza rifare questa
-     verifica. */
-  --sidebar: oklch(0.272 0.03 112);
-  --sidebar-foreground: oklch(0.945 0.006 110);
-  --sidebar-muted: oklch(0.7 0.014 110);
-  --sidebar-border: oklch(0.355 0.024 112);
-  --sidebar-selected: oklch(0.348 0.036 112);
+     L'OLIVA È IL MARCHIO, e per esserlo deve vedersi. Al primo giro la croma stava a
+     0,030 per non litigare con il verde «regolare», e il risultato era un grigio caldo:
+     sulla pagina di accesso, che la colonna non ce l'ha, restava un avorio con un
+     pulsante nero e del colore di marca nessuna traccia. Il vincolo era vero ma
+     risolto dalla parte sbagliata — si sposta il verde funzionale, non si spegne il
+     colore del prodotto. Con «regolare» portato a hue 168 restano cinquantotto gradi,
+     e la colonna può essere muschio davvero.
+
+     Il vincolo che resta, e va tenuto d'occhio: la distanza dal verde di stato non
+     scende sotto i cinquanta gradi. Se un domani si volesse un verde «regolare» più
+     caldo, questa tinta va rimisurata prima. */
+  --sidebar: oklch(0.315 0.078 112);
+  --sidebar-foreground: oklch(0.955 0.014 110);
+  --sidebar-muted: oklch(0.735 0.03 112);
+  --sidebar-border: oklch(0.4 0.06 112);
+  --sidebar-selected: oklch(0.395 0.085 112);
 
   --foreground: oklch(0.243 0.013 110);
   --muted-foreground: oklch(0.503 0.01 110);
@@ -78,24 +83,23 @@
   /* Su fondo scuro l'inchiostro si inverte in chiaro: resta il canale neutro. */
   /* Il pulsante pieno è la stessa oliva della colonna. Tenerne due diversi darebbe
      una pagina con due inchiostri, ed è il difetto che si vede senza saperlo nominare. */
-  --primary: oklch(0.272 0.03 112);
-  --primary-hover: oklch(0.218 0.032 112);
-  --primary-foreground: oklch(0.985 0.004 110);
-  --selected: oklch(0.935 0.02 110);
-  --ring: oklch(0.5 0.09 118);
+  --primary: oklch(0.315 0.078 112);
+  --primary-hover: oklch(0.255 0.075 112);
+  --primary-foreground: oklch(0.985 0.012 110);
+  --selected: oklch(0.93 0.04 112);
+  --ring: oklch(0.5 0.1 115);
 
-  /* Accento del PRODOTTO, distinto dall'inchiostro dei pulsanti: serve a far vedere
-     dove si sta guardando e a colorare le barre dei dati. Blu profondo, lontano dai
-     tre colori di stato e dalle tre tinte di dominio. Resta sotto il 10% della pagina. */
-  /* L'ACCENTO NON COLORA I DATI, e la croma sta bassa apposta. Con la tinta di prodotto a
-     hue 110 un accento saturo sarebbe verde, e in questo prodotto il verde significa
-     «regolare»: una barra verde accanto a una rossa e una ambra si legge «in regola» anche
-     quando conta adempimenti che scadono fra trenta giorni. Trovato guardando uno
-     screenshot del cancello, non leggendo il codice. Le barre dei dati usano ora i neutri;
-     qui resta ciò che serve a dire «stai guardando questo». */
-  --accento: oklch(0.42 0.03 115);
-  --accento-surface: oklch(0.958 0.012 112);
-  --accento-border: oklch(0.88 0.028 115);
+  /* Accento del PRODOTTO: serve a far vedere dove si sta guardando. È la stessa oliva
+     dei pulsanti, più chiara.
+
+     L'ACCENTO NON COLORA I DATI, ed è una regola che vale anche ora che l'oliva è un
+     colore vero. Le barre del cruscotto usano i neutri: lì il colore non ha significato,
+     distingue quattro grandezze, e una barra colorata accanto a una rossa e una ambra
+     verrebbe letta come uno stato. Trovato guardando uno screenshot del cancello, non
+     leggendo il codice. */
+  --accento: oklch(0.44 0.075 112);
+  --accento-surface: oklch(0.952 0.03 112);
+  --accento-border: oklch(0.86 0.06 112);
 
   /* --- Stato della scadenza: RISERVATO ------------------------------------- */
   /* Questi tre non compaiono da nessun'altra parte. Se il colore decora, non può
@@ -109,9 +113,18 @@
   --imminente-surface: oklch(0.952 0.055 72);
   --imminente-border: oklch(0.85 0.1 68);
 
-  --regolare: oklch(0.475 0.115 152);
-  --regolare-surface: oklch(0.95 0.04 152);
-  --regolare-border: oklch(0.86 0.075 152);
+  /* «Regolare» SI È SPOSTATO da hue 152 a 168, e non è un ritocco: è ciò che permette
+     all'oliva di essere un colore.
+     Al primo giro il verde di stato stava a 152 e la tinta di marca a 110: trentotto gradi,
+     troppo pochi perché due verdi convivessero, e la risposta era stata spegnere la marca a
+     croma 0,030. Il risultato è che l'oliva non si vedeva — la pagina di accesso, che la
+     colonna non ce l'ha, era avorio con un pulsante nero. Sbagliata la parte da cui si era
+     risolto: si sposta il verde funzionale, non si spegne il colore del prodotto.
+     A 168 il verde è più freddo — resta inequivocabilmente «a posto» — e lascia
+     cinquantotto gradi all'oliva, che può salire a croma piena senza somigliargli. */
+  --regolare: oklch(0.49 0.115 168);
+  --regolare-surface: oklch(0.95 0.04 168);
+  --regolare-border: oklch(0.86 0.075 168);
 
   /* «Da programmare» non è un rischio: è un'assenza. Resta neutro apposta. */
   --programmare: oklch(0.55 0.012 110);
@@ -203,11 +216,11 @@
   /* La barra è PIÙ SCURA del fondo, non più chiara: incornicia il lavoro invece
      di competerci. Sul chiaro fa il contrario ed è la stessa oliva a piena forza:
      due direzioni opposte, una sola lettura — «questa colonna non è il foglio». */
-  --sidebar: oklch(0.132 0.016 112);
-  --sidebar-foreground: oklch(0.952 0.006 110);
-  --sidebar-muted: oklch(0.64 0.012 110);
-  --sidebar-border: oklch(0.216 0.014 112);
-  --sidebar-selected: oklch(0.235 0.024 112);
+  --sidebar: oklch(0.158 0.038 112);
+  --sidebar-foreground: oklch(0.955 0.018 110);
+  --sidebar-muted: oklch(0.665 0.035 112);
+  --sidebar-border: oklch(0.248 0.045 112);
+  --sidebar-selected: oklch(0.275 0.065 112);
 
   /* Quattro livelli di testo, come i quattro di Linear: titolo, corrente,
      accompagnamento, marginale. Con tre non si riesce a spegnere abbastanza le
@@ -233,15 +246,15 @@
      funziona perché è piccola, e lascia tutta la croma al dato. Sul chiaro il
      primario è invece l'oliva piena: sono due soluzioni allo stesso problema —
      «il pulsante deve staccare dal fondo» — e la risposta giusta cambia col fondo. */
-  --accento: oklch(0.955 0.005 110);
-  --accento-surface: oklch(0.245 0.012 110);
-  --accento-border: oklch(0.33 0.014 110);
+  --accento: oklch(0.83 0.11 115);
+  --accento-surface: oklch(0.26 0.05 112);
+  --accento-border: oklch(0.36 0.07 112);
 
-  --primary: oklch(0.955 0.005 110);
-  --primary-hover: oklch(1 0 0);
-  --primary-foreground: oklch(0.152 0.009 110);
-  --selected: oklch(0.235 0.024 112);
-  --ring: oklch(0.78 0.05 115);
+  --primary: oklch(0.84 0.115 115);
+  --primary-hover: oklch(0.9 0.12 115);
+  --primary-foreground: oklch(0.18 0.045 112);
+  --selected: oklch(0.27 0.055 112);
+  --ring: oklch(0.8 0.11 115);
 
   /* Stato della scadenza. Sul buio si ALZA la luminosità e si abbassa la croma:
      un rosso saturo su fondo scuro vibra e diventa illeggibile a lungo. */
@@ -253,9 +266,9 @@
   --imminente-surface: oklch(0.28 0.06 68);
   --imminente-border: oklch(0.4 0.09 68);
 
-  --regolare: oklch(0.745 0.128 155);
-  --regolare-surface: oklch(0.265 0.055 155);
-  --regolare-border: oklch(0.38 0.085 155);
+  --regolare: oklch(0.755 0.125 170);
+  --regolare-surface: oklch(0.265 0.055 170);
+  --regolare-border: oklch(0.38 0.085 170);
 
   --programmare: oklch(0.62 0.012 110);
   --programmare-surface: oklch(0.235 0.011 110);

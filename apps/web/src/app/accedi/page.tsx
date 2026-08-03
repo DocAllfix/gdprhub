@@ -22,40 +22,45 @@ export default async function PaginaAccesso() {
           della carta intestata e il perimetro reale dei tre decreti, con i conteggi veri del
           catalogo. È lo stesso gesto della copertina del documento, ed è ciò che lega i due
           registri del prodotto. Su schermo stretto sparisce: il modulo viene prima. */}
-      <section className="hidden flex-col justify-between border-r border-border-strong bg-surface-sunken px-12 py-10 lg:flex">
-        <div className="mx-auto w-full max-w-lg border-t-2 border-b border-foreground pt-2 pb-2.5">
+      <section
+        // IL PANNELLO DI MARCA. E' l'unico posto del prodotto dove il colore dello studio
+        // occupa meta' schermo, e finora era avorio su avorio: la pagina d'accesso e' la
+        // sola che non ha la colonna, quindi era anche la sola dove del marchio non
+        // restava traccia. Qui l'oliva fa quello che fa la colonna altrove.
+        className="hidden flex-col justify-between bg-sidebar px-12 py-10 text-sidebar-foreground lg:flex">
+        <div className="mx-auto w-full max-w-lg border-t-2 border-b border-sidebar-foreground/70 pt-2 pb-2.5">
           <p className="text-sm font-semibold tracking-widest uppercase">{nome}</p>
         </div>
 
         <div className="mx-auto w-full max-w-lg">
-          <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
+          <p className="text-xs font-medium tracking-[0.14em] text-sidebar-muted uppercase">
             {PRODOTTO.nome}
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Tre decreti, un registro solo</h1>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-4 text-sm leading-relaxed text-sidebar-muted">
             Adempimenti, scadenze ed evidenze in una lista sola. Ogni obbligo porta due stati distinti: quello
             del lavoro, che lo decide una persona, e quello della scadenza, che lo decide la data.
           </p>
 
-          <dl className="mt-8 border-t border-border">
+          <dl className="mt-8 border-t border-sidebar-border">
             {DOMINI.map((d) => (
               <div
                 key={d}
-                className="flex items-baseline justify-between gap-4 border-b border-border-subtle py-2"
+                className="flex items-baseline justify-between gap-4 border-b border-sidebar-border/60 py-2"
               >
                 <dt className="text-sm">
                   <span className="font-medium">{ETICHETTE_DOMINIO[d].esteso}</span>
-                  <span className="ml-2 font-mono text-[10px] text-faint-foreground">
+                  <span className="ml-2 font-mono text-[10px] text-sidebar-muted/80">
                     {ETICHETTE_DOMINIO[d].norma}
                   </span>
                 </dt>
-                <dd className="font-mono text-xs tabular-nums text-muted-foreground">
+                <dd className="font-mono text-xs tabular-nums text-sidebar-muted">
                   {CATALOGHI[d].length}
                 </dd>
               </div>
             ))}
             <div className="flex items-baseline justify-between gap-4 py-2">
-              <dt className="text-xs tracking-[0.09em] text-muted-foreground uppercase">
+              <dt className="text-xs tracking-[0.09em] text-sidebar-muted uppercase">
                 adempimenti in catalogo
               </dt>
               <dd className="font-mono text-xs font-semibold tabular-nums">{TUTTI_I_TEMPLATES.length}</dd>
@@ -63,7 +68,7 @@ export default async function PaginaAccesso() {
           </dl>
         </div>
 
-        <p className="mx-auto w-full max-w-lg text-xs text-faint-foreground">
+        <p className="mx-auto w-full max-w-lg text-xs text-sidebar-muted/80">
           Istanza dedicata. L&apos;accesso è riservato agli utenti abilitati dallo studio.
         </p>
       </section>
