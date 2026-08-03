@@ -231,6 +231,15 @@ export function Shell({
             `translate-x` da solo lo lascia nell'ordine di tabulazione, e chi naviga da
             tastiera attraverserebbe comandi che non vede. */}
         <aside
+          // ESC CHIUDE, come per qualunque pannello che occupa lo schermo.
+          //
+          // Il cassetto copre il viewport e il velo cattura i clic: senza una via d'uscita
+          // da tastiera, chi non usa il puntatore ci resta dentro. Il tasto si ascolta qui,
+          // sul pannello, così basta che il fuoco sia su uno qualunque dei suoi comandi —
+          // ed è dove lo portiamo appena si apre.
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setApertaSuMobile(false);
+          }}
           className={cn(
             "fixed inset-y-0 left-0 z-40 flex w-56 shrink-0 flex-col bg-sidebar px-3 py-4 text-sidebar-foreground transition-transform duration-200 ease-out lg:hidden",
             apertaSuMobile ? "translate-x-0" : "invisible -translate-x-full",
@@ -245,6 +254,13 @@ export function Shell({
             </div>
             <button
               type="button"
+              // IL FUOCO ENTRA NEL CASSETTO QUANDO SI APRE, e senza un effetto: il
+              // riferimento si esegue quando il nodo compare, e `apertaSuMobile` è la
+              // condizione. Restando fuori, premere Esc non arriverebbe al pannello e la
+              // via d'uscita da tastiera non esisterebbe.
+              ref={(nodo) => {
+                if (apertaSuMobile) nodo?.focus();
+              }}
               onClick={() => setApertaSuMobile(false)}
               className="text-sidebar-muted hover:text-sidebar-foreground"
               aria-label="Chiudi la navigazione"

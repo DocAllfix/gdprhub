@@ -340,7 +340,16 @@ async function verificaPagina(browser, pagina, misura, tema) {
         .first()
         .click({ timeout: 3_000 })
         .catch(() => {});
-      await tab.waitForTimeout(150);
+      // SI ASPETTA CHE IL VELO SPARISCA DAVVERO, non un tempo scelto a occhio.
+      //
+      // Qui c'erano 150 millisecondi fissi, e il cassetto rientra in 200: per quei
+      // cinquanta millesimi il pannello copriva ancora il pulsante che l'aveva aperto, e
+      // il ritentativo trovava l'elenco degli elementi già cambiato sotto. Quattro «clic
+      // fallito» su un pulsante che funziona benissimo, sempre e solo sotto `lg`.
+      await velo
+        .first()
+        .waitFor({ state: "hidden", timeout: 3_000 })
+        .catch(() => {});
     }
 
     const primaConsole = messaggi.length;
