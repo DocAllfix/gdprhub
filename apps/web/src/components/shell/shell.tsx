@@ -7,6 +7,7 @@ import { Building2, CalendarClock, FileText, LayoutGrid, LogOut, Menu, Settings,
 import { signOut } from "@/lib/auth/client";
 import { SelettoreTema } from "@/components/shell/tema";
 import { Guida } from "@/components/tour/guida";
+import { Palette } from "@/components/ricerca/palette";
 import { cn } from "@/lib/utils";
 
 // La shell. Una sola, per tutte le schermate: passando dal portafoglio al 231 cambia il
@@ -173,6 +174,10 @@ export function Shell({
 
   return (
     <div className="min-h-dvh bg-background">
+      {/* La palette vive nella shell perche' ⌘K deve funzionare ovunque, non solo dove
+          qualcuno si e' ricordato di montarla. */}
+      <Palette />
+
       <a
         href="#contenuto"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:shadow-md"

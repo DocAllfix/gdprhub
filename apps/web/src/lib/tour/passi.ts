@@ -57,6 +57,11 @@ export const TOUR: readonly Tour[] = [
           "Quello che cerchi finisce nell'URL, quindi una ricerca si può mandare a un collega o tenere fra i segnalibri. Non si perde ricaricando la pagina.",
       },
       {
+        titolo: "⌘K cerca ovunque",
+        testo:
+          "Premi ⌘K (o Ctrl+K) da qualunque schermata: cerca aziende, codici e adempimenti insieme. Scrivendo «dvr ferrarini» si arriva al documento di valutazione dei rischi di quel cliente, con la riga già evidenziata. È il modo più veloce di muoversi qui dentro.",
+      },
+      {
         ancora: "prima-azienda",
         titolo: "Da qui si entra nel cliente",
         testo:
