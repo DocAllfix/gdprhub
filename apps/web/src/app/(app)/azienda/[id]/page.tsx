@@ -13,6 +13,8 @@ import {
   templatePerCodice,
 } from "@gdpr/engine";
 import { azienda } from "@/features/portafoglio/dati";
+import { sommarioRegistri } from "@/features/registri/dati";
+import { IndiceRegistri } from "@/components/registri/indice";
 import { ModuliAzienda } from "@/components/portafoglio/moduli-azienda";
 import { TabellaAdempimenti, type RigaAdempimento } from "@/components/tabella-adempimenti";
 
@@ -26,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PaginaAzienda({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const dati = await azienda(id);
+  const [dati, registri] = await Promise.all([azienda(id), sommarioRegistri(id)]);
   if (!dati) notFound();
 
   const { azienda: a, moduliAttivi, adempimenti, censiti, ctx } = dati;
@@ -111,6 +113,19 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
           modificabile={ctx.ruolo !== "viewer"}
         />
       </section>
+
+      {attivi.length > 0 ? (
+        <section className="mt-8">
+          <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-sm font-semibold tracking-tight">Registri</h2>
+            <p className="max-w-xl text-[11px] leading-relaxed text-muted-foreground">
+              Gli adempimenti si fanno a scadenza; i registri raccolgono fatti che accadono quando
+              accadono. Una violazione dei dati non ha una periodicità: ha 72 ore.
+            </p>
+          </div>
+          <IndiceRegistri aziendaId={a.id} attivi={attivi} sommario={registri} />
+        </section>
+      ) : null}
 
       <section className="mt-8">
         <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-3">

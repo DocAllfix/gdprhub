@@ -1,5 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { ETICHETTE_DOMINIO, templatePerCodice, type Dominio } from "@gdpr/engine";
+import { ETICHETTE_DOMINIO, REGISTRI, templatePerCodice, type Dominio } from "@gdpr/engine";
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, obligationInstance } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";
@@ -25,7 +25,7 @@ import { inCache } from "@/lib/cache";
 // tempo. Il fuzzy serve quando l'utente non sa cosa cerca; qui lo sa.
 
 export type Risultato = {
-  readonly tipo: "azienda" | "adempimento" | "schermata";
+  readonly tipo: "azienda" | "adempimento" | "registro" | "schermata";
   readonly titolo: string;
   readonly sottotitolo: string;
   readonly percorso: string;
@@ -90,6 +90,25 @@ async function costruisciIndice(organizationId: string): Promise<VoceIndice[]> {
           columns: { codice: true, dominio: true, assessmentId: true },
         });
 
+  // I REGISTRI ENTRANO NELL'INDICE COME VOCI PROPRIE.
+  //
+  // Chi cerca «violazioni ferrarini» non sta cercando un adempimento: sta cercando il
+  // registro. Sono undici righe per azienda contro le centosettantuno degli adempimenti,
+  // e senza di esse l'unico modo di arrivarci sarebbe passare dalla scheda azienda.
+  for (const a of aziende) {
+    for (const r of REGISTRI) {
+      if (!attivi.has(`${a.id}|${r.dominio}`)) continue;
+      voci.push({
+        tipo: "registro",
+        titolo: r.nome,
+        sottotitolo: `${a.nome} · ${r.norma}`,
+        percorso: `/azienda/${a.id}/registro/${r.tipo}`,
+        dominio: r.dominio,
+        cerca: `${r.nome} ${r.nomeSingolare} ${a.nome} ${r.norma}`.toLowerCase(),
+      });
+    }
+  }
+
   for (const i of istanze) {
     const aziendaId = aziendaDi.get(i.assessmentId);
     if (!aziendaId || !attivi.has(`${aziendaId}|${i.dominio}`)) continue;
@@ -128,7 +147,7 @@ export async function cerca(query: string): Promise<readonly Risultato[]> {
 
   // L'ordine dei tipi non è alfabetico: chi cerca digita quasi sempre il nome di un'azienda
   // o un codice, e le schermate sono il caso raro. Metterle in cima le farebbe scorrere.
-  const peso = { azienda: 0, adempimento: 1, schermata: 2 } as const;
+  const peso = { azienda: 0, registro: 1, adempimento: 2, schermata: 3 } as const;
   return trovati
     .sort((a, b) => {
       const p = peso[a.tipo] - peso[b.tipo];

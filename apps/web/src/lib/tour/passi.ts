@@ -172,6 +172,32 @@ export const TOUR: readonly Tour[] = [
       },
     ],
   },
+  {
+    chiave: "registri",
+    nome: "I registri",
+    percorso: "/azienda",
+    versione: 1,
+    passi: [
+      {
+        ancora: "registri",
+        titolo: "Gli adempimenti hanno una periodicità, i fatti no",
+        testo:
+          "Tutto ciò che hai visto finora si ripete a scadenza. Una violazione dei dati, una richiesta di accesso, una segnalazione a un OdV accadono quando accadono: non hanno una periodicità, hanno un termine che parte dal giorno in cui se n'è saputo.",
+      },
+      {
+        ancora: "registro",
+        titolo: "Le 72 ore sono ore, non tre giorni",
+        testo:
+          "L'art. 33 fa decorrere il termine dal momento in cui il titolare «ne viene a conoscenza», non dal momento del fatto: sono due date diverse e spesso distanti. Una violazione saputa venerdì alle 18 va notificata entro lunedì alle 18, non entro lunedì.",
+      },
+      {
+        ancora: "apri-voce",
+        titolo: "Un obbligo assolto senza dire come non prova niente",
+        testo:
+          "Per chiudere un termine il sistema chiede l'esito: a chi, quando, con quale atto. È una riga in più da scrivere oggi e l'unica cosa che regge davanti a un ispettore fra due anni, quando nessuno si ricorda più i dettagli.",
+      },
+    ],
+  },
 ];
 
 export const tourPerChiave = (chiave: string): Tour | undefined =>

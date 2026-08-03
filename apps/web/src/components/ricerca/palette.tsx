@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, CornerDownLeft, FileText, LayoutGrid, Search } from "lucide-react";
+import { BookMarked, Building2, CornerDownLeft, FileText, LayoutGrid, Search } from "lucide-react";
 import { cercaGlobale } from "@/features/ricerca/azioni";
 import type { Risultato } from "@/features/ricerca/dati";
 import { cn } from "@/lib/utils";
@@ -22,8 +22,8 @@ import { cn } from "@/lib/utils";
 // tasto. Senza, digitare «ferrarini» manderebbe nove richieste, otto delle quali per
 // risultati che nessuno leggerà. Con un ritardo più lungo la palette sembra lenta.
 
-const ICONA = { azienda: Building2, adempimento: FileText, schermata: LayoutGrid } as const;
-const ETICHETTA_TIPO = { azienda: "Azienda", adempimento: "Adempimento", schermata: "Vai a" } as const;
+const ICONA = { azienda: Building2, adempimento: FileText, registro: BookMarked, schermata: LayoutGrid } as const;
+const ETICHETTA_TIPO = { azienda: "Azienda", adempimento: "Adempimento", registro: "Registro", schermata: "Vai a" } as const;
 
 export function Palette() {
   const router = useRouter();
@@ -130,7 +130,7 @@ export function Palette() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={suTastoLista}
-            placeholder="Cerca un'azienda, un codice, un adempimento"
+            placeholder="Cerca un'azienda, un codice, un registro"
             aria-label="Cerca"
             className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-faint-foreground"
           />

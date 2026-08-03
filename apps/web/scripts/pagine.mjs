@@ -70,6 +70,43 @@ export const PAGINE = [
     dinamica: true,
     atteso: "[data-tour=proiezione]",
   },
+  // I REGISTRI SONO UNA PAGINA SOLA, parametrica sul tipo, ma non basta verificarne uno.
+  // Quel che cambia fra un tipo e l'altro è la REGOLA DI TERMINE e l'insieme dei campi, ed
+  // è lì che si rompe: questi quattro coprono tutte e quattro le regole (ore · giorni ·
+  // validità · anagrafica), i tre domini e tutti i tipi di campo. Gli altri sette sono la
+  // stessa pagina con altre etichette.
+  {
+    percorso: "/azienda/:prima/registro/violazione",
+    nome: "Registro violazioni · termine in ore",
+    fase: 13,
+    autenticata: true,
+    dinamica: true,
+    atteso: "[data-tour=registro]",
+  },
+  {
+    percorso: "/azienda/:prima/registro/trattamento",
+    nome: "Registro dei trattamenti · anagrafica",
+    fase: 13,
+    autenticata: true,
+    dinamica: true,
+    atteso: "[data-tour=registro]",
+  },
+  {
+    percorso: "/azienda/:prima/registro/segnalazione",
+    nome: "Whistleblowing · termine in giorni",
+    fase: 14,
+    autenticata: true,
+    dinamica: true,
+    atteso: "[data-tour=registro]",
+  },
+  {
+    percorso: "/azienda/:prima/registro/formazione",
+    nome: "Registro formazione · validità",
+    fase: 15,
+    autenticata: true,
+    dinamica: true,
+    atteso: "[data-tour=registro]",
+  },
   {
     percorso: "/scadenzario",
     nome: "Scadenzario unificato",

@@ -108,3 +108,5 @@ export function categorieDi(dominio: Dominio): readonly string[] {
 export function ruoliDi(dominio: Dominio): readonly string[] {
   return [...new Set(CATALOGHI[dominio].map((t) => t.ruolo))];
 }
+export * from "./registri/tipi";
+export * from "./registri/termini";
