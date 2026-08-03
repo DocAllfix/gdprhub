@@ -1,6 +1,6 @@
 # Stato delle fasi
 
-Aggiornato al 2026-08-02. Istanza vetrina: **https://gdprhub.vercel.app**
+Aggiornato al 2026-08-03. Istanza vetrina: **https://gdprhub.vercel.app**
 
 Ogni fase è chiusa solo con output reale riportato: typecheck, lint, test, cancello visivo
 eseguito, e — dove esiste un rischio d'ambiente — verifica **contro la produzione** e non
@@ -19,6 +19,37 @@ soltanto contro il portatile.
 | **F5b** | `DESIGN.md`, token, shadcn/ui + TanStack Table, `/design`                    | cancello verde in due temi, 21 elementi cliccati per vista                   |
 | **F5c** | Quattro prototipi di documento con font incorporati                          | PDF generati **su Vercel**; nomi dei font letti dentro il file               |
 | **F6**  | Shell, accesso, primo accesso, portafoglio, moduli, impostazioni             | percorso completo con DevTools + cancello sulle pagine protette              |
+| **F5d** | **Rifacimento della forma**: oliva hue 110, Geist, schema «quieto»           | scelto dal committente su anteprime navigabili, non su descrizioni          |
+
+## F5d — come si è arrivati alla forma
+
+Vale la pena scriverlo, perché il metodo era sbagliato e cambiarlo è ciò che ha sbloccato.
+
+Per quattro giri ho descritto modifiche ai token e il committente ha risposto «fa cagare»,
+che è un giudizio corretto e inutilizzabile. Il metodo giusto si è rivelato un altro:
+**costruire le alternative e farle guardare**, sullo stesso contenuto reale, in entrambi i
+temi, su tutte le schermate insieme — perché una direzione può reggere sul cruscotto e
+crollare sulla tabella da sessantaquattro righe, e accorgersene alla terza schermata
+significa averne due da riscrivere.
+
+Le anteprime vivono sotto `/varianti` e sono ancora online. La sequenza delle scelte:
+
+| Passo | Alternative mostrate                          | Scelta                     |
+| ----- | --------------------------------------------- | -------------------------- |
+| 1     | Terminale · Schede · Editoriale               | **Schede**                 |
+| 2     | Perizia (Plex+serif) · Console (Geist) · Gazzetta | **Console → Geist**    |
+| 3     | Filetto · Piano · Fascia                      | **Piano**                  |
+| 4     | Quieto · Steso · Inciso                       | **Quieto**                 |
+| 5     | Notte 288 · Carta · Terra 78                  | tutte scartate             |
+| 6     | Grafite · Oliva 110 · Melanzana 307           | **Oliva**                  |
+| 7     | Binario · Contesto · Testata (barra laterale) | **Contesto** _(assunto)_   |
+
+Il passo 7 è l'unico dedotto e non dichiarato: la risposta è stata «mi piace più oliva
+barra», che corregge il colore rispetto alla mia raccomandazione e non nomina la barra. Ho
+applicato la disposizione che avevo raccomandato — colonna di contesto — e l'ho dichiarato.
+**Se era un'altra, si cambia in un file.**
+
+Il ragionamento su ciascuna scelta, con i costi, sta in `DESIGN.md`.
 
 ## Difetti trovati dalla verifica, non dalla lettura del codice
 
@@ -34,6 +65,10 @@ Sono elencati perché ognuno è passato per una build verde.
 | F6   | `APP_URL` diverso dall'origine reale: 403 «Invalid origin»       | all'accesso del committente sulla vetrina         |
 | F6   | Il modulo «nuova azienda» si azzera se la validazione fallisce   | alla prima partita IVA sbagliata                  |
 | F6   | Un'azienda appena creata si presentava «in regola» in verde      | mai, ed è il problema: era una bugia rassicurante |
+| F5d  | `<title>` dentro un `<svg>`: React 19 lo solleva nella testa e rompe l'idratazione | in produzione, come errore #418 minificato |
+| F5d  | `overflow: hidden` su un antenato annulla `position: sticky`     | la barra spariva scorrendo, e io avevo scritto che restava |
+| F5d  | Il cancello chiedeva `/azienda/<id>/d81/d81`: nove 404           | il difetto era **nel cancello**, causato dal nuovo collegamento in barra |
+| F5d  | Cancello bocciato tre volte per 401, non per il limitatore       | un giro di collaudo aveva cambiato le password in banca dati |
 
 ## Dove gira il calcolo
 
