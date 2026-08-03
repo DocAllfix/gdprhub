@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Building2, CalendarClock, FileText, LayoutGrid, LogOut, Menu, Settings, X } from "lucide-react";
@@ -87,6 +87,26 @@ export function Shell({
   const router = useRouter();
   const [apertaSuMobile, setApertaSuMobile] = useState(false);
   const [uscendo, setUscendo] = useState(false);
+
+  // ESC CHIUDE IL CASSETTO, da qualunque punto si stia guardando.
+  //
+  // Il cassetto copre il viewport e il velo cattura ogni clic: senza una via d'uscita da
+  // tastiera, chi non usa il puntatore ci resta dentro. È il requisito di qualunque
+  // pannello modale, e non è un dettaglio da collaudo — è la differenza fra un'interfaccia
+  // usabile e una che intrappola.
+  //
+  // L'ascolto sta sul documento e non sul pannello. Legandolo al pannello funziona solo
+  // finché il fuoco è dentro: basta un clic andato a vuoto, o un ridisegno che riporta il
+  // fuoco sul corpo della pagina, e il tasto non arriva più a nessuno. Un'uscita che
+  // funziona «quasi sempre» non è un'uscita.
+  useEffect(() => {
+    if (!apertaSuMobile) return;
+    const suTasto = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setApertaSuMobile(false);
+    };
+    document.addEventListener("keydown", suTasto);
+    return () => document.removeEventListener("keydown", suTasto);
+  }, [apertaSuMobile]);
 
   const esci = async () => {
     setUscendo(true);
@@ -231,15 +251,6 @@ export function Shell({
             `translate-x` da solo lo lascia nell'ordine di tabulazione, e chi naviga da
             tastiera attraverserebbe comandi che non vede. */}
         <aside
-          // ESC CHIUDE, come per qualunque pannello che occupa lo schermo.
-          //
-          // Il cassetto copre il viewport e il velo cattura i clic: senza una via d'uscita
-          // da tastiera, chi non usa il puntatore ci resta dentro. Il tasto si ascolta qui,
-          // sul pannello, così basta che il fuoco sia su uno qualunque dei suoi comandi —
-          // ed è dove lo portiamo appena si apre.
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setApertaSuMobile(false);
-          }}
           className={cn(
             "fixed inset-y-0 left-0 z-40 flex w-56 shrink-0 flex-col bg-sidebar px-3 py-4 text-sidebar-foreground transition-transform duration-200 ease-out lg:hidden",
             apertaSuMobile ? "translate-x-0" : "invisible -translate-x-full",

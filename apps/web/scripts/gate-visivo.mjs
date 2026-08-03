@@ -336,21 +336,38 @@ async function verificaPagina(browser, pagina, misura, tema) {
     // premerlo qui è esattamente ciò che farebbe una persona.
     const velo = tab.locator(".fixed.inset-0[aria-label^='Chiudi']");
     if ((await velo.count()) > 0 && (await velo.first().isVisible())) {
-      await velo
-        .first()
-        .click({ timeout: 3_000 })
-        .catch(() => {});
-      // SI ASPETTA CHE IL VELO SPARISCA DAVVERO, non un tempo scelto a occhio.
+      // SI CHIUDE CON ESC, non cliccando il velo.
       //
-      // Qui c'erano 150 millisecondi fissi, e il cassetto rientra in 200: per quei
-      // cinquanta millesimi il pannello copriva ancora il pulsante che l'aveva aperto, e
-      // il ritentativo trovava l'elenco degli elementi già cambiato sotto. Quattro «clic
-      // fallito» su un pulsante che funziona benissimo, sempre e solo sotto `lg`.
+      // Il velo è largo quanto il viewport, e Playwright clicca il CENTRO di un elemento:
+      // su un telefono da 390 px il centro cade a x=195, dentro i 224 px del cassetto che
+      // sta sopra di esso. La verifica di raggiungibilità falliva, il `catch` la
+      // silenziava, e il cassetto restava aperto a coprire il pulsante che l'aveva
+      // aperto: quattro «clic fallito» su un pulsante che funziona benissimo, sempre e
+      // solo sotto `lg`. Ho creduto per due giri che fosse una questione di tempi.
+      //
+      // Esc è la via d'uscita che il prodotto offre a chi non usa il puntatore, e usarla
+      // qui la verifica a ogni pagina invece di darla per buona una volta sola.
+      await tab.keyboard.press("Escape");
       await velo
         .first()
         .waitFor({ state: "hidden", timeout: 3_000 })
         .catch(() => {});
     }
+
+    // SI TOGLIE IL FUOCO PRIMA DI CLICCARE, perché qui si sta impersonando un puntatore.
+    //
+    // «Salta al contenuto» è `sr-only` finché non riceve il fuoco, e allora si piazza in
+    // alto a sinistra — sopra il pulsante del menu del telefono, che sta nello stesso
+    // angolo. Chi clicca col dito non ha mai un collegamento di salto acceso; il cancello
+    // sì, perché il clic precedente gliel'ha lasciato addosso, e da lì in poi il menu è
+    // coperto da un elemento che per un utente vero non c'è.
+    //
+    // La navigazione da tastiera si verifica a parte, con la propria passata: lì il fuoco
+    // è l'oggetto della prova, qui è un residuo.
+    await tab.evaluate(() => {
+      const attivo = document.activeElement;
+      if (attivo instanceof HTMLElement) attivo.blur();
+    });
 
     const primaConsole = messaggi.length;
     const primaRete = risposteRotte.length;
@@ -378,7 +395,33 @@ async function verificaPagina(browser, pagina, misura, tema) {
       cliccato = true;
       await tab.waitForTimeout(200);
     } catch (e) {
-      segnala(etichetta, `clic fallito su ${descrizione}: ${e.message.split("\n")[0]}`);
+      // QUANDO UN CLIC FALLISCE, SI DICE COSA C'ERA SOPRA.
+      //
+      // «Timeout 5000ms exceeded» non è una diagnosi: è la constatazione che qualcosa
+      // impediva il clic, e lascia a chi legge il compito di indovinare cosa. Ho perso tre
+      // giri a ipotizzare tempi di animazione per un pulsante coperto da un pannello.
+      // Un'informazione sola — quale elemento occupa quel punto — chiude la domanda subito.
+      let coperto = "";
+      try {
+        const riquadro = await elemento.first().boundingBox();
+        if (riquadro) {
+          coperto = await tab.evaluate(
+            ([x, y]) => {
+              const sopra = document.elementFromPoint(x, y);
+              if (!sopra) return "niente";
+              const classi = String(sopra.className ?? "").slice(0, 60);
+              return `${sopra.tagName.toLowerCase()}${classi ? `.${classi}` : ""}`;
+            },
+            [riquadro.x + riquadro.width / 2, riquadro.y + riquadro.height / 2],
+          );
+        }
+      } catch {
+        coperto = "";
+      }
+      segnala(
+        etichetta,
+        `clic fallito su ${descrizione}: ${e.message.split("\n")[0]}${coperto ? ` — in quel punto c'è ${coperto}` : ""}`,
+      );
     }
 
     // Una richiesta respinta non è di per sé un difetto: premere «Accedi» a modulo vuoto
