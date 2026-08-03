@@ -88,6 +88,12 @@ export const TOUR: readonly Tour[] = [
           "«Ci sono trentanove adempimenti scaduti» è una constatazione, e chi la ascolta la sapeva già. «Con questi cinque interventi l'esposizione scende da 71 a 48» è una frase su cui si decide. Il calcolo è lo stesso del cruscotto: nessuna stima a parte.",
       },
       {
+        ancora: "vai-reati",
+        titolo: "Un OdV ragiona per reati, non per attività",
+        testo:
+          "La domanda che si fa in riunione non è «quante attività sono aperte»: è «il rischio di corruzione è presidiato?». Questa mappa risponde a quella, e conta solo i presìdi fatti E ancora validi — un DVR aggiornato quattro anni fa non esonera da niente ai sensi dell'art. 6.",
+      },
+      {
         ancora: "vai-relazioni",
         titolo: "La relazione è il documento che si consegna",
         testo:

@@ -70,6 +70,14 @@ export const PAGINE = [
     dinamica: true,
     atteso: "[data-tour=proiezione]",
   },
+  {
+    percorso: "/azienda/:prima/reati",
+    nome: "Mappa dei reati presupposto",
+    fase: 14,
+    autenticata: true,
+    dinamica: true,
+    atteso: "[data-tour=reati]",
+  },
   // I REGISTRI SONO UNA PAGINA SOLA, parametrica sul tipo, ma non basta verificarne uno.
   // Quel che cambia fra un tipo e l'altro è la REGOLA DI TERMINE e l'insieme dei campi, ed
   // è lì che si rompe: questi quattro coprono tutte e quattro le regole (ore · giorni ·

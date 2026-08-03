@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, FileText, Scale, SlidersHorizontal } from "lucide-react";
 import {
   DOMINI,
   ETICHETTE_DOMINIO,
@@ -98,6 +98,19 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
           <SlidersHorizontal className="size-4" aria-hidden />
           Simulatore
         </Link>
+        {/* LA MAPPA DEI REATI STA QUI E SOLO SE IL 231 È ATTIVO. È la vista che un
+            Organismo di Vigilanza apre per prima: non «quante attività sono aperte», ma
+            «il rischio di corruzione è presidiato?». */}
+        {moduliAttivi.has("d231") ? (
+          <Link
+            href={`/azienda/${id}/reati`}
+            data-tour="vai-reati"
+            className="inline-flex items-center gap-2 rounded-md border border-border px-3.5 py-2 text-sm hover:bg-accent"
+          >
+            <Scale className="size-4" aria-hidden />
+            Reati presupposto
+          </Link>
+        ) : null}
         <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
           Il documento che si consegna. Congela i numeri del giorno in cui è generato: se i dati cambiano non
           cambia, se ne genera uno nuovo.
