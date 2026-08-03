@@ -36,6 +36,8 @@ export type Pagina = {
    * a mano. Il cancello non la conta come pagina mal riempita.
    */
   readonly aerata?: boolean;
+  /** Classe aggiuntiva sul foglio: serve alla copertina, che non ha margini propri. */
+  readonly classe?: string;
 };
 
 // --- Stima del costo di una riga -------------------------------------------------------
@@ -79,7 +81,7 @@ export function componi(doc: Documento): string {
   const totale = doc.pagine.length;
   const fogli = doc.pagine
     .map((p, i) => {
-      if (p.nuda) return `<section class="pagina">${p.corpo}</section>`;
+      if (p.nuda) return `<section class="pagina${p.classe ? ` ${p.classe}` : ""}">${p.corpo}</section>`;
       return `<section class="pagina${p.aerata ? " pagina-aerata" : ""}">
   <div class="testatina"><span>${esc(doc.testatina.sinistra)}</span><span>${esc(doc.testatina.destra)}</span></div>
   ${p.corpo}

@@ -95,6 +95,11 @@ export type Snapshot = {
   readonly critiche: readonly VoceCritica[];
   readonly prossimeScadenze: readonly VoceCritica[];
   readonly esclusioni: readonly { readonly dominio: Dominio; readonly codice: string; readonly titolo: string; readonly motivazione: string }[];
+  /** Distribuzioni per i grafici. Congelate come tutto il resto: il documento non le ricalcola. */
+  readonly perCategoria: readonly { readonly etichetta: string; readonly quanti: number; readonly scaduti: number }[];
+  readonly perRuolo: readonly { readonly etichetta: string; readonly quanti: number; readonly scaduti: number }[];
+  /** Dodici mesi di carico futuro, impilati per decreto. */
+  readonly caricoMensile: readonly { readonly mese: number; readonly anno: number; readonly per: Readonly<Record<string, number>>; readonly totale: number }[];
   /** Da dove vengono i numeri: si dichiara, non si fa dedurre. */
   readonly metodo: readonly string[];
 };
@@ -286,6 +291,9 @@ export async function costruisciSnapshot(
         };
       })
       .slice(0, 60),
+    perCategoria: distribuzione(tutti, (a) => a.categoria, 8),
+    perRuolo: distribuzione(tutti, (a) => a.ruolo, 7),
+    caricoMensile: carico(tutti, oggi),
     metodo: [
       "La conformità effettiva conta gli adempimenti chiusi E ancora validi: un documento scaduto non protegge, e uno mai redatto nemmeno.",
       "Gli adempimenti non applicabili escono dal denominatore e sono elencati con la loro motivazione.",
@@ -295,6 +303,57 @@ export async function costruisciSnapshot(
       "Un adempimento chiuso senza evidenza allegata resta una dichiarazione: la colonna delle evidenze lo distingue.",
     ],
   };
+}
+
+/** Distribuzione per una chiave, ordinata per quanti sono in ritardo: si guarda il peggio. */
+function distribuzione(
+  tutti: readonly { categoria: string; ruolo: string; statoScadenza: string }[],
+  chiave: (a: { categoria: string; ruolo: string }) => string,
+  quante: number,
+) {
+  const m = new Map<string, { quanti: number; scaduti: number }>();
+  for (const a of tutti) {
+    const k = chiave(a);
+    const v = m.get(k) ?? { quanti: 0, scaduti: 0 };
+    v.quanti += 1;
+    if (a.statoScadenza === "Scaduta") v.scaduti += 1;
+    m.set(k, v);
+  }
+  return [...m.entries()]
+    .map(([etichetta, v]) => ({ etichetta, ...v }))
+    .sort((x, y) => y.scaduti - x.scaduti || y.quanti - x.quanti)
+    .slice(0, quante);
+}
+
+/**
+ * Il carico dei prossimi dodici mesi.
+ *
+ * Nei prototipi di partenza il grafico dell'andamento era generato con `Math.random()`.
+ * Questo guarda avanti e non ha bisogno di storico: le scadenze future si derivano dalle
+ * periodicità. Ed è la domanda più utile — non «come sono andato» ma «quando arriva».
+ */
+function carico(tutti: readonly { dominio: string; scadenza: string | null }[], oggi: string) {
+  const anno = Number(oggi.slice(0, 4));
+  const mese = Number(oggi.slice(5, 7)) - 1;
+  const mesi = Array.from({ length: 12 }, (_, i) => {
+    const assoluto = mese + i;
+    return {
+      chiave: `${anno + Math.floor(assoluto / 12)}-${assoluto % 12}`,
+      mese: assoluto % 12,
+      anno: anno + Math.floor(assoluto / 12),
+      per: Object.fromEntries(DOMINI.map((d) => [d, 0])) as Record<string, number>,
+      totale: 0,
+    };
+  });
+  const indice = new Map(mesi.map((m) => [m.chiave, m]));
+  for (const a of tutti) {
+    if (!a.scadenza) continue;
+    const m = indice.get(`${Number(a.scadenza.slice(0, 4))}-${Number(a.scadenza.slice(5, 7)) - 1}`);
+    if (!m) continue;
+    m.per[a.dominio] = (m.per[a.dominio] ?? 0) + 1;
+    m.totale += 1;
+  }
+  return mesi.map(({ mese, anno, per, totale }) => ({ mese, anno, per, totale }));
 }
 
 /** Il totale degli adempimenti mai perde traccia della fonte: serve al frontespizio. */

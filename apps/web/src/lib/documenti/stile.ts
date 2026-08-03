@@ -433,4 +433,154 @@ span.riga-firma {
   display: block;
   height: 9mm;
 }
+
+/* ---------- Copertina a piena tinta ---------------------------------------------------
+   La lastra oliva occupa quasi tutta la pagina, con il titolo in basso a sinistra. È il
+   gesto che rende un documento riconoscibile prima di essere letto, e su una relazione di
+   conformità dice la cosa giusta: questo non è un tabulato, è un atto che qualcuno firma.
+   Il margine bianco tutto attorno serve: una tinta a filo di pagina si stampa male su ogni
+   stampante da ufficio, e su una piega si vede. */
+
+.pagina.copertina { padding: 0; }
+.lastra {
+  position: absolute;
+  inset: 12mm;
+  background: var(--oliva);
+  color: oklch(0.97 0.02 110);
+  padding: 16mm 16mm 18mm;
+  display: flex;
+  flex-direction: column;
+}
+.lastra .alto { display: flex; justify-content: space-between; align-items: baseline; }
+.lastra .marchio {
+  font-size: 8.5pt; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.lastra .qualifica {
+  font-size: 6.5pt; letter-spacing: 0.1em; text-transform: uppercase;
+  color: oklch(0.86 0.04 110);
+}
+.lastra .basso { margin-top: auto; }
+.lastra .tipo {
+  font-size: 7pt; letter-spacing: 0.14em; text-transform: uppercase;
+  color: oklch(0.86 0.04 110); margin: 0 0 4mm;
+}
+.lastra h1 {
+  font-size: 26pt; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em;
+  margin: 0 0 4mm; max-width: 130mm;
+}
+.lastra .ente { font-size: 12pt; margin: 0 0 8mm; color: oklch(0.92 0.03 110); }
+.lastra .riga-dati {
+  display: flex; gap: 10mm; flex-wrap: wrap;
+  border-top: 0.5pt solid oklch(0.5 0.06 110); padding-top: 4mm;
+}
+.lastra .riga-dati div { font-size: 7pt; line-height: 1.5; color: oklch(0.88 0.03 110); }
+.lastra .riga-dati b {
+  display: block; font-size: 6pt; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: oklch(0.74 0.05 110); margin-bottom: 1mm;
+}
+.lastra .riga-dati .grande {
+  font-family: "Geist Mono", monospace; font-size: 13pt; color: oklch(0.97 0.02 110);
+}
+
+/* ---------- Grafici -------------------------------------------------------------------
+   Ogni valore è STAMPATO: sulla carta non esiste il passaggio del mouse, e un grafico che
+   rivela i numeri solo al passaggio non rivela niente. */
+
+figure.grafico { margin: 5mm 0 0; }
+figure.grafico figcaption {
+  margin-top: 2mm; font-size: 6.5pt; color: var(--debole); line-height: 1.4;
+}
+figure.grafico figcaption .unita { float: right; }
+
+.ciambella { display: flex; align-items: center; gap: 8mm; }
+.ciambella svg { flex: 0 0 auto; }
+.cifra-svg {
+  font-family: "Geist Mono", monospace; font-size: 8px; font-weight: 500;
+  fill: var(--inchiostro); letter-spacing: -0.04em;
+}
+.sotto-svg { font-family: "Geist", sans-serif; font-size: 2.6px; fill: var(--debole); }
+
+ul.legenda { list-style: none; margin: 0; padding: 0; flex: 1; }
+ul.legenda li {
+  display: flex; align-items: baseline; gap: 2mm; font-size: 7.5pt;
+  padding: 0.8mm 0; border-bottom: 0.25pt solid var(--filo-sottile);
+}
+ul.legenda li:last-child { border-bottom: 0; }
+.pallino { width: 2mm; height: 2mm; border-radius: 0.3mm; flex: 0 0 auto; display: inline-block; }
+ul.legenda .voce { flex: 1; color: var(--tenue); }
+ul.legenda .val { font-family: "Geist Mono", monospace; font-weight: 500; }
+ul.legenda .quota {
+  font-family: "Geist Mono", monospace; font-size: 6.5pt; color: var(--debole);
+  width: 9mm; text-align: right;
+}
+
+ul.barre { list-style: none; margin: 0; padding: 0; }
+ul.barre li { display: flex; align-items: center; gap: 3mm; padding: 1mm 0; }
+ul.barre .et { flex: 0 0 44mm; font-size: 7.5pt; line-height: 1.25; }
+ul.barre .barra {
+  flex: 1; height: 2.2mm; background: var(--incavo); border-radius: 1.1mm;
+  overflow: hidden; display: flex;
+}
+ul.barre .barra.alta { height: 3.4mm; border-radius: 1.7mm; }
+ul.barre .pezzo { height: 100%; display: block; }
+ul.barre .pezzo.scaduto { background: var(--scaduta); }
+ul.barre .pezzo.resto { background: var(--filo); }
+ul.barre .val {
+  flex: 0 0 16mm; text-align: right; font-family: "Geist Mono", monospace; font-size: 7.5pt;
+}
+ul.barre .val b { color: var(--scaduta); }
+ul.barre.conformita .val { flex: 0 0 22mm; }
+ul.barre .val .den {
+  display: block; font-size: 6pt; color: var(--debole);
+}
+
+/* LE ETICHETTE DEI MESI STANNO SOTTO, e per stare sotto serve spazio riservato.
+   La prima versione le posizionava in assoluto senza che la colonna fosse il riferimento:
+   finivano tutte impilate sopra la didascalia, illeggibili. Ora ogni colonna è il proprio
+   riferimento e la fascia in fondo è alta quanto il testo che deve contenere. */
+.colonne { display: flex; gap: 2mm; }
+.colonne .scala {
+  display: flex; flex-direction: column; justify-content: space-between; height: var(--h);
+  font-family: "Geist Mono", monospace; font-size: 6pt; color: var(--debole);
+  padding-bottom: 5mm;
+}
+.colonne .campo {
+  position: relative; flex: 1; height: calc(var(--h) + 5mm); display: flex; gap: 1.4mm;
+  align-items: flex-end; padding-bottom: 5mm;
+  border-bottom: 0.5pt solid var(--filo);
+}
+.colonne .media {
+  position: absolute; left: 0; right: 0; border-top: 0.5pt dashed var(--debole);
+  margin-bottom: 5mm;
+}
+.colonne .colonna {
+  position: relative;
+  flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;
+}
+.colonne .pila { display: flex; flex-direction: column-reverse; height: 100%; justify-content: flex-start; }
+.colonne .pila .pezzo { width: 100%; display: block; }
+.colonne .colonna .et {
+  position: absolute; left: 0; right: 0; bottom: -4.6mm;
+  text-align: center; font-size: 5.5pt; color: var(--debole);
+}
+
+/* La legenda va A CAPO, non affiancata alla didascalia: sovrapposta ai mesi non si legge
+   né lei né loro. */
+.legenda-riga {
+  display: flex; gap: 5mm; align-items: center; flex-wrap: wrap;
+  margin-top: 1.5mm;
+}
+.legenda-riga .v { display: flex; align-items: center; gap: 1.2mm; }
+.legenda-riga .media-nota { color: var(--debole); }
+
+/* Il filetto oliva sopra il titolo di sezione: è il gesto che scandisce il documento e lo
+   lega alla colonna dell'applicazione. Sostituisce il numero nel margine come segnale
+   primario — quello resta, ma diventa una nota. */
+h2.sezione::before {
+  content: "";
+  display: block;
+  width: 14mm;
+  border-top: 1.6pt solid var(--oliva);
+  margin-bottom: 2.5mm;
+}
 `;

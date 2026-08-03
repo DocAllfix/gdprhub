@@ -1,6 +1,9 @@
 import { formattaIt } from "@gdpr/engine";
 import type { Snapshot, VoceCritica } from "@/features/relazioni/snapshot";
 import { componi, distribuisci, esc, type Documento, type Pagina } from "./impaginazione";
+import { barreConformita, barreOrizzontali, ciambella, colonneImpilate } from "./grafici-doc";
+
+const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
 
 // LA RELAZIONE, costruita da uno snapshot e da nient'altro.
 //
@@ -56,40 +59,42 @@ const CLASSE_SCADENZA: Record<string, string> = {
 // ============================================================================================
 
 function copertina(s: Snapshot, studio: string, numero: number, impronta: string): string {
-  const moduli = s.moduli
-    .filter((m) => m.attivo)
-    .map((m) => `${m.etichetta.breve} · ${m.etichetta.norma}`);
-  return `
-  <div class="carta-intestata">
-    <span class="studio">${esc(studio)}</span>
-    <span class="qualifica">Suite Compliance · relazione di conformità</span>
-  </div>
+  const moduli = s.moduli.filter((m) => m.attivo).map((m) => m.etichetta.breve);
+  const c = s.complessivo;
+  return `<div class="lastra">
+    <div class="alto">
+      <span class="marchio">${esc(studio)}</span>
+      <span class="qualifica">Suite Compliance</span>
+    </div>
 
-  <p class="tipo-atto">${s.ambito === "suite" ? "Relazione integrata di conformità" : "Relazione di conformità"}</p>
-  <h1 class="titolo-atto">${
-    s.ambito === "suite"
-      ? "Stato degli adempimenti sui tre decreti"
-      : `Stato degli adempimenti · ${esc(s.moduli[0]?.etichetta.esteso ?? "")}`
-  }</h1>
-  <p class="sottotitolo-atto">${esc(s.azienda.nome)}</p>
+    <div class="basso">
+      <p class="tipo">${
+        s.ambito === "suite"
+          ? "Relazione integrata di conformità · " + esc(moduli.join(" · "))
+          : "Relazione di conformità · " + esc(s.moduli[0]?.etichetta.norma ?? "")
+      }</p>
+      <h1>${
+        s.ambito === "suite"
+          ? "Stato degli adempimenti sui tre decreti"
+          : `Stato degli adempimenti<br>${esc(s.moduli[0]?.etichetta.esteso ?? "")}`
+      }</h1>
+      <p class="ente">${esc(s.azienda.nome)}${
+        s.azienda.settore ? ` · ${esc(s.azienda.settore)}` : ""
+      }${s.azienda.sede ? ` · ${esc(s.azienda.sede)}` : ""}</p>
 
-  <div class="specchietto">
-    <dl>
-      <dt>Ente destinatario</dt><dd>${esc(s.azienda.nome)}</dd>
-      ${s.azienda.sede ? `<dt>Sede</dt><dd>${esc(s.azienda.sede)}</dd>` : ""}
-      ${s.azienda.partitaIva ? `<dt>Partita IVA</dt><dd class="mono">${esc(s.azienda.partitaIva)}</dd>` : ""}
-      ${s.azienda.settore ? `<dt>Attività prevalente</dt><dd>${esc(s.azienda.settore)}</dd>` : ""}
-      <dt>Moduli in perimetro</dt><dd>${moduli.map(esc).join("<br>")}</dd>
-      <dt>Data di riferimento</dt><dd class="mono">${formattaIt(s.dataRiferimento)}</dd>
-    </dl>
-  </div>
-
-  <div class="emissione">
-    <div><b>Protocollo</b>n. ${numero} del ${formattaIt(s.dataRiferimento)}</div>
-    <div><b>Adempimenti in perimetro</b>${s.complessivo.totale}<br>conformità effettiva ${pct(
-      s.complessivo.conformitaEffettiva,
-    )} (${denom(s.complessivo.conformitaEffettiva)})</div>
-    <div><b>Impronta del contenuto</b>SHA-256<br><span class="mono">${esc(impronta.slice(0, 32))}…</span></div>
+      <div class="riga-dati">
+        <div><b>Conformità effettiva</b><span class="grande">${pct(c.conformitaEffettiva)}</span><br>${denom(
+          c.conformitaEffettiva,
+        )} applicabili</div>
+        <div><b>Esposizione residua</b><span class="grande">${c.esposizione?.indice ?? "—"}</span><br>su 100 · ${esc(
+          (c.esposizione?.giudizio ?? "").toLowerCase(),
+        )}</div>
+        <div><b>Adempimenti</b><span class="grande">${c.totale}</span><br>${c.scadute} scaduti · ${c.inScadenza} in scadenza</div>
+        <div><b>Protocollo</b>n. ${numero} del ${formattaIt(s.dataRiferimento)}<br>SHA-256 ${esc(
+          impronta.slice(0, 16),
+        )}…</div>
+      </div>
+    </div>
   </div>`;
 }
 
@@ -162,6 +167,18 @@ function quadro(s: Snapshot): string {
       con un indice di esposizione di ${c.esposizione?.indice ?? "—"} su 100${
         c.esposizione ? `, giudicato ${esc(c.esposizione.giudizio.toLowerCase())}` : ""
       }.</p>
+
+      ${barreConformita(
+        s.moduli
+          .filter((m) => m.attivo)
+          .map((m) => ({
+            etichetta: m.etichetta.breve,
+            percentuale: m.conformitaEffettiva.percentuale,
+            denominatore: denom(m.conformitaEffettiva),
+            tinta: m.dominio,
+          })),
+        "Conformità effettiva per modulo: fatto e ancora valido.",
+      )}
 
       <table class="tabella">
         <thead><tr>
@@ -237,6 +254,86 @@ function prosaModuli(s: Snapshot): string {
     .join("");
 }
 
+/**
+ * La sezione dei grafici.
+ *
+ * Sta dopo il quadro e prima delle criticità, perché risponde alla domanda intermedia: la
+ * tabella dice quanto, l'elenco dice quali, e questa dice COME È FATTO e QUANDO ARRIVA. Su
+ * un documento che qualcuno legge in riunione è la pagina su cui ci si ferma.
+ */
+function composizione(s: Snapshot): string {
+  const c = s.complessivo;
+  const scadute = s.moduli.reduce((n, m) => n + m.scadute, 0);
+  const inScadenza = s.moduli.reduce((n, m) => n + m.inScadenza, 0);
+  const regolari = s.moduli.reduce((n, m) => n + m.regolari, 0);
+  const daProgrammare = s.moduli.reduce((n, m) => n + m.daProgrammare, 0);
+  const attivi = s.moduli.filter((m) => m.attivo);
+
+  const picco = [...s.caricoMensile].sort((a, b) => b.totale - a.totale)[0];
+
+  return `<div class="griglia">
+    <div class="margine"><span class="num">4</span>Composizione</div>
+    <div>
+      <h2 class="sezione">Di che cosa è fatto il totale</h2>
+      <p class="occhiello">I ${c.totale} adempimenti in perimetro si distribuiscono su quattro stati
+      della scadenza. Lo stato non è dichiarato da nessuno: si deriva dalla data di ultima
+      esecuzione e dalla periodicità prevista dal catalogo.</p>
+
+      ${ciambella(
+        [
+          { etichetta: "regolari", valore: regolari, tinta: "regolare" },
+          { etichetta: "in scadenza", valore: inScadenza, tinta: "imminente" },
+          { etichetta: "scaduti", valore: scadute, tinta: "scaduta" },
+          { etichetta: "da programmare", valore: daProgrammare, tinta: "programmare" },
+        ],
+        "Composizione per stato della scadenza alla data di riferimento.",
+      )}
+
+      <h3 class="paragrafo">Quando cade il lavoro</h3>
+      <p>Le scadenze dei prossimi dodici mesi si derivano dalle periodicità e sono note dal primo
+      giorno: non richiedono uno storico.${
+        picco && picco.totale > 0
+          ? ` Il mese più carico è ${esc(MESI[picco.mese] ?? "")} ${picco.anno}, con ${picco.totale}
+             ${picco.totale === 1 ? "scadenza" : "scadenze"}.`
+          : ""
+      }</p>
+      ${colonneImpilate(
+        s.caricoMensile.map((m) => ({ etichetta: MESI[m.mese] ?? "", per: m.per, totale: m.totale })),
+        attivi.map((m) => ({ chiave: m.dominio, etichetta: m.etichetta.breve })),
+        "Adempimenti in scadenza per mese, distinti per decreto.",
+      )}
+    </div>
+  </div>`;
+}
+
+/**
+ * Dove si concentra lo scoperto: per categoria e per responsabile.
+ *
+ * Il prototipo 231 aveva lo stesso grafico e diceva solo quanti adempimenti c'erano per
+ * categoria — una proprietà del catalogo, che non cambia mai. Portare dentro la quota
+ * scaduta lo trasforma da inventario in diagnosi.
+ */
+function distribuzioni(s: Snapshot): string {
+  const primoRuolo = s.perRuolo[0];
+  return `<div class="griglia">
+    <div class="margine"><span class="num">5</span>Distribuzione</div>
+    <div>
+      <h2 class="sezione">Dove si concentra lo scoperto</h2>
+      <p class="occhiello">Le due letture rispondono a due domande diverse: quali aree del catalogo
+      sono indietro, e su chi pesa l'arretrato.${
+        primoRuolo && primoRuolo.scaduti > 0
+          ? ` Il carico maggiore è su ${esc(primoRuolo.etichetta)}, con ${primoRuolo.scaduti}
+             ${primoRuolo.scaduti === 1 ? "adempimento scaduto" : "adempimenti scaduti"} su
+             ${primoRuolo.quanti}.`
+          : ""
+      }</p>
+
+      ${barreOrizzontali(s.perCategoria, "Per categoria del catalogo.", "in rosso la quota scaduta")}
+      ${barreOrizzontali(s.perRuolo, "Per responsabile dell'adempimento.", "in rosso la quota scaduta")}
+    </div>
+  </div>`;
+}
+
 function tabellaVoci(voci: readonly VoceCritica[]): string {
   return `<table class="tabella fitta">
     <thead><tr>
@@ -265,7 +362,7 @@ function pagineCritiche(s: Snapshot): Pagina[] {
     return [
       {
         corpo: `<div class="griglia">
-        <div class="margine"><span class="num">4</span>Criticità</div>
+        <div class="margine"><span class="num">6</span>Criticità</div>
         <div>
           <h2 class="sezione">Adempimenti critici aperti</h2>
           <p class="occhiello">Nessun adempimento di priorità critica risulta aperto alla data della
@@ -284,7 +381,7 @@ function pagineCritiche(s: Snapshot): Pagina[] {
   const blocchi = distribuisci(s.critiche, () => 1, CAPIENZA_PRIMA, CAPIENZA_SEGUENTI);
   return blocchi.map((voci, i) => ({
     corpo: `<div class="griglia">
-      <div class="margine">${i === 0 ? '<span class="num">4</span>Criticità' : "segue"}</div>
+      <div class="margine">${i === 0 ? '<span class="num">6</span>Criticità' : "segue"}</div>
       <div>
         ${
           i === 0
@@ -306,7 +403,7 @@ function pagineScadenze(s: Snapshot): Pagina[] {
   const blocchi = distribuisci(s.prossimeScadenze, () => 1, CAPIENZA_PRIMA, CAPIENZA_SEGUENTI);
   return blocchi.map((voci, i) => ({
     corpo: `<div class="griglia">
-      <div class="margine">${i === 0 ? '<span class="num">5</span>Scadenzario' : "segue"}</div>
+      <div class="margine">${i === 0 ? '<span class="num">7</span>Scadenzario' : "segue"}</div>
       <div>
         ${
           i === 0
@@ -345,13 +442,13 @@ function esclusioniEChiusura(s: Snapshot, studio: string): Pagina[] {
   return [
     {
       corpo: `<div class="griglia">
-      <div class="margine"><span class="num">6</span>Esclusioni</div>
+      <div class="margine"><span class="num">8</span>Esclusioni</div>
       <div>
         <h2 class="sezione">Adempimenti non applicabili</h2>
         ${esclusioni}
       </div>
 
-      <div class="margine"><span class="num">7</span>Chiusura</div>
+      <div class="margine"><span class="num">9</span>Chiusura</div>
       <div>
         <h2 class="sezione">Dichiarazione di redazione</h2>
         <p>La presente relazione è generata dalla Suite Compliance sui dati registrati
@@ -379,9 +476,11 @@ export function documentoRelazione(
   opzioni: { studio: string; numero: number; impronta: string },
 ): Documento {
   const pagine: Pagina[] = [
-    { corpo: copertina(s, opzioni.studio, opzioni.numero, opzioni.impronta), nuda: true },
+    { corpo: copertina(s, opzioni.studio, opzioni.numero, opzioni.impronta), nuda: true, classe: "copertina" },
     { corpo: oggettoEMetodo(s) },
     { corpo: quadro(s) },
+    { corpo: composizione(s) },
+    { corpo: distribuzioni(s) },
     ...pagineCritiche(s),
     ...pagineScadenze(s),
     ...esclusioniEChiusura(s, opzioni.studio),
