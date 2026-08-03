@@ -559,7 +559,7 @@ async function ripristinaModuli(browser, pagine, quando = "") {
     );
   }
   await contesto.close();
-  if (riaccesi > 0) console.log(`\n  ripristinati ${riaccesi} moduli spenti dai clic del cancello`);
+  if (riaccesi > 0) console.log(`\n  ${quando}: riaccesi ${riaccesi} moduli spenti da clic del cancello`);
 }
 
 async function main() {

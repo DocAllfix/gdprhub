@@ -1,8 +1,9 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { AlertTriangle, Check, ChevronDown, Clock, Plus } from "lucide-react";
-import { formattaIt, type DefinizioneRegistro } from "@gdpr/engine";
+import { AlertTriangle, Check, ChevronDown, Clock, Link2, Plus } from "lucide-react";
+import Link from "next/link";
+import { formattaIt, registroPerTipo, type DefinizioneRegistro, type LegameRegistri } from "@gdpr/engine";
 import { apriVoce, assolviVoce, cambiaStatoVoce, type EsitoRegistro } from "@/features/registri/azioni";
 import type { VoceRegistro } from "@/features/registri/dati";
 import { Button } from "@/components/ui/button";
@@ -40,11 +41,13 @@ export function ElencoRegistro({
   aziendaId,
   def,
   voci,
+  legami,
   modificabile,
 }: {
   aziendaId: string;
   def: DefinizioneRegistro;
   voci: readonly VoceRegistro[];
+  legami: readonly LegameRegistri[];
   modificabile: boolean;
 }) {
   const [apriModulo, setApriModulo] = useState(false);
@@ -215,6 +218,33 @@ export function ElencoRegistro({
           </form>
         ) : null}
       </section>
+
+      {/* IL FATTO È UNO, I DECRETI SONO DUE, e l'avviso viene DOPO il pannello.
+          Prima si legge che registro è, con la sua norma e il suo termine; poi cosa altro
+          quello stesso fatto fa scattare. Messo in cima parlava dell'Organismo di
+          Vigilanza a chi non aveva ancora letto di stare in un registro di violazioni.
+
+          Il prototipo del committente annotava «Coordinamento DPO-OdV 72h» a margine di una
+          riga: una nota su un foglio, che non avvisa nessuno. Non apre niente da sé — un
+          atto che nessuno ha scritto, con una data che nessuno ha deciso, sarebbe magia. */}
+      {legami.map((l) => {
+        const dove = registroPerTipo(l.a);
+        return (
+          <div key={l.a} className="pannello flex flex-wrap items-start gap-3 p-4">
+            <Link2 className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm leading-relaxed">{l.avviso}</p>
+              <p className="mt-1 font-mono text-[10px] text-faint-foreground">{l.norma}</p>
+            </div>
+            <Link
+              href={`/azienda/${aziendaId}/registro/${l.a}`}
+              className="shrink-0 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-accent"
+            >
+              {dove?.nome ?? l.a}
+            </Link>
+          </div>
+        );
+      })}
 
       {errore ? (
         <p role="alert" className="text-sm leading-relaxed text-scaduta">
