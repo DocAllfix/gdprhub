@@ -88,7 +88,13 @@ const oreFa = (ore) => {
 async function compila(tab, { quando }) {
   const modulo = tab.locator("form", { has: tab.locator('input[name="titolo"]') });
 
-  await modulo.locator('input[name="titolo"]').fill(`Prova automatica ${Date.now()}`);
+  // Il titolo è irripetibile ed è la CHIAVE con cui la prova ritrova la propria riga.
+  // Leggere «la prima dell'elenco» sembrava equivalente e non lo è: l'elenco è ordinato
+  // per data di conoscenza, quindi una voce datata ottanta ore fa finisce SOTTO quelle
+  // che un giro precedente ha lasciato lì. Il primo giro l'ha nascosto perché il registro
+  // era vuoto, e il secondo ha letto lo stato di una voce di un'altra prova.
+  const titolo = `Prova automatica ${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  await modulo.locator('input[name="titolo"]').fill(titolo);
   await modulo.locator('input[name="conosciutoIl"]').fill(quando);
 
   // I campi propri del tipo: si riconoscono dal prefisso `d_`.
@@ -111,11 +117,12 @@ async function compila(tab, { quando }) {
     else if (tipo === "date") await campo.fill(new Date().toISOString().slice(0, 10));
     else await campo.fill("Valore di prova");
   }
+  return titolo;
 }
 
-/** Il testo dello stato del termine della prima riga dell'elenco. */
-async function primoTermine(tab) {
-  const riga = tab.locator("main ul > li").first();
+/** Lo stato del termine della riga che porta questo titolo, e di nessun'altra. */
+async function termineDi(tab, titolo) {
+  const riga = tab.locator("main ul > li").filter({ hasText: titolo }).first();
   await riga.waitFor({ state: "visible", timeout: 15_000 });
   return (await riga.locator("span.font-mono").first().innerText()).trim();
 }
@@ -169,10 +176,10 @@ async function principale() {
       waitUntil: "networkidle",
     });
     await tab.getByRole("button", { name: /^Apri violazione$/ }).click();
-    await compila(tab, { quando: oreFa(caso.ore) });
+    const titolo = await compila(tab, { quando: oreFa(caso.ore) });
     await tab.locator('form button[type="submit"]').first().click();
     await tab.waitForTimeout(2500);
-    const termine = await primoTermine(tab);
+    const termine = await termineDi(tab, titolo);
     prova(caso.nome, caso.atteso.test(termine), `letto «${termine}»`);
   }
 
@@ -220,22 +227,32 @@ async function principale() {
     `avviso «${rifiuto.slice(0, 90)}»`,
   );
 
+  // LA RIGA GIUSTA NON È LA PRIMA. L'elenco è ordinato per data di conoscenza, quindi in
+  // cima c'è la violazione di due ore fa: chiuderla darebbe «assolto nei termini», che è
+  // giusto e non prova niente. La proprietà da verificare è che il RITARDO resti scritto,
+  // e per verificarla bisogna chiudere quella scaduta.
   await tab.goto(new URL(`${azienda}/registro/violazione`, BASE).toString(), {
     waitUntil: "networkidle",
   });
-  const riga2 = tab.locator("main ul > li").first();
-  await riga2.locator("button[aria-expanded]").click();
+  const scaduta = tab
+    .locator("main ul > li")
+    .filter({ hasText: /scadut/i })
+    .first();
+  await scaduta.locator("button[aria-expanded]").click();
   await tab.waitForTimeout(500);
-  await riga2
+  await scaduta
     .locator('textarea[name="esito"]')
     .fill("Notifica trasmessa al Garante il 3 agosto, protocollo 2026/1187.");
-  await riga2.getByRole("button", { name: /assolvimento/i }).click();
+  await scaduta.getByRole("button", { name: /assolvimento/i }).click();
   await tab.waitForTimeout(3000);
-  const dopoChiusura = await primoTermine(tab);
+  const tardive = await tab
+    .locator("main ul > li")
+    .filter({ hasText: /ritardo/i })
+    .count();
   prova(
-    "assolta in ritardo resta scritta come tardiva",
-    /ritardo/i.test(dopoChiusura),
-    `letto «${dopoChiusura}»`,
+    "assolta fuori termine resta scritta come tardiva, e non si sbianca",
+    tardive > 0,
+    `nessuna riga porta «in ritardo»`,
   );
 
   // ── 4. Tutti e undici i registri accettano una voce ─────────────────────────────
@@ -320,7 +337,7 @@ async function principale() {
   await tab.waitForTimeout(400);
   await tab.keyboard.type("violazioni");
   await tab.waitForTimeout(1800);
-  const risultati = await tab.locator('[role="option"], [role="listbox"] li, [cmdk-item]').allInnerTexts();
+  const risultati = await tab.locator('[role="dialog"] [role="option"]').allInnerTexts();
   const trovato = risultati.some((r) => /violazion/i.test(r));
   prova("⌘K trova il registro delle violazioni", trovato, `${risultati.length} risultati`);
   if (trovato) {

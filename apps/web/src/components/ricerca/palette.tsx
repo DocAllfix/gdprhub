@@ -142,6 +142,16 @@ export function Palette() {
             onKeyDown={suTastoLista}
             placeholder="Cerca un'azienda, un codice, un registro"
             aria-label="Cerca"
+            // I RUOLI NON SONO DECORAZIONE. Le frecce spostano una selezione che
+            // esiste solo come colore di sfondo: senza `aria-activedescendant` un
+            // lettore di schermo continua ad annunciare il campo di testo vuoto
+            // mentre l'utente scorre i risultati, e la ricerca diventa inutilizzabile
+            // per chi non vede l'evidenziazione.
+            role="combobox"
+            aria-expanded={risultati.length > 0}
+            aria-controls="risultati-ricerca"
+            aria-activedescendant={risultati[scelto] ? `risultato-${scelto}` : undefined}
+            autoComplete="off"
             className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-faint-foreground"
           />
           <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
@@ -158,13 +168,21 @@ export function Palette() {
                 : `Nessun risultato per «${query}».`}
           </p>
         ) : (
-          <ul className="max-h-[52vh] overflow-y-auto py-1.5">
+          <ul
+            id="risultati-ricerca"
+            role="listbox"
+            aria-label="Risultati"
+            className="max-h-[52vh] overflow-y-auto py-1.5"
+          >
             {risultati.map((r, i) => {
               const I = ICONA[r.tipo];
               return (
-                <li key={`${r.tipo}-${r.percorso}-${r.codice ?? ""}`}>
+                <li key={`${r.tipo}-${r.percorso}-${r.codice ?? ""}`} role="presentation">
                   <button
                     type="button"
+                    id={`risultato-${i}`}
+                    role="option"
+                    aria-selected={i === scelto}
                     onClick={() => vai(r)}
                     onMouseEnter={() => setScelto(i)}
                     className={cn(
