@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useFiltriUrl } from "@/lib/filtri-url";
 import { X } from "lucide-react";
@@ -22,6 +22,10 @@ import { cn } from "@/lib/utils";
 // chi chiamare, non cosa fare.
 
 const INIZIALI = { q: "", finestra: "30", dominio: "", azienda: "", ruolo: "", priorita: "" };
+
+/** Quante righe si disegnano alla volta. Duecento riempiono abbondantemente uno schermo
+ *  e restano leggere: sono milleseicento celle invece di diecimila. */
+const PASSO = 200;
 
 const FINESTRE = [
   { chiave: "", etichetta: "Tutte", limite: Number.MAX_SAFE_INTEGER, min: Number.MIN_SAFE_INTEGER },
@@ -61,6 +65,28 @@ export function TabellaScadenzario({
   }, [voci, f.q, f.finestra, f.dominio, f.azienda, f.ruolo, f.priorita]);
 
   const attivi = [f.q, f.dominio, f.azienda, f.ruolo, f.priorita].filter((x) => x !== "").length;
+
+  // SI DISEGNA UNA FINESTRA, NON L'INTERO ELENCO.
+  //
+  // Con quaranta aziende per tre moduli le voci sono più di mille, e mille righe da otto
+  // celle sono dodicimila nodi nel documento. Non è una preoccupazione teorica: il cancello
+  // visivo è esploso proprio qui, con un `reload` andato in timeout a trenta secondi. Prima
+  // ancora, ogni digitazione nella ricerca costringeva il browser a ridisegnare tutto.
+  //
+  // Non è impaginazione con i numeri delle pagine: è un tetto che si alza. Chi cerca una
+  // scadenza usa i filtri e la trova nelle prime righe; chi vuole scorrere tutto preme una
+  // volta e ne ottiene altre duecento. Un impaginatore costringerebbe a ricordarsi a che
+  // pagina si era, che è lavoro per l'utente al posto del computer.
+  const [tetto, setTetto] = useState(PASSO);
+  // Il tetto torna al minimo quando cambiano i filtri: restare a mille righe dopo aver
+  // ristretto la ricerca a tre significa pagare il costo senza il motivo.
+  const chiaveFiltri = `${f.q}|${f.finestra}|${f.dominio}|${f.azienda}|${f.ruolo}|${f.priorita}`;
+  const [ultimaChiave, setUltimaChiave] = useState(chiaveFiltri);
+  if (chiaveFiltri !== ultimaChiave) {
+    setUltimaChiave(chiaveFiltri);
+    setTetto(PASSO);
+  }
+  const disegnate = visibili.length > tetto ? visibili.slice(0, tetto) : visibili;
 
   return (
     <div className="space-y-3">
@@ -165,7 +191,7 @@ export function TabellaScadenzario({
                 </TableCell>
               </TableRow>
             ) : (
-              visibili.map((v) => (
+              disegnate.map((v) => (
                 <TableRow
                   key={`${v.aziendaId}-${v.dominio}-${v.codice}`}
                   className="h-riga border-b border-border-subtle last:border-0 hover:bg-accent"
@@ -215,6 +241,21 @@ export function TabellaScadenzario({
           </TableBody>
         </Table>
       </div>
+
+      {/* Il resto non è nascosto: è dichiarato, con quante righe mancano e un comando per
+          averle. Un elenco troncato in silenzio è il modo migliore per far credere a un
+          consulente che una scadenza non esiste. */}
+      {visibili.length > disegnate.length ? (
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+          <p className="text-xs text-muted-foreground">
+            Ne vedi <b className="tabular-nums">{disegnate.length}</b> di{" "}
+            <b className="tabular-nums">{visibili.length}</b>. Restringi con i filtri, oppure
+          </p>
+          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setTetto((t) => t + PASSO)}>
+            Mostra altre {Math.min(PASSO, visibili.length - disegnate.length)}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -413,7 +413,25 @@ async function main() {
     for (const pagina of pagine) {
       for (const misura of LARGHEZZE) {
         for (const tema of TEMI) {
-          await verificaPagina(browser, pagina, misura, tema);
+          // UNA PAGINA CHE ESPLODE È UN DIFETTO, NON LA FINE DEL GIRO.
+          //
+          // Fino a qui un timeout di navigazione usciva come eccezione non gestita e
+          // uccideva l'intero cancello: quarantotto combinazioni verificate, nessun
+          // verdetto stampato, e il rapporto perso. È capitato sullo scadenzario, che è
+          // la pagina più pesante del prodotto, e l'effetto è stato non sapere nulla
+          // nemmeno delle pagine già passate.
+          //
+          // Ora l'errore diventa un difetto con il suo nome e il giro prosegue. Il
+          // cancello boccia comunque — non è un modo per ignorare il problema, è un modo
+          // per vederlo insieme a tutti gli altri.
+          try {
+            await verificaPagina(browser, pagina, misura, tema);
+          } catch (errore) {
+            segnala(
+              `${pagina.percorso} · ${misura.nome} · ${tema}`,
+              `la verifica è esplosa: ${errore instanceof Error ? errore.message.split("\n")[0] : errore}`,
+            );
+          }
         }
       }
     }
