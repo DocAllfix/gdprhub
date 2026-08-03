@@ -32,7 +32,6 @@
     "@gdpr/engine": "workspace:*",
     "@neondatabase/serverless": "^1.1.0",
     "@sparticuz/chromium": "^149.0.0",
-    "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.6.25",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

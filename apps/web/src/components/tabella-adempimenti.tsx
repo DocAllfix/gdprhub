@@ -1,15 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  type ColumnDef,
-  type SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import type { AdempimentoRisolto, Dominio } from "@gdpr/engine";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,20 +8,99 @@ import { Input } from "@/components/ui/input";
 import { Codice, PastigliaDominio, Priorita, Scadenza, StatoLavoroEtichetta } from "@/components/stato";
 import { cn } from "@/lib/utils";
 
-// La tabella degli adempimenti, su TanStack Table e sui componenti shadcn.
+// La tabella degli adempimenti. Filtro, ordinamento e disegno scritti qui, senza libreria.
 //
-// Struttura presa dalla pagina «Tasks» del template MIT next-shadcn-admin-dashboard: stato,
-// priorità, responsabile, filtri a faccette. Di quel template si prende la MECCANICA, non
-// l'estetica: colori, densità e vocabolario di stato vengono da DESIGN.md.
+// PERCHÉ SENZA LIBRERIA, visto che prima c'era TanStack Table e il commento diceva che era
+// «un problema risolto». Perché costava 55 KB di JavaScript misurati nel bundle, per fare
+// tre cose che qui stanno in trenta righe: filtrare su tre campi, ordinare su sette colonne,
+// disegnare. TanStack guadagna il suo peso quando servono colonne mobili, raggruppamenti,
+// virtualizzazione, stato delle colonne persistito — niente di cui questa tabella abbia
+// bisogno. E si portava dietro un secondo costo, meno visibile: il compilatore di React
+// rifiuta di memoizzare un componente che la usa, perché `useReactTable()` restituisce
+// funzioni che non si possono memoizzare senza rischiare interfacce stantie. Una libreria
+// che disattiva l'ottimizzazione del compilatore su una tabella da centosettantuno righe è
+// una libreria che lavora contro di noi.
 //
-// Perché TanStack e non una tabella a mano: 171 righe con ordinamento, filtri e visibilità
-// delle colonne sono un problema risolto, e riscriverlo sarebbe lavoro senza valore.
+// La stessa cosa era già stata fatta sul portafoglio, e con lo stesso esito.
+//
+// Struttura e vocabolario restano quelli di prima: stato, priorità, responsabile, filtro
+// sopra la tabella. Di questo non si cambia niente — cambia solo chi lo esegue.
 
 export type RigaAdempimento = AdempimentoRisolto & {
   readonly titolo: string;
   readonly periodicitaTesto: string;
   /** Valorizzato quando l'adempimento è letto da un altro modulo. */
   readonly origine?: Dominio;
+};
+
+type Chiave = "codice" | "titolo" | "ruolo" | "periodicitaTesto" | "priorita" | "stato" | "scadenza";
+
+type Colonna = {
+  readonly chiave: Chiave;
+  readonly testa: string;
+  /** Il valore su cui si ordina. Non sempre è quello che si vede. */
+  readonly valore: (r: RigaAdempimento) => string | number;
+  readonly cella: (r: RigaAdempimento) => React.ReactNode;
+};
+
+const ORDINE_PRIORITA: Record<string, number> = { Critica: 0, Alta: 1, Media: 2, Bassa: 3 };
+
+const COLONNE: readonly Colonna[] = [
+  {
+    chiave: "codice",
+    testa: "Cod.",
+    valore: (r) => r.codice,
+    cella: (r) => <Codice codice={r.codice} {...(r.origine ? { origine: r.origine } : {})} />,
+  },
+  {
+    chiave: "titolo",
+    testa: "Adempimento",
+    valore: (r) => r.titolo,
+    cella: (r) => <span className="block max-w-md truncate">{r.titolo}</span>,
+  },
+  {
+    chiave: "ruolo",
+    testa: "Responsabile",
+    valore: (r) => r.ruolo,
+    cella: (r) => <span className="text-xs text-muted-foreground">{r.ruolo}</span>,
+  },
+  {
+    chiave: "periodicitaTesto",
+    testa: "Periodicità",
+    valore: (r) => r.periodicitaTesto,
+    cella: (r) => <span className="text-xs text-muted-foreground">{r.periodicitaTesto}</span>,
+  },
+  {
+    chiave: "priorita",
+    testa: "Priorità",
+    // Si ordina per gravità e non alfabeticamente: «Alta» prima di «Critica» sarebbe un
+    // ordinamento che nessuno ha chiesto e che sembra rotto.
+    valore: (r) => ORDINE_PRIORITA[r.priorita] ?? 9,
+    cella: (r) => <Priorita priorita={r.priorita} />,
+  },
+  {
+    chiave: "stato",
+    testa: "Lavoro",
+    valore: (r) => r.stato,
+    cella: (r) => <StatoLavoroEtichetta stato={r.stato} />,
+  },
+  {
+    chiave: "scadenza",
+    testa: "Scadenza",
+    // Si ordina per giorni residui e non per data: chi guarda lo scadenzario pensa
+    // «quanto manca», non «che giorno è». I mai programmati vanno in fondo.
+    valore: (r) => r.giorniAllaScadenza ?? Number.MAX_SAFE_INTEGER,
+    cella: (r) => (
+      <Scadenza data={r.scadenza} giorni={r.giorniAllaScadenza} statoScadenza={r.statoScadenza} />
+    ),
+  },
+];
+
+const COLONNA_DOMINIO: Colonna = {
+  chiave: "codice",
+  testa: "Modulo",
+  valore: (r) => r.dominio,
+  cella: (r) => <PastigliaDominio dominio={r.dominio} />,
 };
 
 export function TabellaAdempimenti({
@@ -44,95 +114,47 @@ export function TabellaAdempimenti({
   altezzaRiga?: "compatta" | "comoda";
 }) {
   const [filtro, setFiltro] = useState("");
-  const [ordinamento, setOrdinamento] = useState<SortingState>([]);
+  const [ordine, setOrdine] = useState<{ chiave: Chiave; verso: "asc" | "desc" } | null>(null);
 
-  const colonne = useMemo<ColumnDef<RigaAdempimento>[]>(() => {
-    const base: ColumnDef<RigaAdempimento>[] = [
-      {
-        accessorKey: "codice",
-        header: "Cod.",
-        cell: ({ row }) => (
-          <Codice
-            codice={row.original.codice}
-            {...(row.original.origine ? { origine: row.original.origine } : {})}
-          />
-        ),
-      },
-      {
-        accessorKey: "titolo",
-        header: "Adempimento",
-        cell: ({ row }) => <span className="block max-w-md truncate">{row.original.titolo}</span>,
-      },
-      {
-        accessorKey: "ruolo",
-        header: "Responsabile",
-        cell: ({ row }) => <span className="text-xs text-muted-foreground">{row.original.ruolo}</span>,
-      },
-      {
-        accessorKey: "periodicitaTesto",
-        header: "Periodicità",
-        cell: ({ row }) => (
-          <span className="text-xs text-muted-foreground">{row.original.periodicitaTesto}</span>
-        ),
-      },
-      {
-        accessorKey: "priorita",
-        header: "Priorità",
-        cell: ({ row }) => <Priorita priorita={row.original.priorita} />,
-      },
-      {
-        accessorKey: "stato",
-        header: "Lavoro",
-        cell: ({ row }) => <StatoLavoroEtichetta stato={row.original.stato} />,
-      },
-      {
-        id: "scadenza",
-        header: "Scadenza",
-        // Si ordina per giorni residui e non per data: chi guarda lo scadenzario pensa
-        // «quanto manca», non «che giorno è». I mai programmati vanno in fondo.
-        accessorFn: (r) => r.giorniAllaScadenza ?? Number.MAX_SAFE_INTEGER,
-        cell: ({ row }) => (
-          <Scadenza
-            data={row.original.scadenza}
-            giorni={row.original.giorniAllaScadenza}
-            statoScadenza={row.original.statoScadenza}
-          />
-        ),
-      },
-    ];
+  const colonne = useMemo(
+    () => (mostraDominio ? [COLONNA_DOMINIO, ...COLONNE] : COLONNE),
+    [mostraDominio],
+  );
 
-    if (!mostraDominio) return base;
-    return [
-      {
-        accessorKey: "dominio",
-        header: "Modulo",
-        cell: ({ row }) => <PastigliaDominio dominio={row.original.dominio} />,
-      },
-      ...base,
-    ];
-  }, [mostraDominio]);
+  const visibili = useMemo(() => {
+    const q = filtro.trim().toLowerCase();
+    const filtrate =
+      q === ""
+        ? righe
+        : righe.filter(
+            (r) =>
+              r.codice.toLowerCase().includes(q) ||
+              r.titolo.toLowerCase().includes(q) ||
+              r.ruolo.toLowerCase().includes(q),
+          );
 
-  const tabella = useReactTable({
-    data: righe as RigaAdempimento[],
-    columns: colonne,
-    state: { sorting: ordinamento, globalFilter: filtro },
-    onSortingChange: setOrdinamento,
-    onGlobalFilterChange: setFiltro,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: (riga, _colonna, valore: string) => {
-      const q = valore.toLowerCase();
-      const r = riga.original;
-      return (
-        r.codice.toLowerCase().includes(q) ||
-        r.titolo.toLowerCase().includes(q) ||
-        r.ruolo.toLowerCase().includes(q)
-      );
-    },
-  });
+    if (!ordine) return filtrate;
+    const col = colonne.find((c) => c.chiave === ordine.chiave);
+    if (!col) return filtrate;
 
-  const visibili = tabella.getRowModel().rows;
+    // Copia prima di ordinare: `sort` muta, e `righe` arriva dal server.
+    return [...filtrate].sort((a, b) => {
+      const x = col.valore(a);
+      const y = col.valore(b);
+      const d =
+        typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y), "it");
+      return ordine.verso === "asc" ? d : -d;
+    });
+  }, [righe, filtro, ordine, colonne]);
+
+  const commuta = (chiave: Chiave) =>
+    setOrdine((o) =>
+      o?.chiave !== chiave
+        ? { chiave, verso: "asc" }
+        : o.verso === "asc"
+          ? { chiave, verso: "desc" }
+          : null,
+    );
 
   return (
     <div className="space-y-3">
@@ -146,7 +168,7 @@ export function TabellaAdempimenti({
           className="h-8 max-w-xs text-sm"
           aria-label="Filtra gli adempimenti"
         />
-        <span className="text-xs text-muted-foreground tabular-nums">
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">
           {visibili.length} di {righe.length}
         </span>
       </div>
@@ -154,43 +176,36 @@ export function TabellaAdempimenti({
       <div className="pannello overflow-clip">
         <Table>
           <TableHeader className="bg-surface-sunken">
-            {tabella.getHeaderGroups().map((gruppo) => (
-              <TableRow key={gruppo.id} className="border-b border-border-strong hover:bg-transparent">
-                {gruppo.headers.map((intestazione) => {
-                  const ordinabile = intestazione.column.getCanSort();
-                  const verso = intestazione.column.getIsSorted();
-                  return (
-                    <TableHead key={intestazione.id} className="h-8 px-3">
-                      {ordinabile ? (
-                        <button
-                          type="button"
-                          onClick={intestazione.column.getToggleSortingHandler()}
-                          className="inline-flex items-center gap-1 hover:text-foreground"
-                        >
-                          {flexRender(intestazione.column.columnDef.header, intestazione.getContext())}
-                          {verso === "asc" ? (
-                            <ArrowUp className="size-3" aria-hidden />
-                          ) : verso === "desc" ? (
-                            <ArrowDown className="size-3" aria-hidden />
-                          ) : (
-                            <ChevronsUpDown className="size-3 opacity-40" aria-hidden />
-                          )}
-                          <span className="sr-only">
-                            {verso === "asc"
-                              ? "ordinato crescente"
-                              : verso === "desc"
-                                ? "ordinato decrescente"
-                                : "ordina"}
-                          </span>
-                        </button>
+            <TableRow className="border-b border-border-strong hover:bg-transparent">
+              {colonne.map((c) => {
+                const attiva = ordine?.chiave === c.chiave;
+                return (
+                  <TableHead key={c.testa} className="h-8 px-3">
+                    <button
+                      type="button"
+                      onClick={() => commuta(c.chiave)}
+                      className="inline-flex items-center gap-1 hover:text-foreground"
+                    >
+                      {c.testa}
+                      {!attiva ? (
+                        <ChevronsUpDown className="size-3 opacity-40" aria-hidden />
+                      ) : ordine.verso === "asc" ? (
+                        <ArrowUp className="size-3" aria-hidden />
                       ) : (
-                        flexRender(intestazione.column.columnDef.header, intestazione.getContext())
+                        <ArrowDown className="size-3" aria-hidden />
                       )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
+                      <span className="sr-only">
+                        {!attiva
+                          ? "ordina"
+                          : ordine.verso === "asc"
+                            ? "ordinato crescente"
+                            : "ordinato decrescente"}
+                      </span>
+                    </button>
+                  </TableHead>
+                );
+              })}
+            </TableRow>
           </TableHeader>
           <TableBody>
             {visibili.length === 0 ? (
@@ -204,17 +219,17 @@ export function TabellaAdempimenti({
                 </TableCell>
               </TableRow>
             ) : (
-              visibili.map((riga) => (
+              visibili.map((r) => (
                 <TableRow
-                  key={riga.id}
+                  key={`${r.dominio}-${r.codice}`}
                   className={cn(
                     "border-b border-border-subtle last:border-0 hover:bg-accent",
                     altezzaRiga === "compatta" ? "h-riga" : "h-riga-comoda",
                   )}
                 >
-                  {riga.getVisibleCells().map((cella) => (
-                    <TableCell key={cella.id} className="px-3 py-0">
-                      {flexRender(cella.column.columnDef.cell, cella.getContext())}
+                  {colonne.map((c) => (
+                    <TableCell key={c.testa} className="px-3 py-0">
+                      {c.cella(r)}
                     </TableCell>
                   ))}
                 </TableRow>
