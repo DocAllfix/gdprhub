@@ -48,6 +48,7 @@ const nextConfig: NextConfig = {
     // È lo stesso difetto che ha fatto rispondere 500 alla rotta dei prototipi in
     // produzione mentre in locale funzionava, e si ripeterebbe identico.
     "/api/relazioni/**": [CHROMIUM_BIN],
+    "/api/fascicolo/**": [CHROMIUM_BIN],
   },
 
   poweredByHeader: false,

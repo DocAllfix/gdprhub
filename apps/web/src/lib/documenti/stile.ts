@@ -583,4 +583,20 @@ h2.sezione::before {
   border-top: 1.6pt solid var(--oliva);
   margin-bottom: 2.5mm;
 }
+
+/* Lo spazio per le annotazioni a mano. Un verbale che non lascia dove scrivere costringe
+   chi verifica a usare il retro del foglio, e quel foglio poi si perde. */
+.annotazioni {
+  margin-top: 6mm;
+  height: 62mm;
+  border: 0.5pt solid var(--filo);
+  border-radius: 1mm;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 7.6mm,
+    var(--filo-sottile) 7.6mm,
+    var(--filo-sottile) 7.7mm
+  );
+}
 `;

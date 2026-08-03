@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Download, FileText, Lock, Plus, Trash2 } from "lucide-react";
+import { Download, FileText, Lock, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { ETICHETTE_DOMINIO, formattaIt, type Dominio } from "@gdpr/engine";
 import {
   eliminaBozza,
@@ -30,6 +30,14 @@ const AMBITI: readonly { valore: string; etichetta: string }[] = [
     etichetta: `Solo ${ETICHETTE_DOMINIO[d].breve}`,
   })),
 ];
+
+/** Gli organi che possono presentarsi, e cosa guardano. Il testo vive nel documento. */
+const ORGANI_ELENCO = [
+  { chiave: "garante", breve: "Garante privacy" },
+  { chiave: "ispettorato", breve: "Ispettorato del Lavoro" },
+  { chiave: "asl", breve: "ASL" },
+  { chiave: "giudiziaria", breve: "Autorità giudiziaria / OdV" },
+] as const;
 
 const nomeAmbito = (a: string) =>
   a === "suite" ? "Integrata" : (ETICHETTE_DOMINIO[a as Dominio]?.breve ?? a);
@@ -91,6 +99,37 @@ export function ElencoRelazioni({
           </p>
         </form>
       ) : null}
+
+      {/* IL FASCICOLO NON E' UNA RELAZIONE, e sta in un riquadro suo per dirlo.
+          La relazione e' un atto: si numera, si pubblica, e da quel momento dice quello che
+          diceva. Il fascicolo e' una fotografia che si stampa quando l'ispettore e' gia'
+          seduto, e deve dire com'e' ADESSO: uno di tre mesi fa mostrerebbe uno stato che non
+          corrisponde a quello che sta guardando. Per questo non ha protocollo e non si
+          archivia. */}
+      <section className="pannello p-5" data-tour="fascicolo">
+        <h2 className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <ShieldCheck className="size-4 text-muted-foreground" aria-hidden />
+          Fascicolo ispettivo
+        </h2>
+        <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-muted-foreground">
+          Si genera sul momento e riporta lo stato di oggi. Elenca gli adempimenti ordinati per
+          articolo di norma — non per categoria interna — con la casella di riscontro stampata
+          vuota e lo spazio per le annotazioni: chi verifica non vuole essere convinto, vuole
+          controllare.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {ORGANI_ELENCO.map((o) => (
+            <a
+              key={o.chiave}
+              href={`/api/fascicolo/${aziendaId}/${o.chiave}`}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs hover:bg-accent"
+            >
+              <Download className="size-3.5" aria-hidden />
+              {o.breve}
+            </a>
+          ))}
+        </div>
+      </section>
 
       {errore ? (
         <p role="alert" className="text-sm leading-relaxed text-scaduta">

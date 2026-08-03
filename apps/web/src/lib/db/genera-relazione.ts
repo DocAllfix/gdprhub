@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { clientCompany } from "@/lib/db/schema";
 import { costruisciSnapshot, improntaSnapshot } from "@/features/relazioni/snapshot";
 import { htmlRelazione } from "@/lib/documenti/relazione";
+import { htmlFascicolo } from "@/lib/documenti/fascicolo";
 import { rendiPdf } from "@/lib/pdf";
 
 const cartella = join(homedir(), "Desktop", "relazioni-suite-compliance");
@@ -26,5 +27,16 @@ for (const ambito of ["suite", "d81"] as const) {
   writeFileSync(join(cartella, nome.replace(".pdf", ".html")), html);
   console.log(`${nome} · ${(pdf.length / 1024).toFixed(0)} KB · ${s.complessivo.totale} adempimenti`);
 }
-console.log(`\ncartella: ${cartella}`);
+for (const organo of ["ispettorato", "garante"] as const) {
+  const s2 = await costruisciSnapshot(cfg.organizationId, azienda.id, organo === "garante" ? "gdpr" : "d81");
+  if (!s2) continue;
+  const html = htmlFascicolo(s2, organo, { studio: cfg.brandNome ?? "Studio" });
+  const pdf = await rendiPdf(html);
+  const nome = "fascicolo-" + organo + "-" + s2.azienda.nome.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase() + ".pdf";
+  writeFileSync(join(cartella, nome), pdf);
+  console.log(nome + " · " + (pdf.length / 1024).toFixed(0) + " KB");
+}
+
+console.log("");
+console.log("cartella: " + cartella);
 process.exit(0);

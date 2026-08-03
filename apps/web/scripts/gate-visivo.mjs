@@ -397,8 +397,25 @@ async function verificaPagina(browser, pagina, misura, tema) {
     // non l'assenza di traffico. Con `networkidle` su pagine dinamiche il giro completo
     // passava da minuti a decine di minuti, e un cancello che nessuno ha il tempo di
     // eseguire smette di essere un cancello.
-    if (tab.url() !== url) await tab.goto(url, { waitUntil: "domcontentloaded" });
-    else await tab.reload({ waitUntil: "domcontentloaded" });
+    // `ERR_ABORTED` significa che una navigazione ne ha soppiantata un'altra: capita
+    // quando un clic avvia un caricamento e il ripristino della pagina parte nello stesso
+    // istante. Non è un difetto del prodotto, è una corsa fra due navigazioni nostre, e si
+    // risolve riprovando una volta.
+    //
+    // SOLO `ERR_ABORTED`, e solo una volta: qualunque altro errore resta un difetto. Un
+    // ritentativo generico trasformerebbe il cancello in uno strumento che nasconde
+    // l'instabilità invece di riportarla.
+    const riporta = async () => {
+      if (tab.url() !== url) await tab.goto(url, { waitUntil: "domcontentloaded" });
+      else await tab.reload({ waitUntil: "domcontentloaded" });
+    };
+    try {
+      await riporta();
+    } catch (e) {
+      if (!/ERR_ABORTED/.test(e.message)) throw e;
+      await tab.waitForTimeout(400);
+      await riporta();
+    }
     await tab.waitForLoadState("load");
 
     if (pagina.autenticata && new URL(tab.url()).pathname.startsWith("/accedi")) {
