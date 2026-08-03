@@ -191,6 +191,17 @@ async function verificaPagina(browser, pagina, misura, tema) {
   const fondo = await tab.evaluate(() => getComputedStyle(document.body).backgroundColor);
   fondiPerTema.set(`${pagina.percorso}|${misura.nome}|${tema}`, fondo);
 
+  // --- 0-bis. La pagina ha reso sé stessa, non il proprio ripiego? ---------------------
+  // Una schermata che rende «il modulo non è attivo» o uno stato vuoto non produce errori
+  // di console né richieste rotte: passa verde e non verifica niente. È successo, e me ne
+  // sono accorto per caso guardando il numero di comandi azionabili.
+  if (pagina.atteso && (await tab.locator(pagina.atteso).count()) === 0) {
+    segnala(
+      etichetta,
+      `la pagina si è caricata ma «${pagina.atteso}» non c'è: ha reso un ripiego o uno stato vuoto`,
+    );
+  }
+
   // --- 1. Nessun errore al caricamento ------------------------------------------------
   if (messaggi.length) segnala(etichetta, `al caricamento:\n     - ${messaggi.join("\n     - ")}`);
   if (risposteRotte.length)
@@ -394,6 +405,53 @@ async function risolviDinamiche(browser, pagine) {
   );
 }
 
+/**
+ * Riaccende i moduli che il cancello ha spento cliccando.
+ *
+ * IL CANCELLO CLICCA TUTTO, ed è il suo valore: è così che si scopre che un comando è
+ * rotto. Ma sulla scheda azienda quei comandi includono gli interruttori dei moduli, e un
+ * clic li spegne davvero — non è una finta, è il prodotto. Il risultato era che le pagine
+ * verificate DOPO trovavano un'istanza diversa da quella che dovevano verificare:
+ * l'assessment rendeva «il modulo non è attivo» e il cancello diceva ok.
+ *
+ * Non si risolve smettendo di cliccare, che significherebbe non verificare più gli
+ * interruttori. Si risolve rimettendo le cose com'erano alla fine, che è quello che farebbe
+ * chiunque abbia usato l'istanza di qualcun altro.
+ *
+ * Il ripristino non è silenzioso: dice quanti ne ha riaccesi. Se il numero cresce di giro
+ * in giro, qualcosa nel prodotto non riaccende più.
+ */
+async function ripristinaModuli(browser, pagine) {
+  const scheda = pagine.find((p) => p.dinamica && /^\/azienda\/[^/]+$/.test(p.percorso));
+  if (!scheda) return;
+
+  const contesto = await browser.newContext({ locale: "it-IT" });
+  if (!(await apriSessione(contesto, "ripristino dei moduli"))) {
+    await contesto.close();
+    return;
+  }
+  const tab = await contesto.newPage();
+  let riaccesi = 0;
+  try {
+    await tab.goto(new URL(scheda.percorso, base).toString(), { waitUntil: "networkidle" });
+    // «Attiva» compare solo sui moduli spenti: se non ce ne sono, non c'è nulla da fare.
+    for (let i = 0; i < 6; i++) {
+      const bottone = tab.locator('button:has-text("Attiva")').first();
+      if ((await bottone.count()) === 0) break;
+      await bottone.click();
+      await tab.waitForLoadState("networkidle");
+      riaccesi++;
+    }
+  } catch (errore) {
+    segnala(
+      "ripristino dei moduli",
+      `non riuscito: ${errore instanceof Error ? errore.message.split("\n")[0] : errore}`,
+    );
+  }
+  await contesto.close();
+  if (riaccesi > 0) console.log(`\n  ripristinati ${riaccesi} moduli spenti dai clic del cancello`);
+}
+
 async function main() {
   const selezionate = soloPercorso ? PAGINE.filter((p) => p.percorso === soloPercorso) : PAGINE;
   if (!selezionate.length) {
@@ -435,6 +493,7 @@ async function main() {
         }
       }
     }
+    await ripristinaModuli(browser, pagine);
   } finally {
     await browser.close();
   }
