@@ -24,17 +24,17 @@ import * as schema from "./schema";
 // Il driver di Neon usa WebSocket e nasce per lo scenario serverless. Si sceglie da sé
 // guardando dov'è il database, come fanno gli altri due adattatori.
 
-if (!env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL mancante. In sviluppo copiala in apps/web/.env (vedi .env.example); " +
-      "sulla vetrina la inietta l'integrazione Neon; in produzione arriva dal file .env.prod dell'istanza.",
-  );
-}
-
-/** Vero quando il database è Neon: solo lì il driver WebSocket ha senso e funziona. */
-const suNeon = /\.neon\.tech/.test(env.DATABASE_URL);
-
 function creaClient() {
+  if (!env.DATABASE_URL) {
+    throw new Error(
+      "DATABASE_URL mancante. In sviluppo copiala in apps/web/.env (vedi .env.example); " +
+        "sulla vetrina la inietta l'integrazione Neon; in produzione arriva dal file .env.prod dell'istanza.",
+    );
+  }
+
+  // Vero quando il database è Neon: solo lì il driver WebSocket ha senso e funziona.
+  const suNeon = /\.neon\.tech/.test(env.DATABASE_URL);
+
   if (suNeon) {
     // Node non espone WebSocket in tutte le versioni supportate: si dichiara.
     neonConfig.webSocketConstructor = ws;
@@ -46,13 +46,32 @@ function creaClient() {
   return drizzlePostgres(postgres(env.DATABASE_URL!, { prepare: false }), { schema });
 }
 
-// Il modulo si valuta una volta per istanza: la connessione sopravvive alle invocazioni
-// calde invece di riaprirsi a ogni richiesta.
+// LA CONNESSIONE SI APRE AL PRIMO USO, non all'importazione del modulo.
+//
+// Sembra un dettaglio e non lo è. `next build` carica ogni rotta per raccoglierne i dati,
+// comprese quelle che importano questo file: aprendo il client all'importazione, COMPILARE
+// richiederebbe un database. Sulla CI non c'è, e nella `docker build` di un'istanza cliente
+// non deve esserci — un'immagine si costruisce prima di sapere a quale database parlerà.
+//
+// La verifica non si allenta, si sposta: la prima query senza `DATABASE_URL` fallisce come
+// prima, con lo stesso messaggio. Cambia solo che il rifiuto arriva quando qualcuno chiede
+// davvero un dato, invece che quando un compilatore legge un file.
+//
+// Il client resta uno solo per istanza: si crea alla prima query e sopravvive alle
+// invocazioni calde, come prima.
 //
 // Il tipo si fissa su quello di `postgres-js`: i due driver espongono la stessa superficie
 // per tutto ciò che usiamo, ma le loro firme differiscono nei dettagli, e lasciare
 // l'unione costringerebbe ogni chiamante a distinguere fra due driver che esistono proprio
 // per non doverli distinguere.
-export const db = creaClient() as ReturnType<typeof drizzlePostgres<typeof schema>>;
+type Client = ReturnType<typeof drizzlePostgres<typeof schema>>;
+
+let client: Client | null = null;
+const clientVivo = (): Client => (client ??= creaClient() as Client);
+
+export const db = new Proxy({} as Client, {
+  get: (_, chiave) => Reflect.get(clientVivo(), chiave),
+  has: (_, chiave) => Reflect.has(clientVivo(), chiave),
+});
 export type Db = typeof db;
 export { schema };

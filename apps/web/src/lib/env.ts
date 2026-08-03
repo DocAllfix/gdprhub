@@ -131,13 +131,29 @@ export const env = analisi.data;
 export type Env = typeof env;
 
 /**
- * Controlli che valgono solo in produzione.
+ * Vero mentre Next sta COMPILANDO, non mentre serve richieste.
+ *
+ * La differenza conta. `next build` gira con `NODE_ENV=production` e carica ogni modulo
+ * per raccogliere i dati delle pagine — comprese le rotte che importano il database. Ma
+ * una compilazione non risponde a nessuno: non le serve un segreto di sessione, e non le
+ * serve un database. Pretenderli lì significa una cosa sola, che i segreti di produzione
+ * devono stare nell'ambiente di build; ed è esattamente ciò che non si vuole, né sulla CI
+ * né nella `docker build` di un'istanza cliente.
+ */
+const inCompilazione = process.env.NEXT_PHASE === "phase-production-build";
+
+/**
+ * Controlli che valgono solo su un'istanza che PARTE in produzione.
  *
  * Il segreto di sviluppo è comodo perché fa partire l'istanza senza configurare nulla, ma è
  * pubblico: sta nel repository. Se finisse in produzione, chiunque legga questo file
  * potrebbe forgiare una sessione valida. Meglio che l'istanza si rifiuti di partire.
+ *
+ * Il rifiuto si sposta dalla compilazione all'avvio, e non si allenta: un'immagine
+ * costruita senza segreti si costruisce, ma non serve una sola richiesta finché non ne
+ * riceve di veri. È il momento giusto in cui fallire.
  */
-if (env.NODE_ENV === "production") {
+if (env.NODE_ENV === "production" && !inCompilazione) {
   const mancanti: string[] = [];
   if (env.AUTH_SECRET.startsWith("sviluppo-")) mancanti.push("AUTH_SECRET (è ancora quello di sviluppo)");
   if (!env.DATABASE_URL) mancanti.push("DATABASE_URL");

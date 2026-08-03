@@ -11,6 +11,15 @@ import { registroDi } from "@/features/registri/dati";
 // Vale per tutti e undici i registri, non solo per il RoPA: le colonne si costruiscono
 // dalla definizione del motore, quindi un registro nuovo si esporta senza scrivere altro.
 
+// SENZA QUESTA RIGA LA BUILD FALLISCE, e non sulla mia macchina.
+//
+// Next tratta un `GET` come statico finché non vede il contrario, e per deciderlo carica
+// il modulo in fase di compilazione: qui la catena arriva a `@/lib/db`, che valida
+// `DATABASE_URL` e `AUTH_SECRET`. In locale quelle variabili ci sono e la build passava;
+// sulla CI non ci sono, e la build è morta con «Failed to collect page data». Ogni altra
+// rotta del progetto lo dichiara — questa era l'unica che me n'ero dimenticato.
+export const dynamic = "force-dynamic";
+
 const CSV_BOM = "﻿"; // Excel in italiano legge l'UTF-8 solo se glielo si dichiara.
 
 /** Una cella CSV. Il punto e virgola è il separatore che Excel italiano si aspetta. */
