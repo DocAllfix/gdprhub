@@ -135,11 +135,42 @@ caratteri, l'assolvimento tardivo che resta tardivo, una voce per ciascuno degli
 registri, i numeri di protocollo tutti distinti, il CSV con le colonne dell'art. 30.1, la
 rotta di esportazione che non aggira il guard, ⌘K che trova un registro e ci porta.
 
+### La mappa dei reati presupposto
+
+Il catalogo delle famiglie (artt. 24 → 25-quinquiesdecies), il calcolo della copertura e la
+verifica d'integrità dei presìdi stavano **già** nel motore da fasi precedenti, con le proprie
+prove, e il seed li scriveva nel database. Non li vedeva nessuno: mancava la schermata, cioè
+l'unica parte che serviva a un OdV. Ora `/azienda/<id>/reati` mostra, per ogni famiglia, quanti
+presìdi sono in ordine e quali no, con il collegamento all'adempimento scoperto.
+
+La pagina **dichiara i propri limiti**: copre le famiglie che i tre cataloghi presidiano
+davvero, non l'intero arco degli artt. 24 – 25-duodevicies. Fingere una copertura totale
+sarebbe l'affermazione più costosa che questo strumento possa fare, perché è quella su cui un
+ente si difende ai sensi dell'art. 6.
+
+### Il dataset dimostrativo del 231 è vuoto, e adesso si vede
+
+Sull'azienda della vetrina, dei 65 adempimenti 231 **nessuno risulta completato**: 56 «Da fare»
+e 9 «In corso». Non è un difetto del calcolo — è il dataset del prototipo del committente,
+riportato fedelmente: là la conformità era **1 su 65, il 2%**. Finora si notava poco; la mappa
+dei reati lo rende un muro rosso, otto famiglie scoperte su otto.
+
+È una **decisione del committente**, non nostra, e per questo non l'ho cambiata:
+
+- il dataset è quello che ci ha consegnato, e i test golden del motore verificano proprio la
+  fedeltà a quei numeri: cambiarlo significa rinunciare a quella verifica o riscriverla;
+- il file `d231-demo.json` conserva `statoPrototipo` accanto a `stato` **apposta** per poter
+  divergere in modo tracciabile, quindi la strada tecnica è già aperta;
+- ma _quali_ attività una società con un modello adottato avrebbe plausibilmente svolto è
+  contenuto di consulenza, non un dettaglio implementativo, e inventarlo sarebbe esattamente
+  il difetto che questo progetto contesta ai tre prototipi.
+
+**Raccomandazione**: per la vetrina serve un'azienda a maturità media, non una che ha appena
+comprato il modello. Bastano venti o trenta codici 231 dichiarati completati con la loro ultima
+esecuzione, scelti dal committente; la divergenza si annota in `politica-scoring.md`.
+
 ### Cosa non è entrato in F13-F16, e va detto
 
-- **mappa dei reati presupposto** (F14): il catalogo `reato_presupposto` previsto dal piano
-  non è stato scritto. Un OdV ragiona per reati, non per attività, e senza quella mappa la
-  relazione 231 resta un elenco di adempimenti;
 - **verbali dell'OdV** come documento proprio: oggi il verbale è un campo di testo sul flusso,
   non un atto con un numero e una firma;
 - **DUVRI e cantieri** (F15): il DUVRI è un adempimento del catalogo 81/08, non un registro
