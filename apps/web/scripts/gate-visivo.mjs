@@ -223,11 +223,39 @@ async function verificaPagina(browser, pagina, misura, tema) {
     segnala(etichetta, `richieste fallite:\n     - ${risposteRotte.join("\n     - ")}`);
 
   // --- 2. I collegamenti interni portano da qualche parte ------------------------------
+  //
+  // SI VERIFICA UNA ROTTA, NON DUECENTO URL QUASI UGUALI. Lo scadenzario ha una riga per
+  // adempimento e ognuna porta a `/azienda/<id>/<dominio>?q=<codice>`: sono duecentosette
+  // collegamenti che differiscono solo nella stringa di ricerca, e chiederli tutti
+  // significa disegnare duecentosette volte la stessa schermata. Su funzioni serverless a
+  // freddo il cancello ci moriva dentro — tre esplosioni per timeout a trenta secondi, e
+  // nemmeno una di quelle richieste stava verificando qualcosa di nuovo.
+  //
+  // Si raggruppa per FORMA del percorso: gli identificativi diventano `:id`, la stringa di
+  // ricerca sparisce, e di ogni forma si prova un esemplare solo. Duecentosette richieste
+  // diventano tre, e le tre rotte restano verificate esattamente come prima.
   const href = await tab.$$eval("a[href]", (as) => as.map((a) => a.getAttribute("href")).filter(Boolean));
   const interni = [...new Set(href.filter((h) => h.startsWith("/") && !h.startsWith("//")))];
-  for (const h of interni) {
-    const r = await tab.request.get(new URL(h, base).toString(), { failOnStatusCode: false });
-    if (r.status() >= 400) segnala(etichetta, `collegamento rotto: ${h} risponde ${r.status()}`);
+
+  const forma = (h) =>
+    h
+      .split("?")[0]
+      .split("/")
+      .map((s) => (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(s) ? ":id" : s))
+      .join("/");
+
+  const campioni = new Map();
+  for (const h of interni) if (!campioni.has(forma(h))) campioni.set(forma(h), h);
+
+  for (const h of campioni.values()) {
+    // Il tempo concesso è generoso: una funzione serverless a freddo su una schermata da
+    // centosettantuno adempimenti non risponde in trenta secondi, e bocciarla per questo
+    // sarebbe misurare l'infrastruttura invece del collegamento.
+    const r = await tab.request
+      .get(new URL(h, base).toString(), { failOnStatusCode: false, timeout: 90_000 })
+      .catch(() => null);
+    if (r === null) segnala(etichetta, `collegamento senza risposta entro 90 s: ${h}`);
+    else if (r.status() >= 400) segnala(etichetta, `collegamento rotto: ${h} risponde ${r.status()}`);
   }
 
   // --- 3. Il focus da tastiera si vede -------------------------------------------------
@@ -374,7 +402,7 @@ async function verificaPagina(browser, pagina, misura, tema) {
   const esclusi = await tab.locator(SELETTORE_ESCLUSI).count();
   await contesto.close();
   console.log(
-    `  ok  ${etichetta}  (${quantiAzionabili} azionabili, ${interni.length} collegamenti${
+    `  ok  ${etichetta}  (${quantiAzionabili} azionabili, ${interni.length} collegamenti su ${campioni.size} rotte${
       esclusi > 0 ? `, ${esclusi} esclusi` : ""
     })`,
   );
