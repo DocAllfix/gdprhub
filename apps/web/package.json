@@ -27,7 +27,8 @@
     "db:consegna": "tsx --env-file-if-exists=.env.local src/lib/db/consegna-cli.ts",
     "percorso": "node scripts/percorso.mjs",
     "db:collaudatori": "tsx --env-file-if-exists=.env.local src/lib/db/collaudatori-cli.ts",
-    "prova:registri": "node scripts/prova-registri.mjs"
+    "prova:registri": "node scripts/prova-registri.mjs",
+    "db:seed-registri": "tsx --env-file-if-exists=.env.local src/lib/db/seed-registri-cli.ts"
   },
   "dependencies": {
     "@fontsource/geist-mono": "^5.3.0",

@@ -22,6 +22,7 @@ export * from "./core/simulate";
 export * from "./suite/agenda";
 export * from "./suite/links";
 export { costruisciDemo } from "./core/demo";
+export * from "./core/voci-demo";
 export type { StatoDemo, VoceDemo } from "./core/demo";
 
 // --- Cataloghi per dominio -------------------------------------------------------------

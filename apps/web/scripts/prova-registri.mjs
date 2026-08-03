@@ -362,7 +362,7 @@ async function principale() {
   if (esitoPulizia) console.log(`       ${esitoPulizia.cancellate} voci rimosse`);
 
   // ── 10. La console resta pulita ─────────────────────────────────────────────────
-  console.log("\n9. Nessun rumore in console");
+  console.log("\n10. Nessun rumore in console");
   const veri = erroriConsole.filter((e) => !/favicon|ERR_ABORTED/i.test(e));
   prova("nessun errore in console durante tutta la prova", veri.length === 0, veri.slice(0, 3).join(" · "));
 

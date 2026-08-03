@@ -5,8 +5,10 @@ import {
   CLIENTI_DIMOSTRATIVI,
   DOMINI,
   ETICHETTE_DOMINIO,
+  VOCI_DIMOSTRATIVE,
   costruisciDemo,
   oggiA,
+  registroPerTipo,
   type Dominio,
 } from "@gdpr/engine";
 import { db } from "./index";
@@ -18,6 +20,7 @@ import {
   instanceConfig,
   obligationInstance,
   obligationTemplate,
+  registro,
 } from "./schema";
 
 // L'azienda di esempio, con i tre moduli popolati.
@@ -128,6 +131,8 @@ export async function seminaAziendaDimostrativa(): Promise<EsitoDemo> {
       totale += templates.length;
     }
 
+    await seminaVociRegistro(tx, studio.id, aziendaId, DOMINI);
+
     // Se l'istanza non ha ancora un catalogo agganciato, glielo si aggancia qui: è il
     // momento in cui diventa effettivamente utilizzabile.
     await tx
@@ -137,4 +142,63 @@ export async function seminaAziendaDimostrativa(): Promise<EsitoDemo> {
   });
 
   return { stato: "creata", id: aziendaId, adempimenti: totale };
+}
+
+/**
+ * Le voci dimostrative dei registri, per un'azienda che esiste già.
+ *
+ * UNDICI REGISTRI VUOTI NON DIMOSTRANO NIENTE: spiegano a cosa servirebbero, non come si
+ * comportano. Il comportamento è il punto — una violazione a poche ore dalla scadenza che
+ * conta le ore in rosso, una notificata in tempo che resta verde, una notificata tardi che
+ * si porta dietro il proprio ritardo.
+ *
+ * Sta in una funzione a parte perché serve anche DOPO: l'azienda dimostrativa è nata prima
+ * che i registri esistessero, e la semina principale non la tocca più. Senza questa via
+ * l'unico modo di popolarne i registri sarebbe cancellarla e rifarla, perdendo tutto ciò
+ * che qualcuno ci ha nel frattempo lavorato sopra.
+ *
+ * Solo i registri dei moduli ATTIVI: un flusso verso un Organismo di Vigilanza su
+ * un'azienda senza modello 231 sarebbe un dato che contraddice la propria configurazione.
+ *
+ * Il numero di protocollo si assegna in sequenza per tipo, come farebbe l'azione vera:
+ * «Violazione n. 2/2026» deve identificarne una sola anche in un demo.
+ */
+export async function seminaVociRegistro(
+  // Accetta sia il client sia una transazione: la semina principale la chiama dentro la
+  // propria, il comando a sé stante fuori. La firma chiede l'unica cosa che serve davvero.
+  tx: { insert: (typeof db)["insert"] },
+  organizationId: string,
+  aziendaId: string,
+  domini: readonly Dominio[],
+) {
+  const adesso = Date.now();
+  const progressivo = new Map<string, number>();
+  const voci = VOCI_DIMOSTRATIVE.filter((v) => {
+    const def = registroPerTipo(v.tipo);
+    return def ? domini.includes(def.dominio) : false;
+  });
+  if (voci.length === 0) return 0;
+
+  await tx.insert(registro).values(
+    voci.map((v) => {
+      const conosciutoIl = new Date(adesso - v.oreFa * 3_600_000);
+      const n = (progressivo.get(v.tipo) ?? 0) + 1;
+      progressivo.set(v.tipo, n);
+      return {
+        id: randomUUID(),
+        organizationId,
+        clientCompanyId: aziendaId,
+        tipo: v.tipo,
+        numero: `${n}/${conosciutoIl.getFullYear()}`,
+        titolo: v.titolo,
+        descrizione: v.descrizione ?? null,
+        conosciutoIl,
+        assoltoIl: v.assoltoOreFa ? new Date(adesso - v.assoltoOreFa * 3_600_000) : null,
+        esito: v.esito ?? null,
+        stato: v.stato ?? "aperto",
+        dettagli: v.dettagli,
+      };
+    }),
+  );
+  return voci.length;
 }

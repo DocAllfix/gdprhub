@@ -531,7 +531,7 @@ async function risolviDinamiche(browser, pagine) {
  * Il ripristino non è silenzioso: dice quanti ne ha riaccesi. Se il numero cresce di giro
  * in giro, qualcosa nel prodotto non riaccende più.
  */
-async function ripristinaModuli(browser, pagine) {
+async function ripristinaModuli(browser, pagine, quando = "") {
   const scheda = pagine.find((p) => p.dinamica && /^\/azienda\/[^/]+$/.test(p.percorso));
   if (!scheda) return;
 
@@ -572,7 +572,20 @@ async function main() {
   rmSync(SCREENSHOT, { recursive: true, force: true });
   const browser = await chromium.launch();
   if (selezionate.some((p) => p.autenticata || p.dinamica)) await accediUnaVolta(browser);
+
   const pagine = await risolviDinamiche(browser, selezionate);
+
+  // SI RIPRISTINA ANCHE PRIMA DI COMINCIARE, non solo alla fine, e dopo aver risolto i
+  // percorsi dinamici — prima non si saprebbe su quale azienda intervenire.
+  //
+  // Il ripristino in coda funziona finché la corsa arriva in coda. Una corsa uccisa a metà
+  // — un timeout, un Ctrl+C, una macchina che si spegne — lascia i moduli come li ha
+  // trovati l'ultimo clic, e la corsa successiva parte da un'azienda mutilata: pagine che
+  // rendono un ripiego, marcatori `atteso` che non si trovano, e tempo speso a cercare nel
+  // prodotto un difetto che sta nel collaudo.
+  //
+  // È successo oggi, e per due volte di seguito ha fatto sembrare rotto ciò che non lo era.
+  await ripristinaModuli(browser, pagine, "prima di cominciare");
 
   console.log(`Cancello visivo su ${base}`);
   console.log(`${pagine.length} pagine × ${LARGHEZZE.length} larghezze × ${TEMI.length} temi\n`);
@@ -603,7 +616,7 @@ async function main() {
         }
       }
     }
-    await ripristinaModuli(browser, pagine);
+    await ripristinaModuli(browser, pagine, "dopo i clic");
   } finally {
     await browser.close();
   }
