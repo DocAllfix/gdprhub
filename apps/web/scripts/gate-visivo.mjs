@@ -344,7 +344,25 @@ async function verificaPagina(browser, pagina, misura, tema) {
     const primaRete = risposteRotte.length;
     let cliccato = false;
     try {
-      await elemento.first().click({ timeout: 5_000, trial: false });
+      // UN RITENTATIVO SOLO, e per una ragione precisa.
+      //
+      // Su una schermata che si ridisegna dopo un'azione precedente — la scheda azienda
+      // riscrive i moduli quando se ne commuta uno — il nodo puntato dal localizzatore
+      // sparisce e ricompare, e il clic scade aspettando che stia fermo. Non è un comando
+      // rotto: è un comando colto a metà di un ridisegno, e una persona semplicemente
+      // ricliccherebbe.
+      //
+      // Il secondo tentativo NON allunga il tempo: se il comando fosse davvero
+      // irraggiungibile — coperto, disabilitato, fuori campo — fallirebbe di nuovo, e il
+      // difetto resta. Un ritentativo a oltranza sarebbe il modo di non accorgersi mai di
+      // niente.
+      try {
+        await elemento.first().click({ timeout: 5_000, trial: false });
+      } catch (primoErrore) {
+        if (!/Timeout/.test(primoErrore.message)) throw primoErrore;
+        await tab.waitForTimeout(500);
+        await elemento.first().click({ timeout: 5_000, trial: false });
+      }
       cliccato = true;
       await tab.waitForTimeout(200);
     } catch (e) {
