@@ -96,6 +96,22 @@ function adempimentoDaRiga(riga: typeof obligationInstance.$inferSelect): Adempi
 
 export async function assessmentDi(aziendaId: string, dominio: Dominio) {
   const ctx = await requireStudio();
+  return calcolaAssessment(ctx, aziendaId, dominio);
+}
+
+/**
+ * Il calcolo, separato dal guard.
+ *
+ * Serve perché il collegamento fra domini — chiudere il DVR nell'81/08 e vederlo nel 231 —
+ * si prova solo contro il database reale, e un test non ha una sessione HTTP da cui far
+ * uscire `requireStudio()`. Il guard resta sopra e non si allenta: chi passa da un'URL
+ * attraversa `assessmentDi`, e il contesto qui dentro arriva già verificato.
+ */
+export async function calcolaAssessment(
+  ctx: Awaited<ReturnType<typeof requireStudio>>,
+  aziendaId: string,
+  dominio: Dominio,
+) {
   const oggi = oggiA();
 
   // L'identificativo arriva dall'URL: la clausola porta sempre anche l'organizzazione.
