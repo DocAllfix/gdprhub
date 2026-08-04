@@ -214,14 +214,86 @@ interpretare.
 - Raggi larghi, perché lo schema è «quieto» e il pannello non ha bordo: `--radius-sm` 8px,
   `--radius` 10px, `--radius-lg` 14px, `--radius-xl` 18px. Un riquadro senza filetto con
   angoli stretti sembra una macchia.
-- Ombre discrete e **solo sul tema chiaro**: sul buio valgono zero, perché non c'è luce da
-  bloccare e un'ombra su fondo scuro produce l'alone sporco del tema chiaro riverniciato.
-  **Mai bagliori colorati.**
+- Ombre discrete. **Mai bagliori colorati.**
 - Le schede si usano solo dove sono l'affordance giusta. **Mai schede annidate.** Per elenchi
   di clienti o adempimenti si usa la tabella: quaranta clienti in quaranta schede sono
   quaranta schede da scorrere.
-- Movimento 150-250 ms, solo per cambio di stato. Nessuna coreografia in ingresso.
-  `prefers-reduced-motion` rispettato a livello di `@layer base`.
+- **Mai una griglia di riquadri identici affiancati.** È il pattern più riconoscibile del
+  software vecchio: quattro schede uguali dicono «quattro oggetti indipendenti» e si leggono
+  una per una. Quando le parti appartengono allo stesso fatto — i tre decreti del cruscotto —
+  si usa **una superficie sola divisa da un capello**: dice «un fatto in tre parti», e l'occhio
+  confronta invece di enumerare.
+
+### Il pannello ha un limite, non un bordo _(2026-08-04)_
+
+`.pannello` era superficie più un'ombra da un pixel. Sul tema chiaro significava bianco su
+quasi-bianco: la scheda **galleggiava**. Il committente l'ha detto meglio di qualunque
+diagnosi — «schede attaccate con lo sputo».
+
+La correzione non è un bordo pieno, che è ciò da cui «quieto» si allontana. È un **anello al
+7% del colore del testo**: a occhio non si legge come una linea, si legge come il punto in cui
+la superficie finisce. Àncora senza disegnare.
+
+**Sul tema scuro si inverte**: un bordo più nero del fondo scava invece di delimitare, quindi
+il limite si fa con la **luce** — bianco all'8%. E le ombre sul buio non valgono zero, come si
+diceva prima: valgono a separare i piani, e vanno più profonde e più larghe.
+
+Token: `--contorno-pannello`, `--contorno-pannello-forte`, `--shadow-sm`, `--shadow-md`.
+
+### Un pannello che si può toccare lo dice prima _(2026-08-04)_
+
+Classe `.tocca`, **tre stati e non uno**:
+
+| Stato             | Cosa fa                                                              | Perché                                                                                             |
+| ----------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| passaggio         | superficie di un gradino più su, ombra più lunga, anello più marcato | dice che è un bersaglio prima che lo si tocchi                                                     |
+| **premuto**       | scende di un pixel                                                   | senza, un bersaglio grande sembra rotto: il dito tocca e per duecento millesimi non succede niente |
+| fuoco da tastiera | anello nel primario, staccato dalla superficie                       | chi naviga col tabulatore ha diritto di sapere dove si trova                                       |
+
+Si animano `box-shadow`, `background-color` e `transform`. **Mai la geometria**: animare
+`width` o `top` costringe il browser a rifare l'impaginato a ogni fotogramma.
+
+Un pannello che si solleva **senza** essere cliccabile è una promessa non mantenuta: `.tocca`
+si mette solo dove c'è davvero un `href`.
+
+### Movimento: due animazioni in tutto il sistema _(2026-08-04)_
+
+Prima la regola diceva «nessuna coreografia in ingresso», e su una schermata che aspetta il
+server era sbagliata: senza movimento non si distingue una pagina ferma da una morta.
+
+- `.entra` — opacità e sei pixel di salita, 320 ms. Le schede di una fascia arrivano
+  **sfalsate di 60 ms**: lo sfalsamento dice che sono oggetti distinti, cosa che una griglia
+  nasconde.
+- `.cresce` — le barre partono da zero, 520 ms. Fa vedere la **proporzione formarsi**, mentre
+  una barra già disegnata la si trova e basta.
+
+Curva `cubic-bezier(0.22, 1, 0.36, 1)`: parte veloce e si posa. **Niente rimbalzi**, che in
+uno strumento di lavoro sembrano un giocattolo. Nessuna animazione si ripete: un'interfaccia
+che si agita mentre la si legge è peggio di una ferma. Transizioni di stato 150-250 ms.
+`prefers-reduced-motion` azzera tutto a livello di `@layer base`.
+
+### Il segnaposto è parte del design, non un ripiego _(2026-08-04)_
+
+Ogni pagina è `force-dynamic` e deve esserlo: i numeri devono riflettere l'ultima scrittura.
+La conseguenza è che ogni navigazione aspetta il server, e senza un `loading.tsx` **fra il clic
+e la pagina non succede niente**. Il prodotto si legge come lento anche quando la query
+impiega centottanta millisecondi. È la differenza fra «lento» e «morto», e si percepisce come
+lentezza.
+
+**Regola: ogni rotta ha il suo `loading.tsx`**, e il segnaposto ha la **stessa impaginazione**
+della pagina che arriva. Un rettangolo grigio generico dice «sto caricando»; un segnaposto con
+la forma giusta dice «sto caricando QUESTO», e il contenuto si posa dove l'occhio lo stava già
+aspettando, senza salti. Primitive in `components/ui/scheletro.tsx`.
+
+### Le librerie di terze parti si vestono _(2026-08-04)_
+
+driver.js importato con il proprio CSS è il tema predefinito di una libreria incollato su un
+prodotto che ha scelto la propria forma. Si nota più di qualunque altra cosa, perché la guida
+è il momento in cui l'utente sta guardando con attenzione.
+
+Il popover porta `popoverClass: "guida-popover"` e lo stile sta in `globals.css`, non nel
+componente: è l'unico posto da cui si possono usare i token, e il colore del popover deve
+essere lo stesso dei menù e cambiare col tema da solo.
 
 ## Accessibilità
 
