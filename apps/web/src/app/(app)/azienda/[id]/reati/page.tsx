@@ -96,10 +96,14 @@ export default async function PaginaReati({ params }: { params: Promise<{ id: st
       ) : null}
 
       <ul className="mt-5 space-y-2" data-tour="reati">
-        {misurabili.map((c) => {
+        {misurabili.map((c, i) => {
           const completa = c.copertura === 100;
           return (
-            <li key={c.famiglia.articolo} className="pannello p-4">
+            <li
+              key={c.famiglia.articolo}
+              className="pannello entra p-4"
+              style={{ animationDelay: `${Math.min(i, 6) * 45}ms` }}
+            >
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 {completa ? (
                   <ShieldCheck className="size-4 shrink-0 text-regolare" aria-hidden />

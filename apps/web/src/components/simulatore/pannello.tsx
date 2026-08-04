@@ -70,7 +70,7 @@ export function Simulatore({
     <div className="space-y-4" data-tour="simulatore">
       {/* IL RISULTATO STA IN ALTO e resta visibile mentre si spuntano le voci: è la cosa
           che si guarda, e metterlo in fondo obbligherebbe a scorrere a ogni scelta. */}
-      <section className="pannello p-5" data-tour="proiezione">
+      <section className="pannello entra p-5" data-tour="proiezione">
         <h2 className="text-sm font-semibold tracking-tight">Se chiudo questi, dove arrivo</h2>
 
         <div className="mt-4 flex flex-wrap items-end gap-x-8 gap-y-4">

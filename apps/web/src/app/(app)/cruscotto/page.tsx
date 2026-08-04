@@ -50,92 +50,129 @@ export default async function PaginaCruscotto() {
         </Link>
       </header>
 
-      {/* --- Fascia principale: i tre moduli, ciascuno col suo anello ------------------- */}
-      <section className="mt-6 grid gap-3 lg:grid-cols-4">
-        {d.perDominio.map((m, i) => (
-          // LA SCHEDA È IL BERSAGLIO, non un pezzo di testo dentro la scheda.
-          //
-          // Una scheda che mostra «55 scadute» e non porta da nessuna parte costringe a
-          // cercare altrove la lista di quelle 55. Il bersaglio grande è anche la
-          // differenza fra un cruscotto da guardare e uno da cui si lavora.
-          //
-          // Un modulo spento non è cliccabile: porterebbe a una lista vuota, e un
-          // bersaglio che non mantiene è peggio di nessun bersaglio.
-          <Link
-            key={m.dominio}
-            href={m.attivo ? `/scadenzario?dominio=${m.dominio}` : "/portafoglio"}
-            data-tour={i === 0 ? "scheda-dominio" : undefined}
-            style={{ animationDelay: `${i * 60}ms` }}
-            className={cn("pannello entra group block p-5", m.attivo && "tocca")}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold" style={{ color: TINTA_DOMINIO[m.dominio] }}>
-                  {m.etichetta.breve}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">{m.etichetta.esteso}</p>
-                <p className="mt-0.5 font-mono text-[10px] text-faint-foreground">{m.etichetta.norma}</p>
-              </div>
-              <div className="flex shrink-0 items-start gap-1">
-                <Anello
-                  percentuale={m.conformita?.percentuale ?? null}
-                  tinta={TINTA_DOMINIO[m.dominio]}
-                  dimensione={68}
-                  spessore={7}
-                  etichetta={`Conformità effettiva ${m.etichetta.breve}`}
+      {/* --- Fascia principale: UNA LASTRA in tre colonne, e il quadro d'insieme --------
+
+          Trattamento «Lastra», scelto dal committente confrontando tre costruzioni sugli
+          stessi numeri (2026-08-04). Prima erano quattro riquadri identici affiancati, che
+          è il pattern più riconoscibile del software vecchio.
+
+          La differenza non è estetica. Quattro schede uguali dicono «quattro oggetti
+          indipendenti» e il cervello le legge una per una; una superficie divisa da un
+          capello dice «un fatto in tre parti», e l'occhio CONFRONTA. Confrontare è
+          esattamente ciò che si fa qui: 15, 0, 40.
+
+          Il quadro complessivo esce dalla griglia e diventa un oggetto a sé, perché è di
+          natura diversa: non è un quarto decreto, è la lettura dei tre insieme. Tenerlo in
+          fila con gli altri lo faceva sembrare uno di loro. */}
+      <section className="mt-6 grid gap-3 lg:grid-cols-[1fr_340px]">
+        <div className="pannello overflow-clip">
+          <div className="grid md:grid-cols-3">
+            {d.perDominio.map((m, i) => (
+              <Link
+                key={m.dominio}
+                href={m.attivo ? `/scadenzario?dominio=${m.dominio}` : "/portafoglio"}
+                data-tour={i === 0 ? "scheda-dominio" : undefined}
+                style={{ animationDelay: `${i * 60}ms` }}
+                className={cn(
+                  "entra group relative block p-5 transition-colors duration-200",
+                  m.attivo && "hover:bg-surface-raised",
+                  "focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary",
+                  i > 0 && "md:border-l md:border-border-subtle",
+                )}
+              >
+                {/* LA TESTATA DI COLONNA, a tutta larghezza e sempre presente.
+                    Il colore è un'etichetta, non una decorazione.
+
+                    Nasceva come un filo corto che si allungava al passaggio. Sembrava
+                    intelligente e non lo era: tre trattini rientrati in cima a tre colonne
+                    si leggono come tre segni sciolti appoggiati sopra la scheda, non come
+                    l'intestazione di quella colonna. E il primo cadeva dentro la curva
+                    dell'angolo.
+
+                    A tutta larghezza il segno APPARTIENE alla colonna e la divide dalla
+                    successiva senza bisogno di un altro tratto. Al passaggio si scurisce
+                    invece di allungarsi: uno stato, non un'animazione. */}
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-[3px] opacity-45 transition-opacity duration-200 group-hover:opacity-100"
+                  style={{ background: TINTA_DOMINIO[m.dominio] }}
                 />
-                {m.attivo ? (
-                  <ArrowUpRight
-                    className="mt-1 size-4 text-faint-foreground transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
-                    aria-hidden
-                  />
-                ) : null}
-              </div>
-            </div>
 
-            {m.attivo ? (
-              <>
-                <p className="mt-2 font-mono text-[10px] text-faint-foreground">
-                  {m.conformita?.numeratore}/{m.conformita?.applicabili} fatti e ancora validi
-                </p>
-                <div className="mt-2.5">
-                  <Nastro
-                    segmenti={[
-                      { quanti: m.scadute, colore: "var(--scaduta)", etichetta: "Scadute" },
-                      { quanti: m.inScadenza, colore: "var(--imminente)", etichetta: "In scadenza" },
-                      { quanti: m.regolari, colore: "var(--regolare)", etichetta: "Regolari" },
-                      { quanti: m.daProgrammare, colore: "var(--programmare)", etichetta: "Da programmare" },
-                    ]}
-                  />
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm font-semibold">{m.etichetta.breve}</p>
+                  {m.attivo ? (
+                    <ArrowUpRight
+                      className="size-4 shrink-0 text-faint-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                      aria-hidden
+                    />
+                  ) : null}
                 </div>
-                <dl className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
-                  <Voce etichetta="scadute" valore={m.scadute} tinta="text-scaduta" />
-                  <Voce etichetta="in scadenza" valore={m.inScadenza} tinta="text-imminente" />
-                  <Voce etichetta="da programmare" valore={m.daProgrammare} />
-                  <Voce etichetta="critici aperti" valore={m.critici} />
-                </dl>
-                {m.prontezza ? (
-                  <p className="mt-2.5 border-t border-border-subtle pt-2 text-[10px] text-muted-foreground">
-                    Prontezza a un&apos;ispezione <b className="tabular-nums">{m.prontezza.indice}/100</b>
-                    {m.prontezza.presidiScoperti.length > 0
-                      ? ` · ${m.prontezza.presidiScoperti.length} presidi chiave scoperti`
-                      : " · presidi chiave in ordine"}
-                  </p>
-                ) : null}
-              </>
-            ) : (
-              <p className="mt-3 text-xs text-faint-foreground">Nessuna azienda ha questo modulo attivo.</p>
-            )}
-          </Link>
-        ))}
+                <p className="truncate text-[11px] text-muted-foreground">{m.etichetta.esteso}</p>
+                <p className="font-mono text-[10px] text-faint-foreground">{m.etichetta.norma}</p>
 
-        {/* Il quadro complessivo, con il peso visivo che merita. Nella forma «quieto» il
-            rilievo si fa con la superficie e non con un bordo più marcato: la scheda sale
-            di un gradino invece di alzare la voce con una linea. */}
+                {m.attivo ? (
+                  <>
+                    {/* L'ANELLO È SPARITO, e non per moda: disegnava un arco che diceva la
+                        stessa cosa della cifra che aveva al centro. Due volte lo stesso
+                        dato costa attenzione e non ne restituisce. */}
+                    <p className="mt-4 flex items-baseline gap-1">
+                      <span className="cifra text-[2.6rem] leading-none">
+                        {m.conformita?.percentuale ?? 0}
+                      </span>
+                      <span className="text-base text-muted-foreground">%</span>
+                    </p>
+                    <p className="mt-1 font-mono text-[10px] text-faint-foreground">
+                      {m.conformita?.numeratore}/{m.conformita?.applicabili} fatti e ancora validi
+                    </p>
+
+                    <div className="mt-3">
+                      <Nastro
+                        segmenti={[
+                          { quanti: m.scadute, colore: "var(--scaduta)", etichetta: "Scadute" },
+                          { quanti: m.inScadenza, colore: "var(--imminente)", etichetta: "In scadenza" },
+                          { quanti: m.regolari, colore: "var(--regolare)", etichetta: "Regolari" },
+                          {
+                            quanti: m.daProgrammare,
+                            colore: "var(--programmare)",
+                            etichetta: "Da programmare",
+                          },
+                        ]}
+                      />
+                    </div>
+
+                    <dl className="mt-3 space-y-1 text-[11px]">
+                      <Voce etichetta="scadute" valore={m.scadute} tinta="text-scaduta" />
+                      <Voce etichetta="in scadenza" valore={m.inScadenza} tinta="text-imminente" />
+                      <Voce etichetta="critici aperti" valore={m.critici} />
+                    </dl>
+
+                    {m.prontezza ? (
+                      <p className="mt-3 text-[10px] text-muted-foreground">
+                        Prontezza <b className="tabular-nums">{m.prontezza.indice}/100</b>
+                        {m.prontezza.presidiScoperti.length > 0
+                          ? ` · ${m.prontezza.presidiScoperti.length} presidi scoperti`
+                          : " · presidi in ordine"}
+                      </p>
+                    ) : null}
+                  </>
+                ) : (
+                  <p className="mt-4 text-xs text-faint-foreground">
+                    Nessuna azienda ha questo modulo attivo.
+                  </p>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Il quadro d'insieme. Resta un anello perché qui NON è ridondante: accompagna due
+            numeri diversi (conformità ed esposizione) e fa da ancora visiva a un oggetto che
+            altrimenti sarebbe solo testo. La superficie sale di un gradino invece di alzare
+            la voce con un bordo: nella forma «quieto» il rilievo si fa così. */}
         <div className="pannello entra bg-surface-raised p-5" style={{ animationDelay: "180ms" }}>
           <p className="text-sm font-semibold">Complessivo</p>
           <p className="text-xs text-muted-foreground">sull&apos;insieme unito dei tre decreti</p>
-          <div className="mt-3 flex items-center gap-4">
+          <div className="mt-4 flex items-center gap-4">
             <Anello
               percentuale={c.conformita.percentuale}
               tinta="var(--foreground)"
@@ -155,7 +192,7 @@ export default async function PaginaCruscotto() {
               <p className="text-[10px] text-muted-foreground">esposizione · {esp.giudizio.toLowerCase()}</p>
             </div>
           </div>
-          <p className="mt-3 border-t border-border-subtle pt-2 text-[10px] leading-relaxed text-faint-foreground">
+          <p className="mt-4 border-t border-border-subtle pt-2.5 text-[10px] leading-relaxed text-faint-foreground">
             Calcolato sull&apos;insieme unito, non come media delle tre percentuali: una media peserebbe
             uguale un modulo da 42 e uno da 65, e basterebbe spegnerne uno per migliorare il numero.
           </p>
@@ -314,12 +351,22 @@ function Riquadro({ titolo, nota, children }: { titolo: string; nota?: string; c
   );
 }
 
+// LA COPPIA SI PORTA IL PROPRIO IMPAGINATO, e prima no.
+//
+// `dt` e `dd` uscivano nudi da qui e si affidavano a una griglia a due colonne nel padre.
+// Cambiando il padre in un elenco verticale — la lastra vuole le voci una sotto l'altra —
+// i due elementi sono tornati a essere blocchi e sono andati a capo: l'etichetta su una
+// riga, il numero sulla successiva, allineato a destra. Illeggibile.
+//
+// Un componente che funziona solo dentro un padre preciso è una trappola: la prossima
+// persona che sposta il contenitore rompe l'impaginato senza toccarlo. Ora la coppia sta
+// in piedi da sola, ovunque la si metta.
 function Voce({ etichetta, valore, tinta }: { etichetta: string; valore: number; tinta?: string }) {
   return (
-    <>
+    <div className="flex items-baseline justify-between gap-2">
       <dt className="text-muted-foreground">{etichetta}</dt>
-      <dd className={`text-right font-mono font-medium tabular-nums ${tinta ?? ""}`}>{valore}</dd>
-    </>
+      <dd className={`font-mono font-medium tabular-nums ${tinta ?? ""}`}>{valore}</dd>
+    </div>
   );
 }
 

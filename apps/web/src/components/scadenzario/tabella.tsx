@@ -164,7 +164,7 @@ export function TabellaScadenzario({
         </span>
       </div>
 
-      <div className="pannello overflow-x-auto" data-tour="tabella-scadenzario">
+      <div className="pannello entra overflow-x-auto" data-tour="tabella-scadenzario">
         <Table>
           <TableHeader className="bg-surface-sunken">
             <TableRow className="border-b border-border-strong hover:bg-transparent">
@@ -191,7 +191,7 @@ export function TabellaScadenzario({
               disegnate.map((v) => (
                 <TableRow
                   key={`${v.aziendaId}-${v.dominio}-${v.codice}`}
-                  className="h-riga border-b border-border-subtle last:border-0 hover:bg-accent"
+                  className="h-riga border-b border-border-subtle transition-colors duration-150 last:border-0 hover:bg-surface-raised"
                 >
                   <TableCell className="px-3 py-0">
                     {/* `prefetch={false}`: Next precarica i collegamenti che entrano nel

@@ -193,7 +193,7 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
     );
 
   return (
-    <div className="pannello overflow-clip">
+    <div className="pannello entra overflow-clip">
       {/* La barra di controllo sta DENTRO il pannello: il filtro appartiene alla tabella, e
           staccarlo crea due oggetti dove ce n'è uno. */}
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-sunken px-3 py-2">
@@ -253,7 +253,7 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
               visibili.map((r) => (
                 <tr
                   key={r.id}
-                  className="group border-b border-border-subtle last:border-0 hover:bg-surface-raised"
+                  className="group border-b border-border-subtle transition-colors duration-150 last:border-0 hover:bg-surface-raised"
                 >
                   <td className="px-3 py-2">
                     <Link
