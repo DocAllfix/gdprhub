@@ -220,6 +220,13 @@ vuota**. Nessuna delle quattro va data per buona perché il file esiste.
   avrebbe riavviato niente e un aggiornamento di flotta sarebbe proseguito sulle istanze
   successive credendo che la prima stesse bene.
 
+## L'arretrato sta in un file suo
+
+Da qui in poi «cosa manca» non si ricostruisce leggendo le fasi: sta in
+[`05-arretrato.md`](05-arretrato.md), verificato sul codice e ordinato per ciò che blocca la
+consegna a un cliente pagante — non per fase. Le due voci che la bloccano davvero sono
+l'attivazione del secondo fattore e gli inviti.
+
 ## Prossime
 
 - **F17, la parte che conta**: installazione da zero su una VPS reale, giro completo fino al
