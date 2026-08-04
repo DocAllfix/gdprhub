@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ArrowUpRight } from "lucide-react";
 import { DOMINI, ETICHETTE_DOMINIO, REGISTRI, type Dominio } from "@gdpr/engine";
 import { PastigliaDominio } from "@/components/stato";
 
@@ -43,11 +43,17 @@ export function IndiceRegistri({
                 <li key={r.tipo}>
                   <Link
                     href={`/azienda/${aziendaId}/registro/${r.tipo}`}
-                    className="pannello block h-full p-3.5 transition-colors hover:bg-accent"
+                    className="pannello tocca group block h-full p-3.5"
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="text-sm font-medium">{r.nome}</span>
-                      <span className="cifra shrink-0 text-base">{s?.quante ?? 0}</span>
+                      <span className="flex shrink-0 items-baseline gap-1">
+                        <span className="cifra text-base">{s?.quante ?? 0}</span>
+                        <ArrowUpRight
+                          className="size-3.5 self-center text-faint-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                          aria-hidden
+                        />
+                      </span>
                     </div>
                     <p className="mt-1 font-mono text-[10px] text-faint-foreground">{r.norma}</p>
                     {s && s.daPresidiare > 0 ? (

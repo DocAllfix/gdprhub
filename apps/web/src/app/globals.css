@@ -173,6 +173,16 @@
 
   /* Ombre discrete e tinte come tutto il resto. Mai bagliori colorati. */
   --shadow-sm: 0 1px 2px oklch(0.24 0.014 110 / 0.06);
+  --shadow-md: 0 4px 14px oklch(0.24 0.014 110 / 0.09);
+
+  /* IL LIMITE DEL PANNELLO, non un bordo.
+   *
+   * Sette per cento del colore del testo. A occhio non si legge come una linea: si legge
+   * come il punto in cui la superficie finisce, ed è tutta la differenza fra una scheda
+   * ancorata e una che galleggia. Al passaggio sale al quattordici, così il bersaglio
+   * puntato si stacca dagli altri senza cambiare forma. */
+  --contorno-pannello: oklch(0.24 0.014 110 / 0.07);
+  --contorno-pannello-forte: oklch(0.24 0.014 110 / 0.14);
   --shadow: 0 1px 2px oklch(0.24 0.014 110 / 0.05), 0 4px 12px oklch(0.24 0.014 110 / 0.06);
   --shadow-panel: -1px 0 3px oklch(0.24 0.014 110 / 0.06);
 
@@ -212,6 +222,15 @@
   --surface: oklch(0.2 0.01 110); /* il pannello: tabelle, riquadri */
   --surface-sunken: oklch(0.176 0.009 110); /* l'incavo: intestazioni, pozzetti */
   --surface-raised: oklch(0.236 0.011 110); /* il sollevato: hover, menù, riga attiva */
+
+  /* SUL BUIO IL CONTORNO SI INVERTE. Un'ombra scura su fondo scuro non esiste, e un bordo
+     più nero del fondo scava invece di delimitare: il limite si fa con la LUCE, un bianco
+     all'otto per cento sul bordo superiore dell'oggetto. È la stessa ragione per cui le
+     ombre qui sotto sono più profonde e più larghe: nel buio servono a separare i piani,
+     non a suggerire un'altezza. */
+  --contorno-pannello: oklch(1 0 0 / 0.08);
+  --contorno-pannello-forte: oklch(1 0 0 / 0.16);
+  --shadow-md: 0 6px 20px oklch(0 0 0 / 0.4);
 
   /* La barra è PIÙ SCURA del fondo, non più chiara: incornicia il lavoro invece
      di competerci. Sul chiaro fa il contrario ed è la stessa oliva a piena forza:
@@ -337,10 +356,68 @@
      Chi ha bisogno del filetto — campi, pastiglie, comandi — se lo mette da sé. Questa
      classe è per i CONTENITORI, e sono quelli che nella prima versione erano tutti
      bordati e facevano reticolo. */
+  /* IL PANNELLO — e il contorno da un pixel che prima non c'era.
+   *
+   * Era `superficie + ombra da 1px`, e sul tema chiaro significava bianco su quasi-bianco:
+   * il pannello GALLEGGIAVA. Il committente l'ha detto meglio di qualunque diagnosi —
+   * «schede attaccate con lo sputo» — e aveva ragione, perché senza un bordo l'oggetto non
+   * ha un limite: ha solo un'ombra che suggerisce dove finirebbe.
+   *
+   * La correzione NON è tornare a un bordo pieno, che è ciò da cui la forma «quieto» si
+   * allontanava di proposito. È un anello al 7% del colore del testo: a occhio non si legge
+   * come una linea, si legge come il punto in cui la superficie finisce. Àncora senza
+   * disegnare. È la stessa scelta di `ring-1 ring-foreground/10` nel progetto di
+   * riferimento, calibrata più bassa perché qui il fondo è più caldo.
+   *
+   * `--ombra-pannello` sale al passaggio del mouse solo dove il pannello è un bersaglio:
+   * la classe `.tocca` qui sotto. Un pannello che si solleva senza essere cliccabile è una
+   * promessa che non viene mantenuta. */
   .pannello {
     border-radius: var(--radius-xl);
     background: var(--surface);
-    box-shadow: var(--shadow-sm);
+    box-shadow:
+      0 0 0 1px var(--contorno-pannello),
+      var(--shadow-sm);
+  }
+
+  /* UN PANNELLO CHE SI PUÒ TOCCARE, e lo dice prima di essere toccato.
+   *
+   * Tre stati, non uno. Il passaggio alza la superficie di un gradino e allunga l'ombra;
+   * la pressione la riabbassa di un pixel — senza lo stato premuto un bersaglio grande
+   * sembra rotto, perché il dito tocca e per duecento millesimi non succede niente; il
+   * fuoco da tastiera disegna l'anello, perché chi naviga con il tabulatore ha diritto di
+   * sapere dove si trova.
+   *
+   * Si anima `box-shadow` e `background`, mai la geometria: animare `width` o `top`
+   * costringe il browser a rifare l'impaginato a ogni fotogramma. */
+  .tocca {
+    cursor: pointer;
+    transition:
+      box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .tocca:hover {
+    background: var(--surface-raised);
+    box-shadow:
+      0 0 0 1px var(--contorno-pannello-forte),
+      var(--shadow-md);
+  }
+
+  .tocca:active {
+    transform: translateY(1px);
+    box-shadow:
+      0 0 0 1px var(--contorno-pannello-forte),
+      var(--shadow-sm);
+  }
+
+  .tocca:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 0 0 4px var(--primary),
+      var(--shadow-md);
   }
 }
 
@@ -450,6 +527,50 @@
     color: var(--muted-foreground);
   }
 
+  /* IL MOVIMENTO DI ENTRATA, e solo quello.
+   *
+   * Due animazioni in tutto il sistema: le schede arrivano, le barre crescono. Nient'altro
+   * si muove, e nessuna si ripete — un'interfaccia che si agita mentre la si legge è
+   * peggio di una ferma.
+   *
+   * Non è vezzo. Quattro riquadri identici che compaiono insieme si leggono come un blocco
+   * solo; sfalsati di sessanta millesimi si leggono come quattro oggetti, ed è quello che
+   * sono. E una barra che cresce da zero fa vedere la PROPORZIONE formarsi, mentre una già
+   * disegnata la si trova e basta.
+   *
+   * La curva è `ease-out` esponenziale: parte veloce e si posa. Niente rimbalzi, che in uno
+   * strumento di lavoro sembrano un giocattolo.
+   *
+   * `prefers-reduced-motion` le azzera entrambe, con la regola generale qui sotto. */
+  @keyframes entra-su {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes cresci {
+    from {
+      flex-basis: 0;
+    }
+    to {
+      flex-basis: var(--quota);
+    }
+  }
+
+  .entra {
+    animation: entra-su 320ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .cresce {
+    flex-basis: var(--quota);
+    animation: cresci 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -458,4 +579,118 @@
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════
+   IL POPOVER DELLE GUIDE (driver.js), riportato nei nostri token.
+   ══════════════════════════════════════════════════════════════════════════════════════
+
+   Senza queste righe la guida usa il tema predefinito della libreria: bianco puro, angoli
+   stretti, pulsanti azzurri con l'ombreggiatura del testo. È un pezzo di un'altra
+   applicazione incollato sopra la nostra, e si nota più di qualunque altra cosa — perché
+   la guida è esattamente il momento in cui l'utente sta guardando con attenzione.
+
+   Sta qui e non nel componente perché è l'unico posto da cui si possono usare i token: il
+   colore del popover deve essere lo stesso dei menù, e deve cambiare col tema da solo. */
+
+.guida-popover.driver-popover {
+  background: var(--surface-raised);
+  color: var(--foreground);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 0 0 1px var(--contorno-pannello),
+    var(--shadow-md);
+  padding: 1rem 1.125rem 0.875rem;
+  max-width: 22rem;
+}
+
+.guida-popover .driver-popover-title {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+
+.guida-popover .driver-popover-description {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  margin-top: 0.375rem;
+}
+
+/* Il contatore dei passi in mono, come ogni altra cifra del prodotto. */
+.guida-popover .driver-popover-progress-text {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  color: var(--faint-foreground);
+}
+
+.guida-popover .driver-popover-footer {
+  margin-top: 0.875rem;
+  gap: 0.5rem;
+}
+
+.guida-popover .driver-popover-footer button {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 0.375rem 0.75rem;
+  text-shadow: none;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+.guida-popover .driver-popover-next-btn {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.guida-popover .driver-popover-next-btn:hover {
+  background: var(--primary-hover);
+}
+
+.guida-popover .driver-popover-prev-btn {
+  background: transparent;
+  color: var(--muted-foreground);
+}
+.guida-popover .driver-popover-prev-btn:hover {
+  background: var(--accent);
+  color: var(--foreground);
+}
+
+/* La X di chiusura: driver.js la disegna con un glifo, non con un'icona. */
+.guida-popover .driver-popover-close-btn {
+  color: var(--faint-foreground);
+  transition: color 150ms ease-out;
+}
+.guida-popover .driver-popover-close-btn:hover {
+  color: var(--foreground);
+}
+
+/* La freccia deve prendere il colore della superficie sollevata, o resta bianca e sembra
+   staccata dal popover che la porta. Sono quattro regole perché driver.js disegna la
+   freccia con un bordo, e il lato colorato cambia con la posizione. */
+.guida-popover .driver-popover-arrow-side-left {
+  border-left-color: var(--surface-raised);
+}
+.guida-popover .driver-popover-arrow-side-right {
+  border-right-color: var(--surface-raised);
+}
+.guida-popover .driver-popover-arrow-side-top {
+  border-top-color: var(--surface-raised);
+}
+.guida-popover .driver-popover-arrow-side-bottom {
+  border-bottom-color: var(--surface-raised);
+}
+
+/* L'elemento illuminato: driver.js gli mette un contorno netto. Un raggio coerente col
+   resto e un alone tenue nel colore primario lo fanno sembrare scelto, non ritagliato. */
+.driver-active-element {
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.35);
 }

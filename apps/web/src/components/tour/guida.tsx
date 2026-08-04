@@ -69,6 +69,16 @@ export function Guida({ visti }: { visti: Record<string, number> }) {
       }
 
       const g = driver({
+        // LA CLASSE CHE PORTA IL POPOVER DENTRO IL NOSTRO REGISTRO.
+        //
+        // Senza, driver.js usa il proprio tema predefinito: fondo bianco puro, angoli
+        // stretti, pulsanti azzurri con l'ombreggiatura del testo. Su un prodotto che ha
+        // scelto la propria forma attraverso sette giri di confronto, è un pezzo di
+        // un'altra applicazione incollato sopra — e si vede subito, perché la guida è
+        // proprio il momento in cui si sta guardando con attenzione.
+        //
+        // Lo stile sta in `globals.css`, non qui: è l'unico modo di scriverlo in token.
+        popoverClass: "guida-popover",
         showProgress: passi.length > 1,
         animate: !ridotto,
         overlayOpacity: 0.55,

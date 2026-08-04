@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, LayoutGrid } from "lucide-react";
+import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
 import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
 import { cruscotto } from "@/features/cruscotto/dati";
+import { cn } from "@/lib/utils";
 import {
   Anello,
   CaricoMensile,
@@ -51,8 +52,22 @@ export default async function PaginaCruscotto() {
 
       {/* --- Fascia principale: i tre moduli, ciascuno col suo anello ------------------- */}
       <section className="mt-6 grid gap-3 lg:grid-cols-4">
-        {d.perDominio.map((m) => (
-          <div key={m.dominio} className="pannello p-5">
+        {d.perDominio.map((m, i) => (
+          // LA SCHEDA È IL BERSAGLIO, non un pezzo di testo dentro la scheda.
+          //
+          // Una scheda che mostra «55 scadute» e non porta da nessuna parte costringe a
+          // cercare altrove la lista di quelle 55. Il bersaglio grande è anche la
+          // differenza fra un cruscotto da guardare e uno da cui si lavora.
+          //
+          // Un modulo spento non è cliccabile: porterebbe a una lista vuota, e un
+          // bersaglio che non mantiene è peggio di nessun bersaglio.
+          <Link
+            key={m.dominio}
+            href={m.attivo ? `/scadenzario?dominio=${m.dominio}` : "/portafoglio"}
+            data-tour={i === 0 ? "scheda-dominio" : undefined}
+            style={{ animationDelay: `${i * 60}ms` }}
+            className={cn("pannello entra group block p-5", m.attivo && "tocca")}
+          >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold" style={{ color: TINTA_DOMINIO[m.dominio] }}>
@@ -61,13 +76,21 @@ export default async function PaginaCruscotto() {
                 <p className="truncate text-xs text-muted-foreground">{m.etichetta.esteso}</p>
                 <p className="mt-0.5 font-mono text-[10px] text-faint-foreground">{m.etichetta.norma}</p>
               </div>
-              <Anello
-                percentuale={m.conformita?.percentuale ?? null}
-                tinta={TINTA_DOMINIO[m.dominio]}
-                dimensione={68}
-                spessore={7}
-                etichetta={`Conformità effettiva ${m.etichetta.breve}`}
-              />
+              <div className="flex shrink-0 items-start gap-1">
+                <Anello
+                  percentuale={m.conformita?.percentuale ?? null}
+                  tinta={TINTA_DOMINIO[m.dominio]}
+                  dimensione={68}
+                  spessore={7}
+                  etichetta={`Conformità effettiva ${m.etichetta.breve}`}
+                />
+                {m.attivo ? (
+                  <ArrowUpRight
+                    className="mt-1 size-4 text-faint-foreground transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
+                    aria-hidden
+                  />
+                ) : null}
+              </div>
             </div>
 
             {m.attivo ? (
@@ -103,13 +126,13 @@ export default async function PaginaCruscotto() {
             ) : (
               <p className="mt-3 text-xs text-faint-foreground">Nessuna azienda ha questo modulo attivo.</p>
             )}
-          </div>
+          </Link>
         ))}
 
         {/* Il quadro complessivo, con il peso visivo che merita. Nella forma «quieto» il
             rilievo si fa con la superficie e non con un bordo più marcato: la scheda sale
             di un gradino invece di alzare la voce con una linea. */}
-        <div className="pannello bg-surface-raised p-5">
+        <div className="pannello entra bg-surface-raised p-5" style={{ animationDelay: "180ms" }}>
           <p className="text-sm font-semibold">Complessivo</p>
           <p className="text-xs text-muted-foreground">sull&apos;insieme unito dei tre decreti</p>
           <div className="mt-3 flex items-center gap-4">
