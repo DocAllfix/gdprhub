@@ -6,11 +6,12 @@
 # un difetto, in parallelo lo si scopre su tutti i clienti insieme; in fila lo si scopre sul
 # primo, e gli altri restano alla versione che funzionava. La lentezza è la funzionalità.
 #
-# La flotta è un elenco di righe `nome host percorso`, in `deploy/fleet.txt`, che NON sta
-# nel repository: contiene gli indirizzi dei clienti.
+# La flotta è un elenco di righe in `deploy/fleet.txt`, che NON sta nel repository:
+# contiene gli indirizzi dei clienti.
 #
-#   verdi   root@81.2.3.4      /srv/compliance
-#   rossi   deploy@10.0.0.7    /srv/compliance
+#   <nome>  <utente@host>      <percorso>        <dominio>
+#   verdi   root@81.2.3.4      /srv/compliance   verdi.compliancedesk.it
+#   rossi   deploy@10.0.0.7    /srv/compliance   rossi.compliancedesk.it
 #
 # Uso:  ./deploy/aggiorna-flotta.sh [--prova]
 #   --prova  dice cosa farebbe senza toccare niente
@@ -30,7 +31,7 @@ PROVA=""
 aggiornate=0
 fallite=0
 
-while read -r nome host percorso; do
+while read -r nome host percorso dominio; do
   case "$nome" in ""|\#*) continue ;; esac
 
   echo ""
@@ -76,7 +77,20 @@ while read -r nome host percorso; do
     break
   fi
 
-  echo "  ✓ $nome aggiornata e sana"
+  # LE INTESTAZIONI NON DEVONO REGREDIRE, ed è un controllo che l'istanza sana non fa.
+  #
+  # Un'applicazione può rispondere benissimo e aver perso `X-Robots-Tag` perché qualcuno
+  # ha toccato il Caddyfile: l'istanza è viva, il cliente non se ne accorge, e finisce nei
+  # motori di ricerca. Il riferimento WhistleBlower lo mette qui, dopo l'aggiornamento, ed
+  # è il punto giusto — è l'unico momento in cui qualcosa può essere cambiato.
+  echo "  → intestazioni"
+  if ! "$(dirname "$0")/intestazioni-sicurezza.sh" "https://${dominio}" >/dev/null; then
+    echo "  ✗ $nome: intestazioni di sicurezza regredite dopo l'aggiornamento. MI FERMO."
+    fallite=$((fallite + 1))
+    break
+  fi
+
+  echo "  ✓ $nome aggiornata, sana, con le intestazioni al loro posto"
   aggiornate=$((aggiornate + 1))
 done < "$ELENCO"
 

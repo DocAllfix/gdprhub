@@ -49,7 +49,11 @@ fi
 
 # 4. Il segreto di sviluppo fuori dal proprio posto. È pubblico — sta nel repository — e
 #    un'istanza che parte con quello lascia forgiare una sessione a chiunque legga il codice.
-if git grep -nI "sviluppo-non-usare-in-produzione" -- ':!apps/web/src/lib/env.ts' ':!*.md' >/dev/null 2>&1; then
+# Si esclude anche QUESTO file: contiene la stringa che sta cercando, e senza
+# l'esclusione il controllo boccia sé stesso. Sembra ovvio a leggerlo e non lo è a
+# scriverlo — al primo giro ha segnalato un problema che era solo la propria riga.
+if git grep -nI "sviluppo-non-usare-in-produzione" \
+  -- ':!apps/web/src/lib/env.ts' ':!*.md' ':!deploy/check-segreti.sh' >/dev/null 2>&1; then
   segnala "il segreto di sviluppo compare fuori da env.ts"
 fi
 

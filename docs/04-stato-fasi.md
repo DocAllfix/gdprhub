@@ -185,17 +185,17 @@ non è chiusa: il cancello chiede istanza installata da zero su una macchina ver
 completo fino al PDF, intestazioni verdi, backup eseguito e **ripristino provato su macchina
 vuota**. Nessuna delle quattro va data per buona perché il file esiste.
 
-| File | Cosa fa |
-| --- | --- |
-| `deploy/Dockerfile` | tre stadi + `strumenti`. Gli strumenti di prima installazione hanno bisogno dei sorgenti e di `tsx`, e non devono pesare sull'immagine che gira sempre |
-| `deploy/docker-compose.prod.yml` | **validato da Docker**. Database senza porte esposte, `preparazione` che finisce prima che `app` parta, volumi separati |
-| `deploy/Caddyfile` | `X-Robots-Tag: noindex` come intestazione, non `robots.txt` |
-| `deploy/backup.sh` | dump + volume delle evidenze + `.env.prod`, cifrati GPG |
-| `deploy/restore-prova.sh` | ripristina in un PostgreSQL effimero e **conta le righe** |
-| `deploy/intestazioni-sicurezza.sh` | verifica che le intestazioni arrivino davvero al browser |
-| `deploy/check-segreti.sh` | **verde**: nessun segreto tracciato da git |
-| `deploy/aggiorna-flotta.sh` | una istanza alla volta, si ferma alla prima che non torna sana |
-| `deploy/RUNBOOK.md` | installazione, aggiornamento, backup, ripristino, diagnosi |
+| File                               | Cosa fa                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `deploy/Dockerfile`                | tre stadi + `strumenti`. Gli strumenti di prima installazione hanno bisogno dei sorgenti e di `tsx`, e non devono pesare sull'immagine che gira sempre |
+| `deploy/docker-compose.prod.yml`   | **validato da Docker**. Database senza porte esposte, `preparazione` che finisce prima che `app` parta, volumi separati                                |
+| `deploy/Caddyfile`                 | `X-Robots-Tag: noindex` come intestazione, non `robots.txt`                                                                                            |
+| `deploy/backup.sh`                 | dump + volume delle evidenze + `.env.prod`, cifrati GPG                                                                                                |
+| `deploy/restore-prova.sh`          | ripristina in un PostgreSQL effimero e **conta le righe**                                                                                              |
+| `deploy/intestazioni-sicurezza.sh` | verifica che le intestazioni arrivino davvero al browser                                                                                               |
+| `deploy/check-segreti.sh`          | **verde**: nessun segreto tracciato da git                                                                                                             |
+| `deploy/aggiorna-flotta.sh`        | una istanza alla volta, si ferma alla prima che non torna sana                                                                                         |
+| `deploy/RUNBOOK.md`                | installazione, aggiornamento, backup, ripristino, diagnosi                                                                                             |
 
 **Ciò che è stato verificato davvero**, e non solo scritto:
 
