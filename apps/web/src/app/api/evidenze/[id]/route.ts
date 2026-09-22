@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { evidence } from "@/lib/db/schema";
 import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
+import { registra } from "@/lib/audit";
 import { archivioIstanza, improntaSha256 } from "@/lib/storage";
 
 // Lo scaricamento di un'evidenza.
@@ -51,6 +52,24 @@ export async function GET(_richiesta: Request, contesto: { params: Promise<{ id:
       { status: 409 },
     );
   }
+
+  // OGNI USCITA DI DATI LASCIA UNA RIGA, e prima non ne lasciava nessuna.
+  //
+  // Il registro degli eventi copriva tutte le MUTAZIONI e nessuna LETTURA: un consulente
+  // licenziato che scaricava le evidenze di tutti i clienti prima di andarsene non lasciava
+  // traccia. In un prodotto GDPR e' la lacuna piu' costosa: l'art. 33 chiede di ricostruire
+  // COSA e' uscito, e senza questa riga non si puo'.
+  //
+  // Si scrive DOPO i controlli e PRIMA di consegnare: una riga per un documento che non e'
+  // stato consegnato direbbe il falso in senso opposto.
+  await registra({
+    organizationId: ctx.organizationId,
+    userId: ctx.userId,
+    azione: "evidenza.scarica",
+    entita: "evidence",
+    entitaId: id,
+    dettagli: { nomeFile: riga.nomeFile, dimensione: dati.length },
+  });
 
   return new Response(new Uint8Array(dati), {
     headers: {

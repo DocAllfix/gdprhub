@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useOptimistic, useState, useTransition } from "react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useFiltriUrl } from "@/lib/filtri-url";
-import { Link2, X } from "lucide-react";
+import { Link2, SearchX, X } from "lucide-react";
 import { ETICHETTE_DOMINIO, STATI_LAVORO, STATI_SCADENZA, type StatoLavoro } from "@gdpr/engine";
 import type { RigaAssessment } from "@/features/assessment/dati";
 import { cambiaStato } from "@/features/assessment/azioni";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { VuotoFiltro } from "@/components/ui/vuoto";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Codice, Priorita, Scadenza } from "@/components/stato";
 import { PannelloAdempimento } from "@/components/assessment/pannello";
@@ -26,6 +28,21 @@ import { cn } from "@/lib/utils";
 
 const INIZIALI = { q: "", lavoro: "", scadenza: "", categoria: "", ruolo: "" };
 
+/**
+ * I filtri attivi, in parole. Serve allo stato vuoto: «nessun adempimento corrisponde»
+ * lascia chi guarda a chiedersi cosa stia escludendo, e chi ha filtrato dieci minuti fa se
+ * n'è già dimenticato.
+ */
+function filtriAttivi(f: typeof INIZIALI): string[] {
+  const fuori: string[] = [];
+  if (f.q) fuori.push(`il testo «${f.q}»`);
+  if (f.lavoro) fuori.push(`lavoro: ${f.lavoro}`);
+  if (f.scadenza) fuori.push(`scadenza: ${f.scadenza}`);
+  if (f.categoria) fuori.push(`categoria: ${f.categoria}`);
+  if (f.ruolo) fuori.push(`responsabile: ${f.ruolo}`);
+  return fuori;
+}
+
 export function TabellaAssessment({
   righe,
   modificabile,
@@ -34,7 +51,22 @@ export function TabellaAssessment({
   modificabile: boolean;
 }) {
   const router = useRouter();
-  const [inCorso, avvia] = useTransition();
+  const [, avvia] = useTransition();
+
+  // AGGIORNAMENTO OTTIMISTICO, riga per riga.
+  //
+  // Prima c'era un solo `useTransition` per tutta la tabella, e ogni `<select>` portava
+  // `disabled={… || inCorso}`: cambiare lo stato di UNA riga congelava tutte le sessantaquattro
+  // fino al ritorno del server e al ricaricamento. In una sessione da otto ore sono decine di
+  // attese, ognuna un giro fino a Francoforte con la tabella morta nel frattempo.
+  //
+  // Ora la riga mostra subito il valore scelto, e si blocca SOLO lei finché la scrittura non
+  // torna. Se il server rifiuta, `useOptimistic` rimette il valore di prima da solo alla fine
+  // della transizione: non c'è uno stato da ripristinare a mano, e quindi niente da dimenticare.
+  const [provvisori, applica] = useOptimistic<
+    Readonly<Record<string, StatoLavoro>>,
+    { readonly id: string; readonly stato: StatoLavoro }
+  >({}, (precedenti, modifica) => ({ ...precedenti, [modifica.id]: modifica.stato }));
   const [apertaId, setApertaId] = useState<string | null>(null);
   const { filtri, imposta, azzera } = useFiltriUrl(INIZIALI);
 
@@ -80,8 +112,20 @@ export function TabellaAssessment({
       setApertaId(riga.id);
       return;
     }
+    const stato = nuovo as StatoLavoro;
     avvia(async () => {
-      await cambiaStato(riga.id, nuovo as StatoLavoro);
+      applica({ id: riga.id, stato });
+      const esito = await cambiaStato(riga.id, stato);
+      // ⚠️ L'ESITO SI LEGGE. Prima veniva ignorato: se il server rifiutava la modifica — sola
+      // lettura, modalità dimostrativa, validazione — la riga tornava al valore vecchio senza
+      // una parola, e l'utente non sapeva se aveva sbagliato lui o se il prodotto era rotto.
+      // Il cancello visivo non poteva vederlo: non è un errore HTTP, è una risposta regolare
+      // con un rifiuto dentro.
+      if (!esito.ok) {
+        toast.error(`${riga.codice} non è stato aggiornato`, { description: esito.errore });
+        return;
+      }
+      toast.success(`${riga.codice} · ${stato}`);
       router.refresh();
     });
   };
@@ -133,9 +177,23 @@ export function TabellaAssessment({
         </span>
       </div>
 
-      <div className="pannello entra overflow-x-auto" data-tour="tabella-assessment">
+      {/* L'INTESTAZIONE SI FISSA ALLA FINESTRA, e perché qui non ci sia più un contenitore
+          con overflow da 'lg' in su è la parte che si dimentica: 'position: sticky' si àncora
+          al più vicino antenato che scorre, e un 'overflow-x-auto' ne crea uno anche quando
+          non si vede scorrere. È il difetto già incontrato in F5d e scritto in DESIGN.md.
+
+          Sotto 'lg' l'overflow resta, perché lì la tabella non ci sta in larghezza e lo
+          scorrimento orizzontale serve davvero: a quelle larghezze l'intestazione fissata
+          vale poco, perché di righe se ne vedono comunque poche.
+
+          MISURATO, non supposto: con la scatola di scorrimento si vedevano 14 righe
+          sull'assessment e 10 sullo scadenzario; così se ne vedono 24. DESIGN.md ne chiede 22. */}
+      <div
+        className="pannello entra overflow-x-auto lg:overflow-x-visible"
+        data-tour="tabella-assessment"
+      >
         <Table>
-          <TableHeader className="bg-surface-sunken">
+          <TableHeader className="bg-surface-sunken lg:sticky lg:top-0 lg:z-10 lg:[&_th]:bg-surface-sunken">
             <TableRow className="border-b border-border-strong hover:bg-transparent">
               <TableHead className="h-8 px-3">Cod.</TableHead>
               <TableHead className="h-8 px-3">Adempimento</TableHead>
@@ -149,8 +207,19 @@ export function TabellaAssessment({
           <TableBody>
             {conIntestazioni.length === 0 ? (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={7} className="h-24 text-center text-sm text-muted-foreground">
-                  Nessun adempimento corrisponde ai filtri attivi.
+                <TableCell colSpan={7} className="p-0">
+                  {/* Il vuoto da filtro è il più frequente in una sessione di lavoro, ed era
+                      l'unico senza un'azione: il pulsante «Azzera» esiste, ma sta in cima ai
+                      filtri, fuori dal campo visivo di chi sta guardando la tabella vuota. */}
+                  <VuotoFiltro
+                    icona={SearchX}
+                    filtri={filtriAttivi(filtri)}
+                    azzera={
+                      <Button variant="outline" size="sm" onClick={() => azzera()}>
+                        Azzera i filtri
+                      </Button>
+                    }
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -159,7 +228,7 @@ export function TabellaAssessment({
                   <TableRow key={`cat-${voce.intestazione}`} className="hover:bg-transparent">
                     <TableCell
                       colSpan={7}
-                      className="border-b border-border bg-surface-sunken/60 px-3 py-1 text-[10px] font-semibold tracking-[0.11em] uppercase"
+                      className="border-b border-border bg-surface-sunken/60 px-3 py-1 text-micro font-semibold tracking-[0.11em] uppercase"
                     >
                       {voce.intestazione}
                     </TableCell>
@@ -215,8 +284,10 @@ export function TabellaAssessment({
                         </span>
                       ) : (
                         <select
-                          value={voce.stato}
-                          disabled={!modificabile || inCorso}
+                          value={provvisori[voce.id] ?? voce.stato}
+                          // Si blocca solo la riga che sta salvando: le altre restano azionabili.
+                          disabled={!modificabile || voce.id in provvisori}
+                          aria-busy={voce.id in provvisori}
                           aria-label={`Stato del lavoro di ${voce.codice}`}
                           data-tour="stato-riga"
                           onChange={(e) => cambia(voce, e.target.value)}

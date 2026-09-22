@@ -134,7 +134,27 @@ che un valore che cambia faccia ballare la riga accanto.
 bene alla perizia stampata, ma portava un terzo carattere e un registro che con Geist litiga.
 Resta nel PDF, dove è al suo posto.
 
-- Scala 1.2, fissa in rem, mai fluida. Nessun font display nell'interfaccia.
+- Fissa in rem, mai fluida. Nessun font display nell'interfaccia.
+- **La scala è quella di Tailwind più sette token nostri**, sotto e sopra dove Tailwind non
+  arriva _(2026-09-19)_:
+
+  | Token | Misura | Uso |
+  | --- | --- | --- |
+  | `text-micro` | 10px | etichette di colonna, pastiglie, note sotto una cifra |
+  | `text-nota` | 11px | aiuti, didascalie, microtesto di riga |
+  | `text-titolo` | 1.7rem | il titolo di pagina, su dieci pagine su dieci |
+  | `text-cifra-sm` | 1.6rem | la banda compatta del portafoglio |
+  | `text-cifra` | 1.9rem | la cifra in testata, di pagina o di pannello |
+  | `text-cifra-xl` | 2.6rem | la lastra del cruscotto |
+
+  Erano 125 valori `text-[…]` scritti a mano: non disordine, una scala coerente che nessuno
+  aveva nominato. **Le cifre erano quattro misure e sono tre.** `2.1rem` e `1.9rem` erano la
+  stessa struttura a 3,2 pixel di distanza, mai sulla stessa schermata. Sopravvive 1.9 perché
+  a 2.1 la cifra è **1,24×** il titolo della pagina su cui sta e gli grida sopra, a 1.9 è
+  **1,12×** e gli sta alla pari. Deciso guardando `/varianti/cifre`, che resta come archivio.
+
+  ⚠️ Il registro diceva «scala 1.2»: quella di Tailwind non lo è (12→14 è 1,167). Era
+  un'intenzione mai applicata; rinumerarla sposterebbe 376 usi e la densità misurata.
 - `font-variant-numeric: tabular-nums` sul `body`, non solo nelle tabelle.
 - **Intestazioni di colonna in tondo**, 12px, peso 500, nessuna spaziatura. Il maiuscoletto
   spaziato è il registro dello schema «filetto»: in una pagina senza linee e con tanta aria è
@@ -266,6 +286,12 @@ server era sbagliata: senza movimento non si distingue una pagina ferma da una m
   nasconde.
 - `.cresce` — le barre partono da zero, 520 ms. Fa vedere la **proporzione formarsi**, mentre
   una barra già disegnata la si trova e basta.
+  **Anima `transform: scaleX`, non la larghezza** _(2026-09-19)_: la prima versione animava
+  `flex-basis`, cioè proprio la geometria che la regola qui sopra vieta. Si mette sul
+  **contenitore** del nastro, che si allunga intero, e non sui segmenti, che aprirebbero fessure.
+- **`.tocca` non va sulle parti di una lastra.** Solleva ciò che tocca con ombra e anello: su una
+  delle tre sezioni del cruscotto la staccherebbe dalla superficie, il contrario di «un fatto in
+  tre parti». Lì il passaggio si fa col solo colore.
 
 Curva `cubic-bezier(0.22, 1, 0.36, 1)`: parte veloce e si posa. **Niente rimbalzi**, che in
 uno strumento di lavoro sembrano un giocattolo. Nessuna animazione si ripete: un'interfaccia
@@ -294,6 +320,56 @@ prodotto che ha scelto la propria forma. Si nota più di qualunque altra cosa, p
 Il popover porta `popoverClass: "guida-popover"` e lo stile sta in `globals.css`, non nel
 componente: è l'unico posto da cui si possono usare i token, e il colore del popover deve
 essere lo stesso dei menù e cambiare col tema da solo.
+
+Stessa regola per **le ricevute delle scritture** (`sonner`, _2026-09-19_): `unstyled` e le
+classi in `components/ui/ricevute.tsx`, coi nostri token. **La conferma non è verde**: il verde
+è riservato allo stato della scadenza, e una ricevuta verde accanto a una data verde direbbe
+«regolare» a una cosa che significa «salvato». L errore usa `destructive`.
+
+### Il terzo livello di testo si distingue per dimensione, non per luminosità _(2026-09-19)_
+
+`--faint-foreground` **non passava AA sul tema chiaro**: 3,22-3,57:1 contro una soglia di 4,5,
+misurato in browser su tutti e quattro i fondi. Dei suoi 79 usi, dieci erano icone e settanta
+testo — quasi tutto microtesto da 10-12px, cioè piccolo e poco contrastato insieme.
+
+Scurire il token costava la gerarchia: per arrivare a 4,5:1 su tutti i fondi serviva L 0,540,
+a 0,037 da `--muted-foreground`, due grigi indistinguibili. Quindi:
+
+- **`text-faint-foreground` solo sulle icone**, dove WCAG chiede 3:1 e passa;
+- **sul testo `text-muted-foreground`**, e il terzo livello resta distinto per DIMENSIONE, che a
+  dieci pixel è un segnale più forte di un dodici per cento di luminosità.
+
+### Le intestazioni di tabella si fissano alla finestra _(2026-09-19)_
+
+Da `lg` in su l'intestazione resta mentre si scorre; sotto `lg` no, perché lì la tabella non
+ci sta in larghezza e serve lo scorrimento orizzontale.
+
+**Scelta misurando**, e la misura ha rovesciato la prima scelta. Una scatola di scorrimento
+propria mostrava **14 righe** sull'assessment e **10** sullo scadenzario; la pagina che scorre
+con l'intestazione fissata ne mostra **24**. La regola della densità ne chiede 22.
+
+⚠️ **`position: sticky` si àncora al più vicino antenato che scorre**, e `overflow-x-auto` ne
+crea uno anche quando non si vede scorrere. È il difetto di F5d, e c'era in una seconda copia
+invisibile: `components/ui/table.tsx`, la primitiva di shadcn, avvolge la tabella in un proprio
+`overflow-x-auto`. Da `lg` in su è `overflow-x-visible`. Chi aggiunge un contenitore attorno a
+una tabella controlli questo per primo.
+
+### Lo stato vuoto è un componente solo _(2026-09-19)_
+
+`components/ui/vuoto.tsx`: `<Vuoto>` (icona, titolo, spiegazione, azione) e `<VuotoFiltro>`.
+Sostituisce cinque forme scritte a mano e tre copie letterali della stessa funzione.
+
+**Un vuoto spiega perché è vuoto**, e **un vuoto da filtro nomina i filtri e offre di
+toglierli**: è il più frequente in una sessione di lavoro, ed era l'unico senza un'azione.
+
+### La matrice dei due assi è un filtro _(2026-09-19)_
+
+Ogni cella non vuota porta alla tabella filtrata per quei due stati. «Completata e scaduta» è il
+problema di design centrale del prodotto, e stava in una cella che non portava da nessuna parte.
+
+⚠️ La tabella porta una `key` sui due assi, e senza non funziona: `useFiltriUrl` legge
+l'indirizzo solo al montaggio, e una navigazione alla stessa pagina non rimonta il componente.
+Verificato togliendo la chiave: l'indirizzo cambiava, la tabella restava a 64 righe.
 
 ## Accessibilità
 
@@ -330,9 +406,50 @@ applicato e boccia. Al primo giro passava verde su una pagina in cui il tema scu
 esisteva.
 
 Le pagine protette si dichiarano `autenticata: true` e il cancello apre **una sola** sessione
-riusandone i cookie: l'autenticazione ha un limitatore di frequenza, e ventiquattro accessi in
-fila lo fanno scattare. Fra i pulsanti cliccati c'è anche «Esci», che deve funzionare: il
-cancello se ne accorge, rimette i cookie e prosegue.
+riusandone i cookie: l'autenticazione ha un limitatore di frequenza — **dieci accessi al
+minuto** — e un cancello che ne apre di più si ferma con una raffica di 429. «Esci» deve
+funzionare, e si verifica **una volta per giro**, non per ogni combinazione: è lo stesso comando
+su ogni pagina, e verificarlo novantasei volte significava novantasei accessi.
+
+### Il primo controllo è che la pagina sia viva _(2026-09-19)_
+
+**Fino al 2026-09-19 il cancello cliccava HTML morto.** Apriva le pagine su `127.0.0.1`, il
+server di sviluppo si presenta come `localhost`, e Next 16 blocca le risorse di sviluppo da
+un'origine diversa: gli script arrivavano tutti con 200, nessuna violazione CSP, ma **React non
+si idratava mai**. Ogni clic cadeva su un bottone senza gestori e non produceva errori — quindi
+passava. L'unico clic di cui il cancello verificava l'effetto era «Esci», e infatti era l'unico
+che falliva.
+
+Da allora:
+
+- **il cancello apre `localhost`**, non `127.0.0.1`;
+- **il primo controllo di ogni pagina è l'interattività**: le fibre di React su `<html>` o
+  `<body>`, altrimenti la pagina si boccia e non si prosegue. Solo lì e non su un elemento
+  qualsiasi, perché la sovrapposizione di sviluppo di Next monta una propria radice dentro
+  `<body>` e fa passare per buona anche una pagina inerte.
+
+Messo alla prova sabotando la pagina (pezzi di JavaScript bloccati): HTTP 200, testo leggibile,
+**il controllo vecchio promuoveva, il nuovo boccia**. Con i clic finalmente veri sono usciti due
+difetti rimasti invisibili per mesi — `history.replaceState` dentro un aggiornatore di stato
+(30 occorrenze) e il nonce che rompeva l'idratazione su ogni pagina (690). Entrambi corretti.
+
+**Un cancello su una pagina morta non è cieco: è silenzioso per costruzione.** La regola che ne
+viene vale per ogni strumento di verifica di questo progetto: **prima di credere a un verde,
+vederlo diventare rosso**.
+
+Altri tre accorgimenti, ognuno nato da un falso positivo: la sovrapposizione di sviluppo di Next
+è nascosta durante la prova (copriva «Esci» e rubava il fuoco); lo screenshot usa
+`caret: "initial"`, perché Playwright altrimenti inietta `caret-color: transparent` e React lo
+segnala come mancata corrispondenza; un collegamento senza risposta si riprova **una** volta
+prima di accusare, mai gli stati ≥ 400.
+
+### La guardia dei token _(2026-09-19)_
+
+`src/lib/token-puri.test.ts`, dentro `pnpm test`. Chiede a `globals.css` quali token esistono e
+al sorgente quali si usano, e boccia tre cose: un valore arbitrario che non passa da un token,
+un colore letterale in un componente, e **un nome di scala usato ma non esposto in
+`@theme inline`** — che è il difetto delle ombre: `shadow-md` esisteva come token, non era
+esposto, e Tailwind serviva la propria ombra nera di serie, che sul tema scuro non si azzera.
 
 Dopo il cancello si esegue **`pnpm db:demo-reset`**: cliccare ogni pulsante significa anche
 attivare e disattivare moduli, e i dati della vetrina vanno rimessi come li troverà il

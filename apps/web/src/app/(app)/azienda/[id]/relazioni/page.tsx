@@ -34,7 +34,7 @@ export default async function PaginaRelazioni({ params }: { params: Promise<{ id
 
       <header className="mt-3">
         <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Relazioni</p>
-        <h1 className="titolo mt-1.5 text-[1.7rem]">
+        <h1 className="titolo mt-1.5 text-titolo">
           {elenco.length === 0
             ? "Nessuna relazione emessa"
             : `${elenco.length} ${elenco.length === 1 ? "relazione" : "relazioni"}${

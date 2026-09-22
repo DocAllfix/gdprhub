@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { instanceConfig } from "@/lib/db/schema";
 import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
+import { registra } from "@/lib/audit";
 import { costruisciSnapshot } from "@/features/relazioni/snapshot";
 import { ORGANI, htmlFascicolo, isOrgano } from "@/lib/documenti/fascicolo";
 import { rendiPdf } from "@/lib/pdf";
@@ -52,6 +53,19 @@ export async function GET(
     .replace(/[^a-zA-Z0-9]+/g, "-")
     .toLowerCase()
     .replace(/^-|-$/g, "")}.pdf`;
+
+  // OGNI USCITA DI DATI LASCIA UNA RIGA (vedi `api/evidenze`): il registro copriva le
+  // mutazioni e nessuna lettura, quindi un'esfiltrazione non lasciava traccia.
+  // Il fascicolo ispettivo e' la raccolta piu' densa che l'istanza produca: sapere chi
+  // l'ha generato, per quale azienda e per quale organo e' il minimo.
+  await registra({
+    organizationId: ctx.organizationId,
+    userId: ctx.userId,
+    azione: "fascicolo.scarica",
+    entita: "client_company",
+    entitaId: id,
+    dettagli: { organo },
+  });
 
   return new Response(new Uint8Array(pdf), {
     headers: {

@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useFiltriUrl } from "@/lib/filtri-url";
-import { X } from "lucide-react";
+import { ArrowDown, ArrowUp, CalendarClock, ChevronsUpDown, SearchX, X } from "lucide-react";
 import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
 import type { VoceScadenzario } from "@/features/scadenzario/dati";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Vuoto, VuotoFiltro } from "@/components/ui/vuoto";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Codice, PastigliaDominio, Priorita, Scadenza, StatoLavoroEtichetta } from "@/components/stato";
 import { cn } from "@/lib/utils";
@@ -21,7 +22,39 @@ import { cn } from "@/lib/utils";
 // Il nome dell'azienda è la prima colonna perché è la prima cosa che serve: da qui si decide
 // chi chiamare, non cosa fare.
 
-const INIZIALI = { q: "", finestra: "30", dominio: "", azienda: "", ruolo: "", priorita: "" };
+const INIZIALI = {
+  q: "",
+  finestra: "30",
+  dominio: "",
+  azienda: "",
+  ruolo: "",
+  priorita: "",
+  ordina: "scadenza",
+  verso: "asc",
+};
+
+// L'ORDINAMENTO, che lo scadenzario non aveva: era una delle due tabelle più dense del
+// prodotto e una delle due sole senza. Il predefinito resta la scadenza crescente, perché è
+// un'agenda e la domanda è «cosa scade prima». Le altre due colonne rispondono alle altre due
+// domande di chi lavora: «su quale cliente» e «cosa conta di più».
+type Colonna = "azienda" | "priorita" | "scadenza";
+const COLONNE: readonly Colonna[] = ["azienda", "priorita", "scadenza"];
+const PESO_PRIORITA: Readonly<Record<string, number>> = { Critica: 0, Alta: 1, Media: 2, Bassa: 3 };
+
+/**
+ * I filtri attivi, in parole, per lo stato vuoto. La finestra è esclusa di proposito: c'è
+ * sempre, quindi nominarla a ogni vuoto sarebbe rumore — e il comando per cambiarla è il più
+ * visibile della schermata.
+ */
+function filtriAttivi(f: typeof INIZIALI): string[] {
+  const fuori: string[] = [];
+  if (f.q) fuori.push(`il testo «${f.q}»`);
+  if (f.dominio) fuori.push(`decreto: ${f.dominio}`);
+  if (f.azienda) fuori.push(`azienda: ${f.azienda}`);
+  if (f.ruolo) fuori.push(`responsabile: ${f.ruolo}`);
+  if (f.priorita) fuori.push(`priorità: ${f.priorita}`);
+  return fuori;
+}
 
 /** Quante righe si disegnano alla volta. Duecento riempiono abbondantemente uno schermo
  *  e restano leggere: sono milleseicento celle invece di diecimila. */
@@ -49,7 +82,7 @@ export function TabellaScadenzario({
   const visibili = useMemo(() => {
     const q = f.q.toLowerCase();
     const finestra = FINESTRE.find((x) => x.chiave === f.finestra) ?? FINESTRE[0];
-    return voci.filter(
+    const filtrate = voci.filter(
       (v) =>
         v.giorni <= finestra.limite &&
         v.giorni >= finestra.min &&
@@ -62,7 +95,28 @@ export function TabellaScadenzario({
         (f.ruolo === "" || v.ruolo === f.ruolo) &&
         (f.priorita === "" || v.priorita === f.priorita),
     );
-  }, [voci, f.q, f.finestra, f.dominio, f.azienda, f.ruolo, f.priorita]);
+    const colonna: Colonna = (COLONNE as readonly string[]).includes(f.ordina)
+      ? (f.ordina as Colonna)
+      : "scadenza";
+    const segno = f.verso === "desc" ? -1 : 1;
+    // A parità, la scadenza: dentro la stessa azienda o la stessa priorità l'ordine utile è
+    // comunque «cosa scade prima».
+    return [...filtrate].sort((a, b) => {
+      const primario =
+        colonna === "azienda"
+          ? a.azienda.localeCompare(b.azienda, "it")
+          : colonna === "priorita"
+            ? (PESO_PRIORITA[a.priorita] ?? 9) - (PESO_PRIORITA[b.priorita] ?? 9)
+            : a.giorni - b.giorni;
+      return (primario || a.giorni - b.giorni) * segno;
+    });
+  }, [voci, f.q, f.finestra, f.dominio, f.azienda, f.ruolo, f.priorita, f.ordina, f.verso]);
+
+  const ordina = (colonna: Colonna) => {
+    const attuale = (COLONNE as readonly string[]).includes(f.ordina) ? f.ordina : "scadenza";
+    imposta("ordina", colonna);
+    imposta("verso", attuale === colonna && f.verso !== "desc" ? "desc" : "asc");
+  };
 
   const attivi = [f.q, f.dominio, f.azienda, f.ruolo, f.priorita].filter((x) => x !== "").length;
 
@@ -106,7 +160,7 @@ export function TabellaScadenzario({
             className={cn(
               "rounded px-2.5 py-1 text-xs",
               f.finestra === x.chiave
-                ? "bg-surface font-medium text-foreground shadow-xs"
+                ? "bg-surface font-medium text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -164,27 +218,97 @@ export function TabellaScadenzario({
         </span>
       </div>
 
-      <div className="pannello entra overflow-x-auto" data-tour="tabella-scadenzario">
+      {/* L'INTESTAZIONE SI FISSA ALLA FINESTRA, e perché qui non ci sia più un contenitore
+          con overflow da 'lg' in su è la parte che si dimentica: 'position: sticky' si àncora
+          al più vicino antenato che scorre, e un 'overflow-x-auto' ne crea uno anche quando
+          non si vede scorrere. È il difetto già incontrato in F5d e scritto in DESIGN.md.
+
+          Sotto 'lg' l'overflow resta, perché lì la tabella non ci sta in larghezza e lo
+          scorrimento orizzontale serve davvero: a quelle larghezze l'intestazione fissata
+          vale poco, perché di righe se ne vedono comunque poche.
+
+          MISURATO, non supposto: con la scatola di scorrimento si vedevano 14 righe
+          sull'assessment e 10 sullo scadenzario; così se ne vedono 24. DESIGN.md ne chiede 22. */}
+      <div
+        className="pannello entra overflow-x-auto lg:overflow-x-visible"
+        data-tour="tabella-scadenzario"
+      >
         <Table>
-          <TableHeader className="bg-surface-sunken">
+          <TableHeader className="bg-surface-sunken lg:sticky lg:top-0 lg:z-10 lg:[&_th]:bg-surface-sunken">
             <TableRow className="border-b border-border-strong hover:bg-transparent">
-              <TableHead className="h-8 px-3">Azienda</TableHead>
+              <TableHead className="h-8 px-3" aria-sort={f.ordina === "azienda" ? (f.verso === "desc" ? "descending" : "ascending") : "none"}>
+                <button
+                  type="button"
+                  onClick={() => ordina("azienda")}
+                  className="inline-flex items-center gap-1 rounded-xs hover:text-foreground"
+                >
+                  Azienda
+                  {f.ordina === "azienda" ? (
+                    f.verso === "desc" ? <ArrowDown className="size-3" aria-hidden /> : <ArrowUp className="size-3" aria-hidden />
+                  ) : (
+                    <ChevronsUpDown className="size-3 opacity-40" aria-hidden />
+                  )}
+                </button>
+              </TableHead>
               <TableHead className="h-8 px-3">Modulo</TableHead>
               <TableHead className="h-8 px-3">Cod.</TableHead>
               <TableHead className="h-8 px-3">Adempimento</TableHead>
               <TableHead className="h-8 px-3">Responsabile</TableHead>
-              <TableHead className="h-8 px-3">Priorità</TableHead>
+              <TableHead className="h-8 px-3" aria-sort={f.ordina === "priorita" ? (f.verso === "desc" ? "descending" : "ascending") : "none"}>
+                <button
+                  type="button"
+                  onClick={() => ordina("priorita")}
+                  className="inline-flex items-center gap-1 rounded-xs hover:text-foreground"
+                >
+                  Priorità
+                  {f.ordina === "priorita" ? (
+                    f.verso === "desc" ? <ArrowDown className="size-3" aria-hidden /> : <ArrowUp className="size-3" aria-hidden />
+                  ) : (
+                    <ChevronsUpDown className="size-3 opacity-40" aria-hidden />
+                  )}
+                </button>
+              </TableHead>
               <TableHead className="h-8 px-3">Lavoro</TableHead>
-              <TableHead className="h-8 px-3">Scadenza</TableHead>
+              <TableHead className="h-8 px-3" aria-sort={f.ordina === "scadenza" ? (f.verso === "desc" ? "descending" : "ascending") : "none"}>
+                <button
+                  type="button"
+                  onClick={() => ordina("scadenza")}
+                  className="inline-flex items-center gap-1 rounded-xs hover:text-foreground"
+                >
+                  Scadenza
+                  {f.ordina === "scadenza" ? (
+                    f.verso === "desc" ? <ArrowDown className="size-3" aria-hidden /> : <ArrowUp className="size-3" aria-hidden />
+                  ) : (
+                    <ChevronsUpDown className="size-3 opacity-40" aria-hidden />
+                  )}
+                </button>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {visibili.length === 0 ? (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={8} className="h-24 text-center text-sm text-muted-foreground">
-                  {voci.length === 0
-                    ? "Nessuna scadenza da presidiare in tutto il portafoglio."
-                    : "Nessuna scadenza corrisponde ai filtri attivi."}
+                <TableCell colSpan={8} className="p-0">
+                  {/* DUE VUOTI DIVERSI, e la distinzione c'era già: un portafoglio senza
+                      scadenze non è una ricerca senza risultati, e confonderli manderebbe a
+                      cercare un filtro che non esiste. Qui cambia solo che il secondo caso
+                      dice COSA sta escludendo e offre di smettere. */}
+                  {voci.length === 0 ? (
+                    <Vuoto icona={CalendarClock} titolo="Nessuna scadenza da presidiare" variante="riga">
+                      In tutto il portafoglio non c&apos;è un adempimento con una scadenza: succede
+                      quando le aziende non hanno ancora moduli attivi con adempimenti censiti.
+                    </Vuoto>
+                  ) : (
+                    <VuotoFiltro
+                      icona={SearchX}
+                      filtri={filtriAttivi(f)}
+                      azzera={
+                        <Button variant="outline" size="sm" onClick={() => azzera(["finestra"])}>
+                          Azzera i filtri
+                        </Button>
+                      }
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ) : (

@@ -175,7 +175,7 @@ function Corpo({
                 . Lo stato e la scadenza che vedi sono i suoi, e si modificano da lì: due verità sullo stesso
                 fatto sarebbero peggio di nessuna.
               </p>
-              <p className="mt-1 font-mono text-[10px] text-faint-foreground">{riga.letturaDa.riferimento}</p>
+              <p className="mt-1 font-mono text-micro text-muted-foreground">{riga.letturaDa.riferimento}</p>
             </div>
           ) : null}
 
@@ -349,12 +349,12 @@ function Corpo({
               <ol className="space-y-1.5">
                 {voci.map((v, i) => (
                   <li key={i} className="flex gap-2.5 text-xs">
-                    <span className="w-24 shrink-0 font-mono text-faint-foreground">
+                    <span className="w-24 shrink-0 font-mono text-muted-foreground">
                       {formattaIt(new Date(v.quando).toISOString().slice(0, 10))}
                     </span>
                     <span>
                       <span className="text-muted-foreground">{ETICHETTA_CAMPO[v.campo] ?? v.campo}: </span>
-                      <span className="text-faint-foreground">{v.da ?? "—"}</span>
+                      <span className="text-muted-foreground">{v.da ?? "—"}</span>
                       <span className="text-muted-foreground"> → </span>
                       <span className="font-medium">{v.a ?? "—"}</span>
                     </span>
@@ -362,7 +362,7 @@ function Corpo({
                 ))}
               </ol>
             )}
-            <p className="text-xs text-faint-foreground">
+            <p className="text-xs text-muted-foreground">
               Lo storico è irreversibile per vincolo sul database: nemmeno da qui si può correggere il
               passato.
             </p>

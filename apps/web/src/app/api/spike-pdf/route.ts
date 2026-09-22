@@ -1,5 +1,6 @@
 import { rendiPdf } from "@/lib/pdf";
 import { env } from "@/lib/env";
+import { soloFuoriProduzione } from "@/lib/solo-sviluppo";
 import {
   CATALOGHI,
   CLIENTI_DIMOSTRATIVI,
@@ -32,6 +33,10 @@ export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  // Prima di tutto: avviare Chromium per un chiamante anonimo su una macchina
+  // cliente e' l'amplificatore di carico piu' economico che questo prodotto offra.
+  soloFuoriProduzione();
+
   const inizio = Date.now();
 
   try {

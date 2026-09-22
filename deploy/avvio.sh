@@ -17,7 +17,7 @@
 set -e
 
 echo "→ migrazioni"
-node ./migra.mjs
+node /migratore/migra.mjs
 
 echo "→ server"
 exec node ./apps/web/server.js

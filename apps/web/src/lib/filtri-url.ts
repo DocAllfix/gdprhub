@@ -39,34 +39,51 @@ export function useFiltriUrl<T extends Filtri>(iniziali: T) {
     return letti;
   });
 
+  // ⚠️ L'AGGIORNATORE DI STATO DEV'ESSERE PURO, e qui non lo era.
+  //
+  // `replaceState` stava DENTRO la funzione passata a `setFiltri`. Gli aggiornatori li
+  // chiama React in fase di render, e Next intercetta `history.replaceState` per tenere
+  // allineato il proprio Router: il risultato era l'aggiornamento di un componente (il
+  // Router) durante il render di un altro, che React segnala con
+  // «Cannot update a component (Router) while rendering a different component».
+  //
+  // Non era teoria: il cancello visivo lo ha registrato trenta volte sullo scadenzario, il
+  // 2026-09-19 — al primo giro in cui React si idratava davvero, perché finché la pagina
+  // restava inerte nessun aggiornatore veniva mai eseguito.
+  //
+  // Ora l'aggiornatore calcola e basta; l'indirizzo si riscrive nel gestore dell'evento,
+  // che è il posto degli effetti. L'indirizzo è comunque la fonte per la parte di query —
+  // si rilegge da `window.location`, non dallo stato — quindi qui non serve conoscere i
+  // valori precedenti.
   const imposta = useCallback((chiave: keyof T & string, valore: string) => {
-    setFiltri((precedenti) => {
-      const nuovi = { ...precedenti, [chiave]: valore };
-      const p = new URLSearchParams(window.location.search);
-      if (valore === "") p.delete(chiave);
-      else p.set(chiave, valore);
-      const query = p.toString();
-      window.history.replaceState(null, "", query === "" ? window.location.pathname : `?${query}`);
-      return nuovi;
-    });
+    setFiltri((precedenti) => ({ ...precedenti, [chiave]: valore }));
+
+    const p = new URLSearchParams(window.location.search);
+    if (valore === "") p.delete(chiave);
+    else p.set(chiave, valore);
+    const query = p.toString();
+    window.history.replaceState(null, "", query === "" ? window.location.pathname : `?${query}`);
   }, []);
 
+  // Stesso difetto e stessa correzione. Qui però servono i valori correnti per i filtri che
+  // si tengono, quindi la funzione dipende da `filtri`: cambia identità a ogni filtro
+  // cambiato, il che va bene perché è il gestore di un pulsante e non una dipendenza di un
+  // effetto.
   const azzera = useCallback(
     (tieni: readonly (keyof T & string)[] = []) => {
-      setFiltri((precedenti) => {
-        const nuovi = { ...iniziali } as Record<string, string>;
-        for (const k of tieni) nuovi[k] = precedenti[k] as string;
-        const p = new URLSearchParams();
-        for (const k of tieni) {
-          const v = precedenti[k] as string;
-          if (v !== "") p.set(k, v);
-        }
-        const query = p.toString();
-        window.history.replaceState(null, "", query === "" ? window.location.pathname : `?${query}`);
-        return nuovi as T;
-      });
+      const nuovi = { ...iniziali } as Record<string, string>;
+      for (const k of tieni) nuovi[k] = filtri[k] as string;
+      setFiltri(nuovi as T);
+
+      const p = new URLSearchParams();
+      for (const k of tieni) {
+        const v = filtri[k] as string;
+        if (v !== "") p.set(k, v);
+      }
+      const query = p.toString();
+      window.history.replaceState(null, "", query === "" ? window.location.pathname : `?${query}`);
     },
-    [iniziali],
+    [filtri, iniziali],
   );
 
   return { filtri, imposta, azzera };

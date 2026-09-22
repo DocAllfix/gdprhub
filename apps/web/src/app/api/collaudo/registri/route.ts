@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { auditLog, registro } from "@/lib/db/schema";
 import { requireConsulente } from "@/features/auth/guards";
 import { invalidaDati } from "@/lib/cache";
+import { soloFuoriProduzione } from "@/lib/solo-sviluppo";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,11 @@ export const dynamic = "force-dynamic";
 const PREFISSO = "Prova automatica ";
 
 export async function POST(richiesta: Request) {
+  // Il guard c'e' ed e' corretto. Questo e' un'altra cosa: una rotta che CANCELLA
+  // righe, scritta per la prova automatica, non ha ragione di esistere su una
+  // macchina venduta — nemmeno protetta.
+  soloFuoriProduzione();
+
   const ctx = await requireConsulente();
 
   const corpo = await richiesta.json().catch(() => null);

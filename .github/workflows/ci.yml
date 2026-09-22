@@ -14,6 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # STORIA COMPLETA, e non e' un dettaglio: `check-segreti.sh` cerca anche nei
+          # commit passati (`git log --all`), perche' un segreto tolto oggi resta in quelli
+          # di ieri. Con il clone superficiale predefinito quella ricerca non trova mai
+          # niente e il controllo passa in silenzio dicendo il contrario di cio' che sa.
+          fetch-depth: 0
+
+      # I SEGRETI SI FERMANO PRIMA DI TUTTO IL RESTO, perche' un segreto committato una
+      # volta resta nella storia per sempre: toglierlo dopo non lo toglie da li'.
+      #
+      # Lo script esisteva gia' da mesi e non lo eseguiva nessuno automaticamente. Non ha
+      # visto le tre evidenze documentali tracciate da git perche' andava lanciato a mano,
+      # e a mano non lo lanciava nessuno.
+      - name: Nessun segreto tracciato
+        run: ./deploy/check-segreti.sh
 
       - uses: pnpm/action-setup@v4
         with:

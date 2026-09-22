@@ -52,6 +52,11 @@ Ovviamente man mano che definirai il progetto potrai modificare e aggiornare que
 - `docs/04-stato-fasi.md` — **stato corrente**: cosa è chiuso, cosa manca, i difetti trovati dalla verifica
 - `docs/05-arretrato.md` — **cosa resta da fare**, verificato sul codice: cosa blocca la consegna,
   cosa aspetta una decisione del committente, cosa è ampliamento
+- `docs/06-consegna-al-frontend.md` — **da leggere prima di toccare l'interfaccia**: cosa è
+  già stato deciso sulla forma e con quale metodo, i divieti, il vincolo della CSP sulle
+  librerie, il cancello visivo
+- `deploy/GUASTI.md` — registro dei guasti incontrati davvero, con sintomo, causa e rimedio
+- `deploy/PLAYBOOK-DEPLOY.md` — la sequenza per attivare un'istanza, comando per comando
 - `docs/politica-scoring.md` — ogni numero e ogni scostamento dai prototipi, con l'aritmetica
 - `PRODUCT.md` e `DESIGN.md` — registro di prodotto e registro di design, vincolanti
 

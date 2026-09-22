@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
 import { tourVisti } from "@/features/tour/azioni";
 import { Shell } from "@/components/shell/shell";
+import { Ricevute } from "@/components/ui/ricevute";
 
 // Il layout protetto. Tutte le schermate operative stanno sotto questo gruppo di rotte, e
 // il guard sta QUI e non in un middleware: il middleware gira sull'edge, dove non c'è il
@@ -32,8 +33,13 @@ export default async function LayoutApplicazione({ children }: { children: React
   const visti = await tourVisti();
 
   return (
-    <Shell studio={ctx.studioNome} utente={ctx.nome || ctx.email} ruolo={ctx.ruolo} tourVisti={visti}>
-      {children}
-    </Shell>
+    <>
+      <Shell studio={ctx.studioNome} utente={ctx.nome || ctx.email} ruolo={ctx.ruolo} tourVisti={visti}>
+        {children}
+      </Shell>
+      {/* Qui e non nel layout di radice: le scritture stanno tutte dietro l accesso, e la
+          pagina di accesso non ha niente da confermare. */}
+      <Ricevute />
+    </>
   );
 }

@@ -1,4 +1,25 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* LA VARIANTE `dark:` VA COLLEGATA A MANO, o punta alla cosa sbagliata.
+ *
+ * Il tema di questo prodotto si applica con `data-theme` sull'elemento di radice, scritto
+ * da uno script sincrono in `layout.tsx` prima del disegno. Ma la variante `dark:` di
+ * Tailwind v4, se nessuno la dichiara, significa `@media (prefers-color-scheme: dark)`:
+ * cioè la preferenza del SISTEMA OPERATIVO, che è un'altra cosa.
+ *
+ * Sei primitive portano classi `dark:` (button, badge, checkbox, input, select,
+ * dropdown-menu), e senza questa riga si accendevano per conto loro. Il difetto si vedeva
+ * in un caso solo, ma è il caso che rompe la promessa scritta in DESIGN.md — «la scelta
+ * esplicita dell'utente vince sempre sulla preferenza di sistema, in entrambe le
+ * direzioni»: chi ha il sistema scuro e sceglie il tema chiaro riceveva i riempimenti
+ * scuri delle primitive su una pagina avorio.
+ *
+ * Per i token la promessa era vera, perché li commuta `:root[data-theme="dark"]`. Per le
+ * primitive no. Il cancello visivo non lo vedeva perché non forza `prefers-color-scheme`
+ * CONTRO il tema scelto: prova le due combinazioni concordi, non le due discordi.
+ */
+@custom-variant dark (&:is([data-theme="dark"] *));
 
 /* ============================================================================
    Token della Suite Compliance
@@ -73,6 +94,19 @@
 
   --foreground: oklch(0.243 0.013 110);
   --muted-foreground: oklch(0.503 0.01 110);
+  /* IL TOKEN PIÙ TENUE È PER LE ICONE, non per il testo _(2026-09-19)_.
+
+     Misurato in browser su tutti e quattro i fondi chiari: 3,22-3,57:1. Per il TESTO WCAG AA
+     chiede 4,5:1 e non passa; per gli elementi non testuali chiede 3:1 e passa.
+
+     Non si è scurito il token, perché costava la gerarchia: per arrivare a 4,5:1 serviva
+     L 0.540, a 0,037 da `--muted-foreground` — due grigi indistinguibili. Si è ristretto
+     l'USO: dei 79 punti, i dieci che erano icone lo tengono; i settanta di testo sono passati a
+     `--muted-foreground`, e il terzo livello resta distinto per DIMENSIONE, che a dieci pixel è
+     un segnale più forte di un dodici per cento di luminosità. Regola in DESIGN.md.
+
+     Misurato con conversione oklch→sRGB fatta dal browser su un pixel: leggere i numeri da
+     `getComputedStyle` scambia componenti LAB per RGB e dà risultati senza senso. */
   --faint-foreground: oklch(0.623 0.008 110);
 
   --border: oklch(0.918 0.006 110);
@@ -166,6 +200,13 @@
      dal fondo per superficie e non per filetto, e un riquadro senza bordo con angoli
      stretti sembra una macchia, non un pannello. L'angolo è quello che dice «questa
      è una cosa» quando la linea non c'è più. */
+  /* I DUE GRADINI MINUTI, che mancavano e venivano scritti a mano.
+     Servono agli oggetti di pochi pixel — la casella di spunta, la freccia del tooltip,
+     le pastiglie di legenda da otto pixel — dove i raggi della scala sono più larghi
+     dell'oggetto e lo trasformerebbero in un cerchio. Erano `rounded-[2px]` e
+     `rounded-[4px]`, cioè gli unici raggi del prodotto senza un token dietro. */
+  --radius-2xs: 0.125rem; /* 2px — quadratini: legenda, freccia */
+  --radius-xs: 0.25rem; /* 4px — casella di spunta */
   --radius-sm: 0.5rem;
   --radius: 0.625rem;
   --radius-lg: 0.875rem;
@@ -246,7 +287,7 @@
      etichette senza spegnere anche i dati. */
   --foreground: oklch(0.958 0.004 110);
   --muted-foreground: oklch(0.757 0.008 110);
-  --faint-foreground: oklch(0.605 0.008 110);
+  --faint-foreground: oklch(0.605 0.008 110); /* vedi la nota sul tema chiaro: 4,3:1 su --surface-raised */
 
   /* Filetti su tre gradini. Sul buio un bordo troppo chiaro urla, uno troppo
      scuro sparisce: servono valori diversi per il pannello, per il campo a
@@ -481,6 +522,8 @@
   --color-d81: var(--d81);
   --color-d81-surface: var(--d81-surface);
 
+  --radius-2xs: var(--radius-2xs);
+  --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius);
   --radius-lg: var(--radius-lg);
@@ -491,6 +534,86 @@
 
   --spacing-riga: var(--riga-h);
   --spacing-riga-comoda: var(--riga-h-comoda);
+
+  /* LE OMBRE MANCAVANO QUI, e per questo non erano le nostre.
+   *
+   * I quattro token ombra esistono da sempre in `:root`, e sul tema scuro tre valgono
+   * `transparent` di proposito: sul buio non c'è luce da bloccare, i piani li separano la
+   * scala delle superfici e i filetti. È scritto in DESIGN.md e per `.pannello` era vero,
+   * perché quella classe li legge con `var()`.
+   *
+   * Ma senza questa mappatura le utility `shadow-md` e `shadow-lg` scritte nei componenti
+   * non erano i token: erano le ombre NERE di serie di Tailwind, che sul tema scuro non si
+   * azzerano. Cassetto mobile, menù a tendina, elenco di Select e pannello laterale
+   * portavano un'ombra nera su fondo notte — invisibile alla build, invisibile al
+   * typecheck, e invisibile anche al cancello, che non confronta gli screenshot.
+   *
+   * Mappati solo i due gradini che il sistema dichiara. `shadow-lg` e `shadow-xs` sono
+   * stati ricondotti a questi nei componenti: quattro ombre dichiarate e quattro usate,
+   * altrimenti la scala torna a crescere per conto sua.
+   */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+
+  /* LA SCALA TIPOGRAFICA ESISTEVA GIÀ: non era dichiarata.
+   *
+   * Nel prodotto c'erano 125 occorrenze di `text-[…]` scritte a mano. Non erano disordine:
+   * erano una scala coerente che nessuno aveva nominato. `text-[1.7rem]` compariva su
+   * DIECI pagine su dieci ed era, di fatto, «il titolo di pagina». Il microtesto stava a
+   * 11px e 10px con la stessa disciplina.
+   *
+   * Qui si nominano quei valori e basta. La scala di Tailwind — `text-xs` … `text-3xl`,
+   * 376 usi nel prodotto — resta intatta: questi token stanno SOTTO e SOPRA, dove Tailwind
+   * non arriva. Nessuna misura cambia, perché cambiare misure è una decisione di forma e si
+   * prende guardando, non sostituendo stringhe.
+   *
+   * ⚠️ DESIGN.md §Tipografia dichiara «scala 1.2, fissa in rem». La scala di Tailwind non è
+   * a 1.2 (12→14 è 1,167; 14→16 è 1,143), quindi il registro descrive un'intenzione che il
+   * prodotto non ha mai avuto. Va sanata in un verso o nell'altro, ma non di soppiatto
+   * dentro un lavoro di bonifica: rinumerare la scala sposterebbe 376 usi e la densità
+   * della tabella, che è misurata in 22 righe a 1440×900.
+   *
+   * Due valori sono stati assorbiti invece che nominati, ed è dichiarato:
+   *   - `text-[9px]` (2 usi) → `text-micro`, 10px. Sotto i dieci pixel non è una scelta
+   *     tipografica, è un limite di leggibilità: il testo diventa più leggibile, mai meno.
+   *   - `text-[0.8rem]` (1 uso, in `button.tsx` taglia `sm`) → `text-xs`. Sono 0,8 pixel di
+   *     differenza su una primitiva: sotto la soglia del percepibile, e toglie deriva da un
+   *     componente di base.
+   */
+  --text-micro: 0.625rem; /* 10px — etichette di colonna, pastiglie, note sotto una cifra */
+  --text-nota: 0.6875rem; /* 11px — aiuti, didascalie, microtesto di riga */
+
+  --text-titolo: 1.7rem; /* il titolo di pagina, su dieci pagine su dieci */
+
+  /* Le cifre grandi. TRE misure, ed erano quattro fino al 2026-09-19.
+   *
+   * `2.1rem` e `1.9rem` erano la stessa identica struttura — una cifra allineata a destra in
+   * cima a un contenitore, con l'etichetta sotto — a 3,2 pixel di distanza, e vivevano su
+   * schermate che non si toccano mai: `2.1` su scheda azienda e reati, `1.9` su registri e
+   * simulatore. Mai viste una accanto all'altra, che è la condizione in cui una deriva nasce
+   * e sopravvive per mesi.
+   *
+   * Decise guardandole affiancate su `/varianti/cifre`, che resta come archivio.
+   *
+   * PERCHÉ SOPRAVVIVE 1.9 E NON 2.1. Fondere verso l'alto o verso il basso appiattisce la
+   * distinzione allo stesso modo: «tenere la gerarchia pagina sopra pannello» non era un
+   * argomento per 2.1, perché anche 2.1 la appiattiva. Restava una domanda sola — quale
+   * misura — e la decide il rapporto con il titolo che la cifra accompagna:
+   *
+   *     titolo di pagina  1.7rem = 27,2px
+   *     cifra a 2.1rem    33,6px  →  1,24×   grida più forte del titolo
+   *     cifra a 1.9rem    30,4px  →  1,12×   sta alla pari
+   *
+   * Una cifra un quarto più grande del titolo della pagina su cui sta è esattamente la forma
+   * che i Divieti chiamano «grande numero eroico» e che PRODUCT.md elenca fra gli
+   * anti-riferimenti. A 1.9 è un dato; a 2.1 è un annuncio.
+   *
+   * `-sm` e `-xl` restano perché sono gesti diversi davvero: una banda a quattro celle
+   * strette contro il numero più grande del prodotto, che vive nella lastra del cruscotto —
+   * una banda anch'essa, quindi dentro la regola. */
+  --text-cifra-sm: 1.6rem; /* banda compatta del portafoglio */
+  --text-cifra: 1.9rem; /* testata, di pagina o di pannello: la stessa cosa */
+  --text-cifra-xl: 2.6rem; /* la lastra del cruscotto */
 }
 
 @layer base {
@@ -553,12 +676,18 @@
     }
   }
 
+  /* `.cresce` ANIMA LA TRASFORMAZIONE, NON LA GEOMETRIA — e prima contraddiceva il sistema.
+     La prima versione animava `flex-basis` da zero a `--quota`, cioè la larghezza: proprio
+     ciò che la regola di DESIGN.md vieta, perché costringe il browser a rifare l'impaginato a
+     ogni fotogramma. Ora anima `transform: scaleX`, che resta sul compositore.
+     `flex-basis` rimane nella classe, ma STATICO: chi la usa per dare la larghezza a un
+     segmento (l'archivio `/varianti/cruscotto`) continua ad averla. */
   @keyframes cresci {
     from {
-      flex-basis: 0;
+      transform: scaleX(0);
     }
     to {
-      flex-basis: var(--quota);
+      transform: none;
     }
   }
 
@@ -568,6 +697,7 @@
 
   .cresce {
     flex-basis: var(--quota);
+    transform-origin: left center;
     animation: cresci 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
@@ -577,6 +707,13 @@
     *::after {
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
+      /* ANCHE IL RITARDO, che prima restava. Cruscotto e reati sfalsano l'ingresso con
+         `animationDelay` in linea, fino a 360 ms, e l'animazione usa `backwards`: durante il
+         ritardo l'elemento sta nel suo stato iniziale, cioè INVISIBILE. Azzerando solo la
+         durata, chi aveva chiesto meno movimento vedeva comunque le schede comparire una
+         dopo l'altra con un vuoto di un terzo di secondo — il movimento tolto, l'attesa no. */
+      animation-delay: 0ms !important;
+      transition-delay: 0ms !important;
     }
   }
 }

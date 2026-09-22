@@ -3,6 +3,9 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, twoFactor } from "better-auth/plugins";
 import { db, schema } from "@/lib/db";
 import { env } from "@/lib/env";
+import { accoda } from "@/lib/posta";
+import { invito, reimpostaPassword } from "@/lib/posta/modelli";
+import { nomeStudio } from "@/lib/posta/studio";
 
 // Autenticazione dell'istanza.
 //
@@ -62,12 +65,57 @@ export const auth = betterAuth({
   //      diverse per il browser: è così che questo difetto è saltato fuori.
   trustedOrigins: origini(),
 
+  // LIMITATORE, dichiarato invece che ereditato.
+  //
+  // Better Auth ne ha uno predefinito, ed e' il motivo per cui era facile non accorgersi
+  // che mancava: spento in sviluppo, e in produzione cento richieste ogni dieci secondi per
+  // indirizzo su QUALUNQUE rotta. Sono seicento tentativi di password al minuto, senza una
+  // regola dedicata all'accesso e senza blocco dell'utenza.
+  //
+  // Aggravante che rendeva l'attacco invisibile: i tentativi falliti non finivano in nessun
+  // registro (vedi il gancio piu' sotto, che ora li scrive).
+  //
+  // `storage: "database"` e non la memoria: sulla vetrina il contatore vive dentro una
+  // funzione serverless e si azzera a ogni avvio a freddo, quindi bastava aspettare. In una
+  // tabella il conteggio sopravvive al processo.
+  rateLimit: {
+    enabled: true,
+    storage: "database",
+    window: 60,
+    max: 100,
+    customRules: {
+      // Dieci tentativi al minuto per indirizzo. Un utente che sbaglia la password tre
+      // volte di fila non se ne accorge; un dizionario sì.
+      "/sign-in/email": { window: 60, max: 10 },
+      // Il secondo fattore ha sei cifre: senza limite si esaurisce lo spazio in poche ore.
+      "/two-factor/verify-totp": { window: 60, max: 5 },
+      "/two-factor/verify-backup-code": { window: 60, max: 5 },
+      // Reimpostare la password manda posta: senza limite diventa un amplificatore di spam
+      // a nome del dominio dello studio.
+      "/forget-password": { window: 300, max: 3 },
+    },
+  },
+
   emailAndPassword: {
     enabled: true,
     // La porta chiusa lato server: non è un pulsante nascosto nell'interfaccia.
     disableSignUp: true,
     minPasswordLength: 12,
     requireEmailVerification: false,
+
+    // IL RECUPERO PASSWORD, che prima non esisteva.
+    //
+    // Con `disableSignUp: true` nessuno puo' rifarsi un'utenza: senza questa funzione un
+    // utente che perde la password resta fuori finche' un amministratore non interviene, e
+    // se l'amministratore e' lui, finche' non interveniamo NOI sul database del cliente.
+    //
+    // La mail si ACCODA e non parte in linea: un timeout del relay non deve far fallire la
+    // richiesta lasciando l'utente senza messaggio e senza errore comprensibile.
+    sendResetPassword: async ({ user, url }) => {
+      const { oggetto, testo } = reimpostaPassword(url, await nomeStudio(), 60);
+      await accoda({ a: user.email, oggetto, testo });
+    },
+    resetPasswordTokenExpiresIn: 60 * 60,
   },
 
   user: {
@@ -98,6 +146,17 @@ export const auth = betterAuth({
       organizationLimit: 1,
       membershipLimit: 50,
       invitationExpiresIn: 60 * 60 * 24 * 7,
+
+      // GLI INVITI, che erano configurati e non si potevano mandare.
+      //
+      // `invitationExpiresIn` c'era gia', i ruoli erano verificati lato server, ma senza
+      // posta non esisteva modo di consegnare l'invito: ogni utenza andava creata da riga
+      // di comando sulla VPS del cliente.
+      sendInvitationEmail: async (dati) => {
+        const url = `${env.APP_URL}/invito/${dati.id}`;
+        const { oggetto, testo } = invito(url, await nomeStudio(), dati.role, 7);
+        await accoda({ a: dati.email, oggetto, testo, organizationId: dati.organization.id });
+      },
     }),
     twoFactor({
       issuer: "Suite Compliance",

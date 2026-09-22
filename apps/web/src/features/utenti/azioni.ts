@@ -5,9 +5,13 @@ import { revalidatePath } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { account, auditLog, member, user } from "@/lib/db/schema";
+import { account, auditLog, invitation, member, user } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { assertNotDemo, requireAdmin, type Ruolo } from "@/features/auth/guards";
+import { accoda, postaConfigurata } from "@/lib/posta";
+import { invito as modelloInvito } from "@/lib/posta/modelli";
+import { nomeStudio } from "@/lib/posta/studio";
+import { registra } from "@/lib/audit";
 
 // Creazione e gestione delle utenze dello studio.
 //
@@ -21,9 +25,24 @@ import { assertNotDemo, requireAdmin, type Ruolo } from "@/features/auth/guards"
 
 export type EsitoUtente =
   | { readonly ok: true; readonly email: string; readonly password: string }
+  // L'INVITO NON HA UNA PASSWORD, ed e' il suo pregio: se la sceglie l'invitato accettando,
+  // quindi non passa mai per le mani di chi invita ne' per un canale da custodire. La
+  // variante e' separata proprio per non poter scrivere `password: ""` e far credere a chi
+  // legge il codice che ce ne sia una.
+  | { readonly ok: true; readonly invitato: string }
   | { readonly ok: false; readonly errore: string; readonly valori?: Readonly<Record<string, string>> };
 
 const RUOLI: readonly Ruolo[] = ["admin", "consulente", "viewer"];
+
+/**
+ * Durata di un invito.
+ *
+ * Coincide con `invitationExpiresIn` di Better Auth ed e' scritta qui perche' e' questo
+ * codice a fissare la scadenza sulla riga. Una settimana: abbastanza perche' qualcuno in
+ * ferie lo veda, abbastanza poco perche' un indirizzo di posta compromesso mesi dopo non
+ * apra ancora una porta.
+ */
+const GIORNI_INVITO = 7;
 const LUNGHEZZA_MINIMA = 12;
 
 /** Password leggibile e dettabile al telefono: niente caratteri che si confondono. */
@@ -177,4 +196,98 @@ export async function reimpostaPassword(
 
   revalidatePath("/impostazioni");
   return { ok: true, email: destinatario.email, password };
+}
+
+/**
+ * INVITA UN COLLEGA, invece di creargli un'utenza con una password da consegnare a voce.
+ *
+ * Chiude la lacuna per cui uno studio con quattro persone doveva chiamarci a ogni assunzione:
+ * i ruoli erano verificati lato server e `invitationExpiresIn` era configurato, ma senza
+ * posta non c'era modo di consegnare l'invito.
+ *
+ * La differenza da `creaUtente()` non è di comodità: qui **la password non esiste mai**. Non
+ * viene generata, non viene mostrata, non viene consegnata su un canale che nessuno controlla
+ * — se la sceglie l'invitato accettando. Una password che non è mai passata per le mani di
+ * qualcun altro è una password che non va cambiata al primo accesso.
+ *
+ * La mail si ACCODA (vedi `lib/posta`): un relay lento non deve far fallire l'invito lasciando
+ * l'amministratore senza sapere se è partito.
+ */
+export async function invitaCollega(_precedente: EsitoUtente | null, dati: FormData): Promise<EsitoUtente> {
+  const ctx = await requireAdmin();
+  await assertNotDemo("invito di un collega");
+
+  const email = String(dati.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  const ruoloGrezzo = String(dati.get("ruolo") ?? "consulente");
+  const valori = { email, nome: "", ruolo: ruoloGrezzo };
+
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return { ok: false, errore: "Indirizzo di posta non valido.", valori };
+  }
+  if (!RUOLI.includes(ruoloGrezzo as Ruolo)) {
+    return { ok: false, errore: "Ruolo sconosciuto.", valori };
+  }
+
+  const gia = await db.query.user.findFirst({ where: eq(user.email, email) });
+  if (gia) return { ok: false, errore: "Esiste già un'utenza con questo indirizzo.", valori };
+
+  // SENZA POSTA L'INVITO NON SI MANDA, e va detto subito invece di accodare un messaggio che
+  // resterebbe in coda per sempre. Su un'istanza senza relay si crea l'utenza a mano.
+  if (!postaConfigurata()) {
+    return {
+      ok: false,
+      errore:
+        "Questa istanza non ha un relay di posta configurato: l'invito non potrebbe essere " +
+        "consegnato. Crea l'utenza con una password iniziale.",
+      valori,
+    };
+  }
+
+  // L'INVITO SI SCRIVE QUI, e non con `auth.api.createInvitation`.
+  //
+  // Quell'endpoint conosce i ruoli SUOI — `owner`, `admin`, `member` — e non quelli di
+  // questo prodotto, che sono `admin`, `consulente`, `viewer` e vivono in `guards.ts` con la
+  // propria gerarchia. Chiamarlo con `consulente` risponde `ROLE_NOT_FOUND`, e l'invito
+  // fallirebbe sempre per due ruoli su tre.
+  //
+  // Il primo tentativo mascherava il disallineamento con un cast a `"admin" | "member"`: il
+  // compilatore taceva e la prova lo ha trovato al primo invio. Un cast che mette a tacere
+  // un tipo sta quasi sempre nascondendo una differenza vera.
+  //
+  // Scrivere la riga qui tiene UN SOLO modello di ruoli — quello dell'applicazione — e non
+  // toglie niente, perche' anche l'accettazione e' gia' nostra (`/invito/[id]`): di Better
+  // Auth serviva solo la tabella, che e' la stessa.
+  const idInvito = randomUUID();
+  const scadenza = new Date(Date.now() + GIORNI_INVITO * 24 * 60 * 60 * 1000);
+
+  await db.insert(invitation).values({
+    id: idInvito,
+    organizationId: ctx.organizationId,
+    email,
+    role: ruoloGrezzo as Ruolo,
+    status: "pending",
+    expiresAt: scadenza,
+    inviterId: ctx.userId,
+  });
+
+  const { oggetto, testo } = modelloInvito(
+    `${env.APP_URL}/invito/${idInvito}`,
+    await nomeStudio(),
+    ruoloGrezzo,
+    GIORNI_INVITO,
+  );
+  await accoda({ a: email, oggetto, testo, organizationId: ctx.organizationId });
+
+  await registra({
+    organizationId: ctx.organizationId,
+    userId: ctx.userId,
+    azione: "utente.invitato",
+    entita: "invitation",
+    dettagli: { email, ruolo: ruoloGrezzo },
+  });
+
+  revalidatePath("/impostazioni");
+  return { ok: true, invitato: email };
 }

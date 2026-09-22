@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { instanceConfig } from "@/lib/db/schema";
-import { NonAutenticato, NonAutorizzato } from "@/features/auth/guards";
+import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
+import { registra } from "@/lib/audit";
 import { relazione } from "@/features/relazioni/dati";
 import { improntaSnapshot } from "@/features/relazioni/snapshot";
 import { htmlRelazione } from "@/lib/documenti/relazione";
@@ -63,6 +64,18 @@ export async function GET(_richiesta: Request, contesto: { params: Promise<{ id:
     .replace(/[^a-zA-Z0-9]+/g, "-")
     .toLowerCase()
     .replace(/^-|-$/g, "")}.pdf`;
+
+  // OGNI USCITA DI DATI LASCIA UNA RIGA (vedi `api/evidenze`): il registro copriva le
+  // mutazioni e nessuna lettura, quindi un'esfiltrazione non lasciava traccia.
+  const ctx = await requireStudio();
+  await registra({
+    organizationId: ctx.organizationId,
+    userId: ctx.userId,
+    azione: "relazione.scarica",
+    entita: "report",
+    entitaId: id,
+    dettagli: { numero: riga.numero, stato: riga.stato },
+  });
 
   return new Response(new Uint8Array(pdf), {
     headers: {

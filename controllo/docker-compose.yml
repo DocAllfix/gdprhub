@@ -1,0 +1,167 @@
+# LA MACCHINA DI CONTROLLO — una sola, per tutti e tre i prodotti della casa.
+#
+# Non sta su nessuna VPS cliente, e non è un dettaglio di architettura: se il monitoraggio
+# gira sulla macchina che deve sorvegliare, quando quella cade cade anche ciò che doveva
+# avvisarti. Il progetto di riferimento lo aveva scritto come requisito e non l'aveva mai
+# costruito — restava un `docker run` copiaincollato in un markdown.
+#
+#   docker compose -f controllo/docker-compose.yml --env-file controllo/.env up -d
+#
+# ─────────────────────────────────────────────────────────────────────────────────────────
+# QUESTA È UN'ISTANZA DI PRODUZIONE, non uno «strumento interno».
+#
+# Contiene le tracce di errore dei clienti di TRE prodotti diversi, cioè di titolari del
+# trattamento diversi, e se cade nessuno dei tre sa più come stanno le proprie istanze.
+# Quindi: backup proprio, allow-list sull'amministrazione, aggiornamenti come le altre.
+#
+# Ne discende una conseguenza che non è cosmetica: **un progetto GlitchTip per CLIENTE**, non
+# per prodotto. `environment = <slug>` serve a filtrare, non a isolare gli accessi. Aggregare
+# in un progetto solo gli errori di studi diversi sarebbe, per il nostro stesso DPA, un
+# trattamento che nessuno ha dichiarato.
+# ─────────────────────────────────────────────────────────────────────────────────────────
+
+name: controllo-flotta
+
+services:
+  # ── Il proxy ───────────────────────────────────────────────────────────────────────────
+  # Le sole porte pubbliche della macchina. L'amministrazione è dietro allow-list: la
+  # raggiunge chi arriva dai nostri indirizzi, non chiunque trovi il sottodominio.
+  proxy:
+    image: caddy:2-alpine
+    environment:
+      DOMINIO: ${DOMINIO}
+      IP_AMMESSI: ${IP_AMMESSI}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_dati:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    logging: &registro
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # ── GlitchTip: le eccezioni di tutta la flotta ─────────────────────────────────────────
+  # Accetta gli SDK Sentry e lo stesso formato DSN. Gira in mezzo giga; Sentry self-hosted
+  # ne vuole sedici e quaranta container, per funzioni che a noi non servono.
+  glitchtip:
+    image: glitchtip/glitchtip:v4.1
+    depends_on: [glitchtip_db, redis]
+    environment: &glitchtip
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip_db:5432/glitchtip
+      SECRET_KEY: ${GLITCHTIP_SECRET}
+      PORT: 8000
+      # Nessuna registrazione aperta: le utenze le creiamo noi. È la stessa scelta del
+      # prodotto, per la stessa ragione — non è un servizio pubblico.
+      ENABLE_OPEN_USER_REGISTRATION: "False"
+      ENABLE_ORGANIZATION_CREATION: "False"
+      GLITCHTIP_DOMAIN: https://${DOMINIO}
+      # NOVANTA GIORNI e non di più. Oltre, la finalità «diagnostica tecnica» non regge
+      # davanti a un DPO: è il numero che si difende, non quello che fa comodo.
+      GLITCHTIP_MAX_EVENT_LIFE_DAYS: 90
+      DEFAULT_FROM_EMAIL: ${SMTP_MITTENTE}
+      EMAIL_URL: ${EMAIL_URL}
+    restart: unless-stopped
+    logging: *registro
+
+  # Il lavoratore di sfondo: ingestione, potatura, notifiche. Senza, gli eventi arrivano e
+  # nessuno li elabora — e il servizio sembra vivo.
+  glitchtip_worker:
+    image: glitchtip/glitchtip:v4.1
+    depends_on: [glitchtip_db, redis]
+    command: ./bin/run-celery-with-beat.sh
+    environment: *glitchtip
+    restart: unless-stopped
+    logging: *registro
+
+  glitchtip_db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD}
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_dati:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip"]
+      interval: 10s
+      retries: 6
+    # NESSUNA PORTA PUBBLICATA, come sulle istanze cliente: una 5432 aperta viene trovata da
+    # uno scanner nel giro di ore.
+    restart: unless-stopped
+    logging: *registro
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    logging: *registro
+
+  # ── Gatus: le sonde e i battiti, DICHIARATI IN UN FILE ─────────────────────────────────
+  #
+  # Qui ho cambiato idea rispetto alla prima stesura, e vale la pena scrivere perche'.
+  #
+  # Avevo scelto Uptime Kuma, che ha un'interfaccia migliore ed e' quello del progetto di
+  # riferimento. Ma il requisito che conta e' un altro: **i monitor devono nascere da uno
+  # script**, perche' un monitor creato a mano e' un monitor che al decimo cliente qualcuno
+  # dimentica — ed e' esattamente ciò che è successo nel riferimento, dove la VPS di
+  # monitoraggio non e' mai stata creata.
+  #
+  # Kuma non ha un file di configurazione: si configura cliccando, e automatizzarlo vuol dire
+  # parlare alla sua API socket.io. Gatus si configura con un YAML: `monitor-add.sh` ci
+  # aggiunge un blocco e ricarica. I monitor finiscono in git, si rivedono in una revisione,
+  # e si ricreano da zero se la macchina si perde.
+  #
+  # DUE TIPI DI SONDA PER ISTANZA, e servono a cose diverse:
+  #
+  #   http su /api/health, ogni 60 s  guarda da FUORI: vede la VPS spenta, il DNS scaduto,
+  #                                   il certificato non rinnovato.
+  #   external (battito), 15 min      vede IL SILENZIO. Se `sentinella.sh` smette di
+  #                                   chiamare, allarma. Una VPS spenta non manda eccezioni:
+  #                                   solo l'assenza la segnala.
+  #
+  # Cio' che si perde e' la pagina di stato con la percentuale mensile da esibire come
+  # evidenza SLA. Quando servira' davvero a un contratto, Kuma si aggiunge accanto: sono due
+  # mestieri diversi e non e' una scelta irreversibile.
+  gatus:
+    image: twinproduction/gatus:v5
+    depends_on: [gatus_db]
+    environment:
+      GATUS_CONFIG_PATH: /config
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN:-}
+      TELEGRAM_CHAT: ${TELEGRAM_CHAT:-}
+      GATUS_TOKEN: ${GATUS_TOKEN}
+    volumes:
+      # Una cartella e non un file: Gatus unisce tutti gli YAML che ci trova, quindi
+      # `monitor-add.sh` scrive `clienti/<slug>.yaml` senza toccare la configurazione comune.
+      - ./gatus:/config:ro
+    restart: unless-stopped
+    logging: *registro
+
+  # Lo storico delle sonde. Senza, a ogni riavvio Gatus riparte senza memoria e non si puo'
+  # dire da quanto un'istanza era giu'.
+  gatus_db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: gatus
+      POSTGRES_PASSWORD: ${GATUS_DB_PASSWORD}
+      POSTGRES_DB: gatus
+    volumes:
+      - gatus_dati:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gatus"]
+      interval: 10s
+      retries: 6
+    restart: unless-stopped
+    logging: *registro
+
+volumes:
+  # LO STORICO ENTRA NEL BACKUP. I monitor invece no, e non serve: sono file YAML in git,
+  # e si ricreano da zero. E' il vantaggio della configurazione dichiarata su quella
+  # cliccata — nel riferimento, perdere il volume di Kuma significava perdere ogni monitor
+  # di ogni cliente.
+  gatus_dati:
+  glitchtip_dati:
+  caddy_dati:
+  caddy_config:

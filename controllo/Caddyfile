@@ -1,0 +1,65 @@
+# Il proxy della macchina di controllo.
+#
+# Due percorsi con due politiche opposte, e la distinzione è il punto:
+#
+#   /api/*           DEVE essere raggiungibile da chiunque: ci scrivono le istanze dei
+#                    clienti, che stanno su indirizzi che non conosciamo in anticipo.
+#   tutto il resto   l'interfaccia di amministrazione, raggiungibile SOLO dai nostri
+#                    indirizzi. Contiene le tracce di errore dei clienti di tre prodotti.
+
+{$DOMINIO} {
+	encode gzip zstd
+
+	# ── L'ingestione ───────────────────────────────────────────────────────────────────
+	# Gli SDK Sentry parlano qui. Nessuna allow-list: un'istanza cliente cambia indirizzo
+	# quando la si ricrea, e un errore che non arriva è un errore che non esiste.
+	@ingestione path /api/* /envelope/*
+	handle @ingestione {
+		reverse_proxy glitchtip:8000
+	}
+
+	# ── I battiti ──────────────────────────────────────────────────────────────────────
+	# `sentinella.sh` spinge qui da ogni VPS, sugli endpoint esterni di Gatus. Stessa
+	# ragione: nessuna allow-list, gli indirizzi delle istanze cambiano.
+	@battito path /push/*
+	handle @battito {
+		reverse_proxy gatus:8080
+	}
+
+	# ── L'amministrazione ──────────────────────────────────────────────────────────────
+	# Tutto il resto. `{$IP_AMMESSI}` sono i nostri indirizzi, separati da spazio.
+	#
+	# NON È PARANOIA: da questa interfaccia si leggono le tracce di errore dei clienti di
+	# tre prodotti diversi. È la superficie più concentrata che possediamo, e l'unica che
+	# non ha bisogno di essere pubblica.
+	@fuori not remote_ip {$IP_AMMESSI}
+	handle @fuori {
+		# 404 e non 403: un 403 conferma che qui c'è qualcosa.
+		respond 404
+	}
+
+	handle /sonde/* {
+		uri strip_prefix /sonde
+		reverse_proxy gatus:8080
+	}
+
+	handle {
+		reverse_proxy glitchtip:8000
+	}
+
+	header {
+		# QUESTA MACCHINA NON DEVE COMPARIRE NEI MOTORI DI RICERCA, e a maggior ragione
+		# delle istanze: il suo indirizzo dice a chiunque dove guardare per trovare, in un
+		# posto solo, lo stato di tutta la flotta.
+		X-Robots-Tag "noindex, nofollow"
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+		-Server
+	}
+
+	# Nessun registro degli accessi, come sulle istanze: un file con indirizzi e percorsi
+	# sarebbe a sua volta un trattamento da censire, e qui riguarderebbe tre prodotti.
+}

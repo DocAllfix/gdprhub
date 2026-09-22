@@ -51,6 +51,20 @@ const nextConfig: NextConfig = {
     "/api/fascicolo/**": [CHROMIUM_BIN],
   },
 
+  // IL LIMITE DI CARICAMENTO DICHIARATO ERA FITTIZIO.
+  //
+  // `lib/storage` dichiara `DIMENSIONE_MASSIMA = 25 MB` e l'azione lo verifica, ma il corpo
+  // di una server action si ferma a 1 MB per impostazione predefinita: un file piu' grande
+  // veniva respinto PRIMA di arrivare al controllo, con un errore che non parla di
+  // dimensioni. Un DVR in PDF supera 1 MB di regola, quindi il difetto si sarebbe
+  // presentato al primo documento vero del primo cliente.
+  //
+  // Il valore combacia con `DIMENSIONE_MASSIMA`: se un giorno divergono, vince il piu'
+  // piccolo e il messaggio d'errore torna a mentire.
+  experimental: {
+    serverActions: { bodySizeLimit: "25mb" },
+  },
+
   poweredByHeader: false,
 };
 

@@ -1,4 +1,14 @@
-import { boolean, index, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+  bigint,
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 // Tabelle di Better Auth con il plugin `organization` e `twoFactor`.
 //
@@ -86,6 +96,33 @@ export const verification = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [index("verification_identifier_idx").on(t.identifier)],
+);
+
+/**
+ * Conteggio del limitatore di frequenza.
+ *
+ * Better Auth sa tenerlo in memoria, ed e' il suo comportamento predefinito. Non basta qui,
+ * per due ragioni diverse nei due ambienti:
+ *
+ *   · sulla VETRINA ogni funzione serverless ha la propria memoria, e si azzera a ogni
+ *     avvio a freddo: un attacco a dizionario non deve far altro che aspettare;
+ *   · su un'ISTANZA il conteggio sparirebbe a ogni riavvio del contenitore, compresi quelli
+ *     che Docker fa da solo dopo un aggiornamento.
+ *
+ * In tabella il conteggio sopravvive al processo. I nomi dei campi sono quelli che Better
+ * Auth si aspetta: non sono una scelta di stile.
+ */
+export const rateLimit = pgTable(
+  "rate_limit",
+  {
+    id: text("id").primaryKey(),
+    /** Chiave del limite: indirizzo di rete piu' rotta. */
+    key: text("key").notNull(),
+    count: integer("count").notNull(),
+    /** Millisecondi epoch. Lo scrive la libreria come numero, non come data. */
+    lastRequest: bigint("last_request", { mode: "number" }).notNull(),
+  },
+  (t) => [index("rate_limit_key_idx").on(t.key)],
 );
 
 /** Secondo fattore. Obbligatorio per gli amministratori dell'istanza. */

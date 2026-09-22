@@ -27,7 +27,7 @@ const STILE_LAVORO: Readonly<Record<StatoLavoro, string>> = {
   "Da fare": "border-border text-muted-foreground",
   "In corso": "border-border-strong text-foreground font-medium",
   Completata: "border-border bg-surface-sunken text-foreground",
-  "Non applicabile": "border-dashed border-border text-faint-foreground",
+  "Non applicabile": "border-dashed border-border text-muted-foreground",
 };
 
 export function StatoLavoroEtichetta({ stato }: { stato: StatoLavoro }) {
@@ -68,8 +68,13 @@ export function Scadenza({
   // diverse e le distingue la colonna del lavoro, non questa.
   if (!data || giorni === null) {
     return (
-      <span className="font-mono text-sm text-faint-foreground" title="Nessuna scadenza da rispettare">
-        &mdash;
+      <span className="font-mono text-sm text-muted-foreground" title="Nessuna scadenza da rispettare">
+        {/* Il trattino da solo non dice niente a un lettore di schermo — lo legge come
+            «trattino lungo», o lo salta — e il significato stava SOLO nel `title`, che quegli
+            strumenti non annunciano in modo affidabile. Stessa regola della data qui sotto:
+            il colore e il segno non sono mai l'unico canale. */}
+        <span aria-hidden>&mdash;</span>
+        <span className="sr-only">Nessuna scadenza da rispettare</span>
       </span>
     );
   }

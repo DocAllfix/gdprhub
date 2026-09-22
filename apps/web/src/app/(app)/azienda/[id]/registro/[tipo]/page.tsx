@@ -41,7 +41,7 @@ export default async function PaginaRegistro({ params }: { params: Promise<{ id:
       <header className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Registro</p>
-          <h1 className="titolo mt-1.5 text-[1.7rem]">{def.nome}</h1>
+          <h1 className="titolo mt-1.5 text-titolo">{def.nome}</h1>
         </div>
         {/* L'art. 30.3 chiede il registro «in forma scritta, anche in formato elettronico»:
             tenerlo e non saperlo consegnare sarebbe metà lavoro. Il cancello visivo salta

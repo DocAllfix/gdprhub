@@ -152,9 +152,9 @@ export function Palette() {
             aria-controls="risultati-ricerca"
             aria-activedescendant={risultati[scelto] ? `risultato-${scelto}` : undefined}
             autoComplete="off"
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-faint-foreground"
+            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
-          <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+          <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-micro text-muted-foreground">
             esc
           </kbd>
         </div>
@@ -193,11 +193,11 @@ export function Palette() {
                     <I className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm">{r.titolo}</span>
-                      <span className="block truncate text-[11px] text-muted-foreground">
+                      <span className="block truncate text-nota text-muted-foreground">
                         {r.sottotitolo}
                       </span>
                     </span>
-                    <span className="shrink-0 text-[10px] tracking-[0.09em] text-faint-foreground uppercase">
+                    <span className="shrink-0 text-micro tracking-[0.09em] text-muted-foreground uppercase">
                       {ETICHETTA_TIPO[r.tipo]}
                     </span>
                     {i === scelto ? (
@@ -210,7 +210,7 @@ export function Palette() {
           </ul>
         )}
 
-        <p className="border-t border-border px-4 py-2 text-[10px] text-faint-foreground">
+        <p className="border-t border-border px-4 py-2 text-micro text-muted-foreground">
           ↑↓ per scorrere · invio per aprire · ⌘K per richiudere
         </p>
       </div>

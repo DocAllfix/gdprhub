@@ -10,7 +10,7 @@
 // Esce con codice diverso da zero al primo difetto: è un cancello, non un rapporto.
 //
 // Uso:
-//   node scripts/gate-visivo.mjs                      → contro http://127.0.0.1:3100
+//   node scripts/gate-visivo.mjs                      → contro http://localhost:3100
 //   node scripts/gate-visivo.mjs https://esempio.app  → contro l'istanza online
 //   node scripts/gate-visivo.mjs --solo /portafoglio  → una pagina sola
 
@@ -34,7 +34,21 @@ const TEMI = /** @type {const} */ (["light", "dark"]);
 const CONSOLE_IGNORATI = [/Download the React DevTools/i, /\[Fast Refresh\]/i, /React DevTools/i];
 
 const argomenti = process.argv.slice(2);
-const base = argomenti.find((a) => a.startsWith("http")) ?? "http://127.0.0.1:3100";
+// LOCALHOST E NON 127.0.0.1, e non è indifferente.
+//
+// Next 16 in sviluppo blocca per impostazione predefinita le richieste alle proprie risorse
+// di sviluppo che arrivano da un'origine diversa da quella con cui il server si presenta —
+// e il server si presenta come `localhost`. Aperta su 127.0.0.1, la pagina scarica tutti gli
+// script con 200 ma il WebSocket dell'aggiornamento a caldo viene respinto, e React NON SI
+// IDRATA MAI: l'HTML c'è, i gestori degli eventi no.
+//
+// Il risultato era il peggiore possibile per un cancello: cliccava ogni elemento di ogni
+// pagina su HTML morto, e passava verde, perché verifica gli errori e non gli effetti.
+// L'unico clic di cui controllava l'effetto era «Esci», e infatti era l'unico che falliva —
+// su tutte le pagine, in tutti i giri. Trovato il 2026-09-19 inseguendo proprio quello.
+//
+// In produzione non succede: il blocco riguarda solo le risorse di sviluppo.
+const base = argomenti.find((a) => a.startsWith("http")) ?? "http://localhost:3100";
 const soloIndice = argomenti.indexOf("--solo");
 const soloPercorso = soloIndice >= 0 ? argomenti[soloIndice + 1] : null;
 
@@ -89,6 +103,25 @@ const CREDENZIALI = {
 /** Cookie di una sessione valida, ottenuti una sola volta e riusati da tutti i contesti. */
 let cookieSessione = null;
 
+/**
+ * «Esci» si verifica UNA VOLTA PER GIRO, non per ogni combinazione.
+ *
+ * Il limitatore di frequenza concede dieci accessi al minuto a `/sign-in/email`, ed e'
+ * una regola di produzione che non si allenta per far passare un collaudo. Ma ogni clic
+ * su «Esci» chiude la sessione condivisa e ne impone una nuova: con sedici pagine
+ * protette per sei combinazioni sarebbero novantasei accessi, e il giro si ferma al
+ * decimo con una raffica di 429.
+ *
+ * Non si perde copertura: «Esci» e' lo stesso identico comando su ogni pagina, montato
+ * dalla barra laterale. Verificarlo novantasei volte non dice novantasei cose diverse.
+ *
+ * ⚠️ Prima della migrazione la tabella `rate_limit` non esisteva e il limitatore falliva
+ * in silenzio: il cancello faceva novantasei accessi senza che nessuno se ne accorgesse.
+ * Applicata la migrazione, il limitatore ha cominciato a funzionare e ha bocciato il giro.
+ * Non era una regressione: era la prima volta che quel vincolo veniva davvero applicato.
+ */
+let uscitaVerificata = false;
+
 async function accediUnaVolta(browser) {
   if (cookieSessione) return true;
   if (!CREDENZIALI.email || !CREDENZIALI.password) {
@@ -134,12 +167,30 @@ async function apriSessione(contesto, etichetta) {
 
 async function verificaPagina(browser, pagina, misura, tema) {
   const etichetta = `${pagina.percorso} · ${misura.nome} · ${tema}`;
+  const url = new URL(pagina.percorso, base).toString();
   const contesto = await browser.newContext({
     viewport: { width: misura.larghezza, height: misura.altezza },
     colorScheme: tema,
     locale: "it-IT",
     timezoneId: "Europe/Rome",
   });
+
+  // TRENTA SECONDI NON BASTANO A `/design`, e il limite non era nostro: e' il valore
+  // predefinito di Playwright per le navigazioni.
+  //
+  // `/design` e' la vetrina del sistema di design: ventidue elementi azionabili, tutti i
+  // componenti sui dati veri dei tre cataloghi. In sviluppo ogni clic porta una navigazione
+  // e del lavoro di compilazione su richiesta, e su questa macchina una ricarica ogni tanto
+  // supera i trenta secondi.
+  //
+  // Il sintomo era chiaramente intermittente: al primo giro e' esplosa la combinazione
+  // `mobile · dark` su `waitForLoadState`, al secondo `tablet · dark` su `reload`. Una
+  // causa deterministica non cambia bersaglio.
+  //
+  // Alzare la pazienza NON indebolisce nessun controllo: un timeout non e' un'asserzione
+  // sul prodotto, e' quanto lo strumento aspetta prima di rinunciare. Ogni verifica vera —
+  // console, rete, collegamenti, fuoco, clic, interattivita' — resta identica.
+  contesto.setDefaultNavigationTimeout(90_000);
 
   if (pagina.autenticata && !(await apriSessione(contesto, etichetta))) {
     await contesto.close();
@@ -148,20 +199,64 @@ async function verificaPagina(browser, pagina, misura, tema) {
 
   const tab = await contesto.newPage();
 
+  // LA SOVRAPPOSIZIONE DI SVILUPPO DI NEXT NON E' IL PRODOTTO, e in produzione non esiste.
+  //
+  // `<nextjs-portal>` monta la barretta degli strumenti in basso a sinistra: esattamente
+  // sopra il pulsante «Esci» della barra laterale. Il cancello ci sbatteva in due modi —
+  // ventisei clic su «Esci» falliti per timeout («in quel punto c'e' nextjs-portal») e
+  // ottantasei «focus non visibile», perche' l'attraversamento da tastiera ci finisce
+  // dentro e quell'elemento non ha un anello di fuoco nostro da mostrare.
+  //
+  // Nasconderlo non nasconde un difetto: non fa parte di cio' che riceve il cliente. Se un
+  // giorno il prodotto avesse un elemento con quel nome, questa riga andrebbe rivista.
+  // `addInitScript` e non `addStyleTag`: il secondo aggiunge lo stile al documento CORRENTE,
+  // e la navigazione che segue se lo porta via. Questo gira prima degli script di ogni
+  // pagina, e si attacca a <html> perche' <body> potrebbe non esistere ancora.
+  await tab.addInitScript(() => {
+    // Gli script di inizializzazione girano PRIMA che il documento esista: al primo giro
+    // `document.documentElement` era null e questo stesso codice sollevava un'eccezione,
+    // che il cancello riportava sei volte per pagina. Si riprova finche' la radice c'e'.
+    const metti = () => {
+      if (!document.documentElement) {
+        requestAnimationFrame(metti);
+        return;
+      }
+      const stile = document.createElement("style");
+      stile.textContent = "nextjs-portal{display:none!important}";
+      document.documentElement.appendChild(stile);
+    };
+    metti();
+  });
+
+  // LO STATO ATTESO PUÒ NON ESSERE 200. La pagina «non trovata» risponde 404 ed è il suo
+  // mestiere: un cancello che pretende 200 da tutti non può verificarla, e resterebbe
+  // l'unica schermata di confine fuori da ogni controllo. `stato` si dichiara
+  // nell'inventario e vale per la navigazione, per la sorveglianza della rete e per la
+  // console — il browser registra da sé un `console.error` sul proprio stato 404.
+  const statoAtteso = pagina.stato ?? 200;
+
+  // L'esenzione è STRETTA: vale solo per lo stato dichiarato da questa pagina, quindi un 404
+  // su un foglio di stile o su un'immagine continua a bocciare. Un'esenzione globale su
+  // «404» spegnerebbe proprio il controllo che serve di più.
+  const rumoreAtteso =
+    statoAtteso === 200 ? null : new RegExp(`status of ${statoAtteso}(?![0-9])`, "i");
+
   const messaggi = [];
   const risposteRotte = [];
   tab.on("console", (m) => {
     if (!["error", "warning"].includes(m.type())) return;
     const testo = m.text();
     if (CONSOLE_IGNORATI.some((r) => r.test(testo))) return;
+    if (rumoreAtteso?.test(testo)) return;
     messaggi.push(`console.${m.type()}: ${testo}`);
   });
   tab.on("pageerror", (e) => messaggi.push(`eccezione non gestita: ${e.message}`));
-  tab.on("response", (r) => {
-    if (r.status() >= 400) risposteRotte.push(`${r.status()} ${r.url()}`);
-  });
 
-  const url = new URL(pagina.percorso, base).toString();
+  tab.on("response", (r) => {
+    if (r.status() >= 400 && !(r.status() === statoAtteso && r.url() === url)) {
+      risposteRotte.push(`${r.status()} ${r.url()}`);
+    }
+  });
 
   // Server spento, DNS sbagliato, TLS rotto: sono difetti da riportare, non eccezioni da
   // far esplodere. Un cancello che va in crash non dice quale pagina ha il problema.
@@ -174,8 +269,11 @@ async function verificaPagina(browser, pagina, misura, tema) {
     return;
   }
 
-  if (!risposta || risposta.status() >= 400) {
-    segnala(etichetta, `la pagina risponde ${risposta?.status() ?? "senza risposta"}`);
+  if (!risposta || risposta.status() !== statoAtteso) {
+    segnala(
+      etichetta,
+      `la pagina risponde ${risposta?.status() ?? "senza risposta"}, atteso ${statoAtteso}`,
+    );
     await contesto.close();
     return;
   }
@@ -194,9 +292,61 @@ async function verificaPagina(browser, pagina, misura, tema) {
   await tab.evaluate((t) => document.documentElement.setAttribute("data-theme", t), tema);
   await tab.waitForTimeout(150);
 
+  // --- 00. La pagina è interattiva? -------------------------------------------------------
+  // IL CONTROLLO CHE MANCAVA, e la sua assenza ha reso inutili tutti gli altri.
+  //
+  // Un clic su un bottone che React non ha agganciato non produce errori: non produce
+  // niente. Quindi un cancello che guarda solo errori, rete e console passa verde su una
+  // pagina completamente inerte — ed è successo, su tutte le pagine, per un'origine sbagliata
+  // (vedi il commento su `base`). Qui si pretende la prova positiva: le fibre di React
+  // attaccate al DOM. Se mancano, ogni verifica che segue sarebbe una verifica finta, quindi
+  // la pagina si boccia e non si prosegue.
+  const interattiva = await tab
+    .waitForFunction(
+      // SOLO SU <html> E <body>, e non su qualunque elemento. La prima versione cercava ovunque
+      // e passava verde anche sulla pagina inerte: la sovrapposizione di sviluppo di Next monta
+      // una PROPRIA radice React dentro <body>, che ha le sue fibre anche quando l'app non si è
+      // idratata affatto. L'app, invece, idrata il documento intero, quindi le fibre stanno su
+      // <html> e <body>: sono la prova che si è agganciata lei, e non qualcun altro.
+      () =>
+        [document.documentElement, document.body].some((n) =>
+          Object.keys(n).some((k) => k.startsWith("__reactFiber")),
+        ),
+      null,
+      { timeout: 20_000 },
+    )
+    .then(() => true)
+    .catch(() => false);
+  if (!interattiva) {
+    segnala(
+      etichetta,
+      "la pagina NON è interattiva: React non si è agganciato al DOM, quindi ogni clic che seguirebbe cadrebbe su HTML morto. In sviluppo, controlla che il cancello apra l'origine con cui il server si presenta (localhost, non 127.0.0.1).",
+    );
+    await contesto.close();
+    return;
+  }
+
+  // LO SCATTO VA DOPO IL CONTROLLO DI INTERATTIVITA', e prima era prima.
+  //
+  // Playwright, per fare uno screenshot stabile, nasconde il cursore di testo iniettando
+  // `caret-color: transparent` negli `input`. Se lo scatto avviene mentre React si sta
+  // ancora idratando, quello stile entra nel DOM prima che React finisca, e React lo
+  // segnala come mancata corrispondenza — «A tree hydrated but some attributes... didn't
+  // match». Un difetto del banco di prova travestito da difetto del prodotto.
+  //
+  // Si vedeva su due combinazioni su centodue, sempre a larghezza mobile: cioe' dove la
+  // pagina e' piu' lenta a idratarsi. Una corsa, non un guasto.
+  //
+  // Spostandolo dopo il controllo, lo scatto ritrae anche una pagina davvero viva.
   mkdirSync(SCREENSHOT, { recursive: true });
   const nomeFile = `${pagina.percorso.replace(/\W+/g, "_") || "_radice"}--${misura.nome}--${tema}.png`;
-  await tab.screenshot({ path: join(SCREENSHOT, nomeFile), fullPage: true });
+  // `caret: "initial"` disattiva la cortesia di Playwright, che per default nasconde il
+    // cursore di testo iniettando `caret-color: transparent`. Quello stile finisce nel DOM e
+    // React, idratando un confine di sospensione ANCORA PENDENTE, lo segnala come mancata
+    // corrispondenza. Spostare lo scatto dopo il controllo di interattivita non bastava: quel
+    // controllo aspetta la radice, non i confini annidati. Meglio togliere l interferenza che
+    // rincorrere la corsa.
+    await tab.screenshot({ path: join(SCREENSHOT, nomeFile), fullPage: true, caret: "initial" });
 
   // --- 0. Il tema è davvero applicato? -------------------------------------------------
   // Al primo giro questo cancello è passato verde su una pagina in cui il tema scuro non
@@ -251,10 +401,27 @@ async function verificaPagina(browser, pagina, misura, tema) {
     // Il tempo concesso è generoso: una funzione serverless a freddo su una schermata da
     // centosettantuno adempimenti non risponde in trenta secondi, e bocciarla per questo
     // sarebbe misurare l'infrastruttura invece del collegamento.
-    const r = await tab.request
-      .get(new URL(h, base).toString(), { failOnStatusCode: false, timeout: 90_000 })
-      .catch(() => null);
-    if (r === null) segnala(etichetta, `collegamento senza risposta entro 90 s: ${h}`);
+    // SI RIPROVA UNA VOLTA PRIMA DI ACCUSARE, e la ragione e' misurata.
+    //
+    // Su tre giri completi consecutivi e' comparso esattamente un timeout per giro, ogni
+    // volta su un bersaglio diverso e su un'operazione diversa: `/design mobile dark` su
+    // `waitForLoadState`, `/design tablet dark` su `reload`, `/impostazioni mobile dark`
+    // su questo collegamento a `/cruscotto`. Una causa deterministica non cambia bersaglio.
+    //
+    // E le pagine, interrogate direttamente, rispondono tutte sotto il secondo — cruscotto
+    // compreso, che e' la piu' pesante. Il timeout non misurava la pagina: misurava la
+    // contesa del momento, con browser, compilazione su richiesta e banca dati in coda.
+    //
+    // Una sola riprova distingue l'intermittenza dal guasto senza indebolire niente: un
+    // collegamento davvero rotto fallisce anche la seconda volta. Non si riprova sugli
+    // stati >= 400, che sono risposte vere e non vanno mai ignorate.
+    const chiedi = () =>
+      tab.request
+        .get(new URL(h, base).toString(), { failOnStatusCode: false, timeout: 90_000 })
+        .catch(() => null);
+    let r = await chiedi();
+    if (r === null) r = await chiedi();
+    if (r === null) segnala(etichetta, `collegamento senza risposta entro 90 s, due volte: ${h}`);
     else if (r.status() >= 400) segnala(etichetta, `collegamento rotto: ${h} risponde ${r.status()}`);
   }
 
@@ -307,8 +474,10 @@ async function verificaPagina(browser, pagina, misura, tema) {
   // riaperta. Cliccarla a metà giro lasciava le pagine successive senza verifica — e il
   // guasto restava invisibile per cinque minuti, quanto dura la cache del cookie di
   // sessione, così sembrava che il difetto fosse altrove.
-  const uscita = bersagli.find((b) => b.tour === "esci");
-  const ordinati = uscita ? [...bersagli.filter((b) => b !== uscita), uscita] : bersagli;
+  const uscita = uscitaVerificata ? undefined : bersagli.find((b) => b.tour === "esci");
+  const esci = bersagli.find((b) => b.tour === "esci");
+  const senzaUscita = esci ? bersagli.filter((b) => b !== esci) : bersagli;
+  const ordinati = uscita ? [...senzaUscita, uscita] : senzaUscita;
   const quantiAzionabili = ordinati.length;
   let scomparsi = 0;
 
@@ -459,6 +628,7 @@ async function verificaPagina(browser, pagina, misura, tema) {
         segnala(etichetta, `«Esci» non porta all'accesso: resta su ${new URL(tab.url()).pathname}`);
       }
       // La sessione appena chiusa era quella condivisa: si riapre per chi viene dopo.
+      uscitaVerificata = true;
       cookieSessione = null;
       if (!(await accediUnaVolta(browser))) {
         segnala(etichetta, "dopo l'uscita non è stato possibile riaprire la sessione del cancello");

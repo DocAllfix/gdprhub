@@ -78,8 +78,6 @@ const schema = z.object({
    *   fs   → volume locale (produzione per istanza)
    */
   STORAGE_DRIVER: z.enum(["blob", "fs"]).default("fs"),
-  /** Radice del volume quando STORAGE_DRIVER=fs. */
-  STORAGE_FS_ROOT: z.string().default("./.dati/evidenze"),
 
   /**
    * Come si rende il PDF.
@@ -95,6 +93,44 @@ const schema = z.object({
    * esterno fa uscire dati dal server del cliente, e in un prodotto GDPR va dichiarato.
    */
   SENTRY_DSN: z.string().optional(),
+
+  /**
+   * Modalità dell'istanza, letta SOLO alla prima installazione per scrivere
+   * `instance_config.mode`.
+   *
+   * Dopo il bootstrap la fonte è la colonna nel database, e deve restare così: la modalità
+   * di un'istanza viva non può cambiare perché qualcuno riavvia un contenitore con una
+   * variabile diversa.
+   *
+   * `cliente` → `full`, ed è ogni istanza venduta. `vetrina` → `demo`, che oggi è un no-op
+   * (`assertNotDemo` non blocca niente) e si attiva solo su conferma esplicita.
+   *
+   * Prima questa variabile veniva passata dal compose e NON esisteva qui: zod la scartava in
+   * silenzio, quindi la predisposizione documentata non arrivava a destinazione.
+   */
+  ISTANZA_MODO: z.enum(["cliente", "vetrina"]).default("cliente"),
+
+  /**
+   * POSTA IN USCITA.
+   *
+   * Senza `SMTP_HOST` la mail si stampa e non parte: e' il driver `registro`, predefinito in
+   * sviluppo. Un ambiente di sviluppo che manda posta vera e' un ambiente che prima o poi la
+   * manda a un cliente vero.
+   *
+   * LE CREDENZIALI SONO PER ISTANZA, non condivise fra i clienti. Una VPS compromessa non
+   * deve poter mandare posta a nome del dominio di tutti gli altri: brucerebbe la
+   * reputazione del mittente per l'intera flotta, e per i tre prodotti insieme se il relay
+   * e' comune.
+   *
+   * Senza posta non esistono recupero password, inviti e promemoria: `disableSignUp` chiude
+   * la registrazione pubblica, quindi un utente che perde la password non ha altra strada.
+   */
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  /** Mittente degli invii. Deve stare su un dominio con SPF, DKIM e DMARC configurati. */
+  SMTP_MITTENTE: z.string().default("no-reply@compliancedesk.it"),
 });
 
 /**

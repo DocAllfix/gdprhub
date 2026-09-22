@@ -1,6 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useFiltriUrl } from "@/lib/filtri-url";
+import { Building2, SearchX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Vuoto, VuotoFiltro } from "@/components/ui/vuoto";
 import Link from "next/link";
 import { ArrowDown, ArrowUp, ChevronsUpDown, Search } from "lucide-react";
 import { DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
@@ -62,7 +66,7 @@ function Nastro({ q }: { q: QuadroModulo }) {
 function CellaModulo({ q }: { q: QuadroModulo }) {
   if (!q.attivo) {
     return (
-      <span className="text-xs text-faint-foreground" title="Modulo non attivo per questa azienda">
+      <span className="text-xs text-muted-foreground" title="Modulo non attivo per questa azienda">
         non attivo
       </span>
     );
@@ -74,11 +78,11 @@ function CellaModulo({ q }: { q: QuadroModulo }) {
     <span className="block w-28">
       <span className="flex items-baseline gap-1.5">
         <span className="text-sm font-semibold tabular-nums">{q.conformita.percentuale}%</span>
-        <span className="font-mono text-[10px] text-faint-foreground">
+        <span className="font-mono text-micro text-muted-foreground">
           {q.conformita.numeratore}/{q.conformita.applicabili}
         </span>
         {q.scadute > 0 ? (
-          <span className="ml-auto font-mono text-[10px] font-semibold text-scaduta">
+          <span className="ml-auto font-mono text-micro font-semibold text-scaduta">
             {"−"}
             {q.scadute}
           </span>
@@ -91,7 +95,7 @@ function CellaModulo({ q }: { q: QuadroModulo }) {
 
 /** L'esposizione come indicatore compatto: la cifra e quanto occupa della scala 0-100. */
 function Esposizione({ valore }: { valore: number | null }) {
-  if (valore === null) return <span className="text-xs text-faint-foreground">{"—"}</span>;
+  if (valore === null) return <span className="text-xs text-muted-foreground">{"—"}</span>;
   const tinta = valore >= 70 ? "bg-scaduta" : valore >= 45 ? "bg-imminente" : "bg-regolare";
   return (
     <span className="block w-20">
@@ -130,7 +134,7 @@ function Intestazione({
         type="button"
         onClick={() => onOrdina(colonna)}
         className={cn(
-          "inline-flex items-center gap-1 py-2 text-[10px] font-semibold tracking-[0.09em] uppercase hover:text-foreground",
+          "inline-flex items-center gap-1 py-2 text-micro font-semibold tracking-[0.09em] uppercase hover:text-foreground",
           attiva ? "text-foreground" : "text-muted-foreground",
           classe,
         )}
@@ -151,12 +155,27 @@ function Intestazione({
   );
 }
 
+// FILTRO E ORDINAMENTO VIVONO NELL'INDIRIZZO, come in assessment e scadenzario.
+//
+// Il portafoglio era l'unica tabella il cui stato non si poteva condividere: il filtro stava in
+// uno `useState` e spariva al ricaricamento. Ed è proprio la schermata da cui si manda un
+// collegamento a un collega — «guarda queste tre aziende» — quindi era il posto dove serviva di
+// più. Stesso meccanismo delle altre due, così le tre tabelle si comportano allo stesso modo.
+const INIZIALI = { q: "", ordina: "esposizione", verso: "desc" };
+
+const COLONNE_VALIDE: readonly Colonna[] = ["nome", "complessivo", "esposizione", ...DOMINI];
+
 export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[] }) {
-  const [filtro, setFiltro] = useState("");
-  const [ordine, setOrdine] = useState<{ colonna: Colonna; verso: "asc" | "desc" }>({
-    colonna: "esposizione",
-    verso: "desc",
-  });
+  const { filtri, imposta } = useFiltriUrl(INIZIALI);
+  const filtro = filtri.q;
+  // Un valore scritto a mano nell'indirizzo non deve rompere la pagina: si torna al predefinito.
+  const ordine: { colonna: Colonna; verso: "asc" | "desc" } = {
+    colonna: (COLONNE_VALIDE as readonly string[]).includes(filtri.ordina)
+      ? (filtri.ordina as Colonna)
+      : "esposizione",
+    verso: filtri.verso === "asc" ? "asc" : "desc",
+  };
+  const setFiltro = (v: string) => imposta("q", v);
 
   const visibili = useMemo(() => {
     const q = filtro.trim().toLowerCase();
@@ -183,17 +202,23 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
       const c = typeof x === "string" ? x.localeCompare(y as string) : (x as number) - (y as number);
       return ordine.verso === "asc" ? c : -c;
     });
-  }, [righe, filtro, ordine]);
+  }, [righe, filtro, ordine.colonna, ordine.verso]);
 
-  const ordina = (colonna: Colonna) =>
-    setOrdine((p) =>
-      p.colonna === colonna
-        ? { colonna, verso: p.verso === "asc" ? "desc" : "asc" }
-        : { colonna, verso: colonna === "nome" ? "asc" : "desc" },
-    );
+  const ordina = (colonna: Colonna) => {
+    const verso =
+      ordine.colonna === colonna
+        ? ordine.verso === "asc"
+          ? "desc"
+          : "asc"
+        : colonna === "nome"
+          ? "asc"
+          : "desc";
+    imposta("ordina", colonna);
+    imposta("verso", verso);
+  };
 
   return (
-    <div className="pannello entra overflow-clip">
+    <div className="pannello entra overflow-clip lg:overflow-visible">
       {/* La barra di controllo sta DENTRO il pannello: il filtro appartiene alla tabella, e
           staccarlo crea due oggetti dove ce n'è uno. */}
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface-sunken px-3 py-2">
@@ -208,13 +233,13 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
             placeholder="Cerca azienda, settore, sede"
             aria-label="Filtra le aziende"
             data-tour="filtro-portafoglio"
-            className="h-7 w-full rounded-md border border-border bg-surface pr-2 pl-8 text-xs outline-none placeholder:text-faint-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-7 w-full rounded-md border border-border bg-surface pr-2 pl-8 text-xs outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
           />
         </label>
-        <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+        <span className="font-mono text-micro tabular-nums text-muted-foreground">
           {visibili.length}/{righe.length}
         </span>
-        <span className="ml-auto hidden items-center gap-3 text-[10px] text-faint-foreground sm:flex">
+        <span className="ml-auto hidden items-center gap-3 text-micro text-muted-foreground sm:flex">
           <Legenda colore="bg-scaduta" testo="scadute" />
           <Legenda colore="bg-imminente" testo="in scadenza" />
           <Legenda colore="bg-regolare" testo="regolari" />
@@ -222,9 +247,23 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
         </span>
       </div>
 
-      <div className="overflow-x-auto" data-tour="tabella-portafoglio">
+      {/* L'INTESTAZIONE SI FISSA ALLA FINESTRA, e perché qui non ci sia più un contenitore
+          con overflow da 'lg' in su è la parte che si dimentica: 'position: sticky' si àncora
+          al più vicino antenato che scorre, e un 'overflow-x-auto' ne crea uno anche quando
+          non si vede scorrere. È il difetto già incontrato in F5d e scritto in DESIGN.md.
+
+          Sotto 'lg' l'overflow resta, perché lì la tabella non ci sta in larghezza e lo
+          scorrimento orizzontale serve davvero: a quelle larghezze l'intestazione fissata
+          vale poco, perché di righe se ne vedono comunque poche.
+
+          MISURATO, non supposto: con la scatola di scorrimento si vedevano 14 righe
+          sull'assessment e 10 sullo scadenzario; così se ne vedono 24. DESIGN.md ne chiede 22. */}
+      <div
+        className="overflow-x-auto lg:overflow-x-visible"
+        data-tour="tabella-portafoglio"
+      >
         <table className="w-full">
-          <thead className="border-b border-border-strong bg-surface-sunken">
+          <thead className="border-b border-border-strong bg-surface-sunken lg:sticky lg:top-0 lg:z-10 lg:[&_th]:bg-surface-sunken">
             <tr>
               <Intestazione colonna="nome" ordine={ordine} onOrdina={ordina}>
                 Azienda
@@ -245,8 +284,22 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
           <tbody>
             {visibili.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-3 py-12 text-center text-sm text-muted-foreground">
-                  {filtro ? `Nessuna azienda corrisponde a «${filtro}».` : "Nessuna azienda nel portafoglio."}
+                <td colSpan={6} className="p-0">
+                  {filtro ? (
+                    <VuotoFiltro
+                      icona={SearchX}
+                      filtri={[`il testo «${filtro}»`]}
+                      azzera={
+                        <Button variant="outline" size="sm" onClick={() => setFiltro("")}>
+                          Azzera la ricerca
+                        </Button>
+                      }
+                    />
+                  ) : (
+                    <Vuoto icona={Building2} titolo="Nessuna azienda nel portafoglio" variante="riga">
+                      Questa tabella elenca le aziende assistite: si popola appena ne aggiungi una.
+                    </Vuoto>
+                  )}
                 </td>
               </tr>
             ) : (
@@ -265,14 +318,14 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
                       <span className="flex items-center gap-2">
                         <span className="text-sm font-medium group-hover:underline">{r.nome}</span>
                         {r.isDemo ? (
-                          <span className="rounded-sm border border-border px-1 text-[9px] tracking-wide text-faint-foreground uppercase">
+                          <span className="rounded-sm border border-border px-1 text-micro tracking-wide text-muted-foreground uppercase">
                             esempio
                           </span>
                         ) : null}
                       </span>
-                      <span className="mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground">
+                      <span className="mt-0.5 flex items-center gap-2 text-micro text-muted-foreground">
                         {r.settore ? <span className="truncate">{r.settore}</span> : null}
-                        {r.sede ? <span className="truncate text-faint-foreground">{r.sede}</span> : null}
+                        {r.sede ? <span className="truncate text-muted-foreground">{r.sede}</span> : null}
                       </span>
                     </Link>
                   </td>
@@ -283,12 +336,12 @@ export function TabellaPortafoglio({ righe }: { righe: readonly RigaPortafoglio[
                   ))}
                   <td className="px-3 py-2 align-top">
                     {!r.conformita || r.conformita.percentuale === null ? (
-                      <span className="text-xs text-faint-foreground">{"—"}</span>
+                      <span className="text-xs text-muted-foreground">{"—"}</span>
                     ) : (
                       <span className="block w-24">
                         <span className="flex items-baseline gap-1.5">
                           <span className="cifra text-base">{r.conformita.percentuale}%</span>
-                          <span className="font-mono text-[10px] text-faint-foreground">
+                          <span className="font-mono text-micro text-muted-foreground">
                             {r.conformita.numeratore}/{r.conformita.applicabili}
                           </span>
                         </span>

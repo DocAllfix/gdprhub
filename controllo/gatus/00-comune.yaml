@@ -1,0 +1,28 @@
+# Configurazione comune della sorveglianza. I clienti stanno in `clienti/<slug>.yaml`:
+# Gatus unisce tutti gli YAML che trova in questa cartella.
+
+storage:
+  type: postgres
+  path: "postgres://gatus:${GATUS_DB_PASSWORD}@gatus_db:5432/gatus?sslmode=disable"
+
+# I destinatari degli allarmi. Telegram perche' arriva sul telefono senza aprire la posta:
+# un'istanza giu' alle undici di sera non aspetta la prossima lettura della casella.
+alerting:
+  telegram:
+    token: "${TELEGRAM_TOKEN}"
+    id: "${TELEGRAM_CHAT}"
+    default-alert:
+      # TRE FALLIMENTI PRIMA DI SVEGLIARE QUALCUNO, e non uno.
+      #
+      # Una sonda sola che fallisce e' rumore: un riavvio, una latenza, un rinnovo di
+      # certificato. Tre di fila a sessanta secondi l'una sono due minuti di disservizio, e
+      # a quel punto e' vero. Un allarme che grida per ogni singhiozzo si impara a ignorare,
+      # ed e' peggio di nessun allarme.
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+
+# Le sonde si vedono solo da dentro: il proxy le tiene dietro allow-list.
+ui:
+  title: "Flotta"
+  header: "Stato delle istanze"

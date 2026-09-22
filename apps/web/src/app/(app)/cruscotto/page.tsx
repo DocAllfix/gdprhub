@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
+import { Vuoto } from "@/components/ui/vuoto";
 import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
 import { cruscotto } from "@/features/cruscotto/dati";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,28 @@ export const dynamic = "force-dynamic";
 
 export default async function PaginaCruscotto() {
   const d = await cruscotto();
-  if (!d) return <Vuoto />;
+  if (!d)
+    return (
+      <div className="mx-auto max-w-3xl px-6 py-16">
+        <Vuoto
+          icona={LayoutGrid}
+          livello="h1"
+          titolo="Non c'è ancora nulla da misurare"
+          azione={
+            <Link
+              href="/portafoglio"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-sm hover:bg-accent"
+            >
+              Vai al portafoglio
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+          }
+        >
+          Il cruscotto misura quello che c&apos;è: si popola quando almeno un&apos;azienda ha un modulo
+          attivo con adempimenti censiti.
+        </Vuoto>
+      </div>
+    );
 
   const c = d.complessivo;
   const esp = c.esposizione;
@@ -37,7 +59,7 @@ export default async function PaginaCruscotto() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Cruscotto</p>
-          <h1 className="titolo mt-1.5 text-[1.7rem]">
+          <h1 className="titolo mt-1.5 text-titolo">
             {d.aziende.length} aziende, tre decreti, {d.totale} adempimenti
           </h1>
         </div>
@@ -107,8 +129,8 @@ export default async function PaginaCruscotto() {
                     />
                   ) : null}
                 </div>
-                <p className="truncate text-[11px] text-muted-foreground">{m.etichetta.esteso}</p>
-                <p className="font-mono text-[10px] text-faint-foreground">{m.etichetta.norma}</p>
+                <p className="truncate text-nota text-muted-foreground">{m.etichetta.esteso}</p>
+                <p className="font-mono text-micro text-muted-foreground">{m.etichetta.norma}</p>
 
                 {m.attivo ? (
                   <>
@@ -116,12 +138,12 @@ export default async function PaginaCruscotto() {
                         stessa cosa della cifra che aveva al centro. Due volte lo stesso
                         dato costa attenzione e non ne restituisce. */}
                     <p className="mt-4 flex items-baseline gap-1">
-                      <span className="cifra text-[2.6rem] leading-none">
+                      <span className="cifra text-cifra-xl leading-none">
                         {m.conformita?.percentuale ?? 0}
                       </span>
                       <span className="text-base text-muted-foreground">%</span>
                     </p>
-                    <p className="mt-1 font-mono text-[10px] text-faint-foreground">
+                    <p className="mt-1 font-mono text-micro text-muted-foreground">
                       {m.conformita?.numeratore}/{m.conformita?.applicabili} fatti e ancora validi
                     </p>
 
@@ -140,14 +162,14 @@ export default async function PaginaCruscotto() {
                       />
                     </div>
 
-                    <dl className="mt-3 space-y-1 text-[11px]">
+                    <dl className="mt-3 space-y-1 text-nota">
                       <Voce etichetta="scadute" valore={m.scadute} tinta="text-scaduta" />
                       <Voce etichetta="in scadenza" valore={m.inScadenza} tinta="text-imminente" />
                       <Voce etichetta="critici aperti" valore={m.critici} />
                     </dl>
 
                     {m.prontezza ? (
-                      <p className="mt-3 text-[10px] text-muted-foreground">
+                      <p className="mt-3 text-micro text-muted-foreground">
                         Prontezza <b className="tabular-nums">{m.prontezza.indice}/100</b>
                         {m.prontezza.presidiScoperti.length > 0
                           ? ` · ${m.prontezza.presidiScoperti.length} presidi scoperti`
@@ -156,7 +178,7 @@ export default async function PaginaCruscotto() {
                     ) : null}
                   </>
                 ) : (
-                  <p className="mt-4 text-xs text-faint-foreground">
+                  <p className="mt-4 text-xs text-muted-foreground">
                     Nessuna azienda ha questo modulo attivo.
                   </p>
                 )}
@@ -184,15 +206,15 @@ export default async function PaginaCruscotto() {
               <p className="font-mono text-xs tabular-nums">
                 {c.conformita.numeratore}/{c.conformita.applicabili}
               </p>
-              <p className="text-[10px] text-muted-foreground">conformità effettiva</p>
+              <p className="text-micro text-muted-foreground">conformità effettiva</p>
               <p className="mt-2 text-lg font-semibold tabular-nums">
                 {esp.indice}
-                <span className="text-xs font-normal text-faint-foreground">/100</span>
+                <span className="text-xs font-normal text-muted-foreground">/100</span>
               </p>
-              <p className="text-[10px] text-muted-foreground">esposizione · {esp.giudizio.toLowerCase()}</p>
+              <p className="text-micro text-muted-foreground">esposizione · {esp.giudizio.toLowerCase()}</p>
             </div>
           </div>
-          <p className="mt-4 border-t border-border-subtle pt-2.5 text-[10px] leading-relaxed text-faint-foreground">
+          <p className="mt-4 border-t border-border-subtle pt-2.5 text-micro leading-relaxed text-muted-foreground">
             Calcolato sull&apos;insieme unito, non come media delle tre percentuali: una media peserebbe
             uguale un modulo da 42 e uno da 65, e basterebbe spegnerne uno per migliorare il numero.
           </p>
@@ -286,7 +308,7 @@ export default async function PaginaCruscotto() {
           solo facendo le divisioni a mente. */}
       <section className="mt-3 grid gap-3 lg:grid-cols-3">
         <div className="pannello p-5 lg:col-span-2">
-          <h2 className="text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+          <h2 className="text-nota font-semibold tracking-[0.1em] text-muted-foreground uppercase">
             Carico dei prossimi dodici mesi
           </h2>
           <div className="mt-3">
@@ -330,7 +352,7 @@ export default async function PaginaCruscotto() {
               con Math.random(). Finché lo storico non basta, qui non si disegna nulla. */}
           <div className="flex h-32 flex-col items-center justify-center gap-1.5 rounded-md border border-dashed border-border text-center">
             <p className="text-xs font-medium">Non ci sono ancora dati storici</p>
-            <p className="max-w-xs text-[11px] leading-relaxed text-muted-foreground">
+            <p className="max-w-xs text-nota leading-relaxed text-muted-foreground">
               Un andamento va misurato, non generato. Comparirà quando ci saranno abbastanza rilevazioni
               datate.
             </p>
@@ -345,7 +367,7 @@ function Riquadro({ titolo, nota, children }: { titolo: string; nota?: string; c
   return (
     <div className="pannello p-5">
       <h2 className="text-sm font-semibold tracking-tight">{titolo}</h2>
-      {nota ? <p className="mt-0.5 mb-3 text-[11px] leading-relaxed text-muted-foreground">{nota}</p> : null}
+      {nota ? <p className="mt-0.5 mb-3 text-nota leading-relaxed text-muted-foreground">{nota}</p> : null}
       {children}
     </div>
   );
@@ -370,19 +392,4 @@ function Voce({ etichetta, valore, tinta }: { etichetta: string; valore: number;
   );
 }
 
-function Vuoto() {
-  return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <div className="rounded-lg border border-dashed border-border-strong bg-surface px-6 py-16 text-center">
-        <LayoutGrid className="mx-auto size-6 text-faint-foreground" aria-hidden />
-        <h1 className="mt-3 text-sm font-semibold">Non c&apos;è ancora nulla da misurare</h1>
-        <p className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">
-          Il cruscotto si popola quando almeno un&apos;azienda ha un modulo attivo con adempimenti censiti.
-        </p>
-        <Link href="/portafoglio" className="mt-4 inline-block text-sm underline">
-          Vai al portafoglio
-        </Link>
-      </div>
-    </div>
-  );
-}
+

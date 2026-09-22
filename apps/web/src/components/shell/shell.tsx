@@ -136,7 +136,7 @@ export function Shell({
             <Icona className="size-4 shrink-0" aria-hidden />
             {binario ? null : voce.etichetta}
             {!binario && voce.futura ? (
-              <span className="ml-auto text-[9px] tracking-wide uppercase opacity-70">presto</span>
+              <span className="ml-auto text-micro tracking-wide uppercase opacity-70">presto</span>
             ) : null}
             {/* L'ETICHETTA AL PASSAGGIO, che è la condizione perché il binario funzioni.
                 Senza, cinque icone documentali sono un indovinello. Sta fuori dalla
@@ -228,7 +228,7 @@ export function Shell({
             <Guida visti={tourVisti} />
             <SelettoreTema />
             <span
-              className="grid size-7 place-items-center rounded-full bg-sidebar-selected text-[10px] font-semibold"
+              className="grid size-7 place-items-center rounded-full bg-sidebar-selected text-micro font-semibold"
               title={`${utente} · ${ruolo}`}
             >
               {inizialiUtente}
@@ -261,7 +261,7 @@ export function Shell({
               <p className="truncate text-sm font-semibold tracking-tight" title={studio}>
                 {studio}
               </p>
-              <p className="text-[10px] tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</p>
+              <p className="text-micro tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</p>
             </div>
             <button
               type="button"
@@ -287,7 +287,7 @@ export function Shell({
               <p className="truncate text-xs font-medium" title={utente}>
                 {utente}
               </p>
-              <p className="text-[10px] text-sidebar-muted capitalize">{ruolo}</p>
+              <p className="text-micro text-sidebar-muted capitalize">{ruolo}</p>
             </div>
             <div className="flex items-center justify-between px-1.5">
               <span className="flex items-center gap-1">

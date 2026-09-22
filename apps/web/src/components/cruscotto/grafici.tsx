@@ -99,7 +99,11 @@ export function Nastro({
   if (totale === 0) return null;
   return (
     <div
-      className="flex w-full overflow-hidden rounded-full"
+      // `.cresce` sul CONTENITORE e non sui segmenti: si allunga il nastro intero, con le
+      // proporzioni già al loro posto, e fra un segmento e l'altro non si apre nessuna fessura
+      // durante l'animazione. È l'effetto che DESIGN.md dichiara — «fa vedere la proporzione
+      // formarsi» — ed era rimasto codice morto: la classe non stava su nessuna pagina vera.
+      className="cresce flex w-full overflow-hidden rounded-full"
       style={{ height: altezza }}
       role="img"
       aria-label={segmenti.map((s) => `${s.etichetta}: ${s.quanti}`).join(", ")}
@@ -142,7 +146,7 @@ export function Distribuzione({
           <span className="truncate text-xs" title={v.etichetta}>
             {v.etichetta}
           </span>
-          <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+          <span className="font-mono text-micro tabular-nums text-muted-foreground">
             {v.scaduti > 0 ? <span className="text-scaduta">{v.scaduti}</span> : null}
             {v.scaduti > 0 ? "/" : null}
             {v.quanti}
@@ -189,7 +193,7 @@ export function Matrice({
           <tr>
             <th className="w-20" />
             {priorita.map((p) => (
-              <th key={p} className="pb-1 text-[10px] font-medium tracking-wide text-muted-foreground">
+              <th key={p} className="pb-1 text-micro font-medium tracking-wide text-muted-foreground">
                 {p}
               </th>
             ))}
@@ -198,7 +202,7 @@ export function Matrice({
         <tbody>
           {[...fasce].reverse().map((f) => (
             <tr key={f.etichetta}>
-              <th className="pr-2 text-right text-[10px] font-medium whitespace-nowrap text-muted-foreground">
+              <th className="pr-2 text-right text-micro font-medium whitespace-nowrap text-muted-foreground">
                 {f.etichetta}
               </th>
               {priorita.map((p) => {
@@ -211,7 +215,7 @@ export function Matrice({
                       className={cn(
                         "flex h-9 items-center justify-center rounded-sm border text-xs font-medium tabular-nums",
                         n === 0
-                          ? "border-border-subtle text-faint-foreground"
+                          ? "border-border-subtle text-muted-foreground"
                           : "border-transparent text-foreground",
                       )}
                       style={
@@ -251,16 +255,16 @@ export function Scomposizione({
       {componenti.map((c) => (
         <div key={c.nome} className="grid grid-cols-[7.5rem_3.5rem_1fr_2.5rem] items-center gap-2">
           <span className="truncate text-xs">{c.nome}</span>
-          <span className="font-mono text-[10px] text-muted-foreground">
+          <span className="font-mono text-micro text-muted-foreground">
             {c.valore.toFixed(2)}×{c.peso.toFixed(2)}
           </span>
           <span className="flex h-1.5 overflow-hidden rounded-full bg-surface-sunken">
             <span className="bg-foreground" style={{ width: `${c.valore * c.peso * 100 * 1.8}%` }} />
           </span>
-          <span className="text-right font-mono text-[10px] tabular-nums">
+          <span className="text-right font-mono text-micro tabular-nums">
             {(c.valore * c.peso * 100).toFixed(1)}
           </span>
-          <span className="col-span-4 -mt-1 text-[10px] text-faint-foreground">{c.spiega}</span>
+          <span className="col-span-4 -mt-1 text-micro text-muted-foreground">{c.spiega}</span>
         </div>
       ))}
       <div className="flex items-baseline justify-between border-t border-border pt-2">
@@ -359,10 +363,10 @@ export function Ciambella({
       <dl className="min-w-40 flex-1 space-y-1.5 text-xs">
         {vive.map((s) => (
           <div key={s.etichetta} className="flex items-center gap-2">
-            <span className="size-2 shrink-0 rounded-[2px]" style={{ background: s.colore }} aria-hidden />
+            <span className="size-2 shrink-0 rounded-2xs" style={{ background: s.colore }} aria-hidden />
             <dt className="text-muted-foreground">{s.etichetta}</dt>
             <dd className="ml-auto font-mono text-sm tabular-nums">{s.quanti}</dd>
-            <dd className="w-9 text-right font-mono text-[10px] text-faint-foreground tabular-nums">
+            <dd className="w-9 text-right font-mono text-micro text-muted-foreground tabular-nums">
               {Math.round((s.quanti / totale) * 100)}%
             </dd>
           </div>
@@ -424,23 +428,23 @@ export function CaricoMensile({
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
-        <p className="text-[11px] leading-relaxed text-faint-foreground">
+        <p className="text-nota leading-relaxed text-muted-foreground">
           Deriva dalle periodicità, non da uno storico: si sa dal primo giorno.
         </p>
         <div className="flex gap-4 text-right">
           <p>
             <span className="cifra block text-xl leading-none">{picco.totale}</span>
-            <span className="text-[10px] text-muted-foreground">picco · {MESI_BREVI[picco.mese]}</span>
+            <span className="text-micro text-muted-foreground">picco · {MESI_BREVI[picco.mese]}</span>
           </p>
           <p>
             <span className="cifra block text-xl leading-none text-muted-foreground">{media}</span>
-            <span className="text-[10px] text-muted-foreground">media mensile</span>
+            <span className="text-micro text-muted-foreground">media mensile</span>
           </p>
         </div>
       </div>
 
       <div className="flex gap-2">
-        <div className="flex h-36 flex-col justify-between font-mono text-[10px] text-faint-foreground tabular-nums">
+        <div className="flex h-36 flex-col justify-between font-mono text-micro text-muted-foreground tabular-nums">
           <span>{massimo}</span>
           <span>{Math.round(massimo / 2)}</span>
           <span>0</span>
@@ -474,12 +478,12 @@ export function CaricoMensile({
       </div>
 
       <div className="mt-1.5 flex gap-2">
-        <span className="invisible font-mono text-[10px]">{massimo}</span>
+        <span className="invisible font-mono text-micro">{massimo}</span>
         <div className="flex min-w-0 flex-1 gap-1.5">
           {mesi.map((m) => (
             <span
               key={m.chiave}
-              className={`min-w-0 flex-1 text-center text-[10px] ${
+              className={`min-w-0 flex-1 text-center text-micro ${
                 m === picco ? "font-semibold text-foreground" : "text-muted-foreground"
               }`}
             >
@@ -489,14 +493,14 @@ export function CaricoMensile({
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-4 border-t border-border pt-2.5 text-[10px]">
+      <div className="mt-3 flex flex-wrap items-center gap-4 border-t border-border pt-2.5 text-micro">
         {domini.map((d) => (
           <span key={d} className="flex items-center gap-1.5 text-muted-foreground">
-            <span className="size-2 rounded-[2px]" style={{ background: TINTA_DOMINIO[d] }} aria-hidden />
+            <span className="size-2 rounded-2xs" style={{ background: TINTA_DOMINIO[d] }} aria-hidden />
             {etichette[d].breve}
           </span>
         ))}
-        <span className="ml-auto text-faint-foreground">
+        <span className="ml-auto text-muted-foreground">
           {/* Un mese vuoto è un dato, non un buco nel disegno: se ce ne sono parecchi lo si
               dice, altrimenti il grafico sembra rotto. */}
           {vuoti > 3

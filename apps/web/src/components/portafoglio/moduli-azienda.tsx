@@ -114,7 +114,7 @@ export function ModuliAzienda({
               <div>
                 <p className={cn("text-sm font-semibold", TINTA[d])}>{ETICHETTE_DOMINIO[d].breve}</p>
                 <p className="text-xs text-muted-foreground">{ETICHETTE_DOMINIO[d].esteso}</p>
-                <p className="mt-0.5 font-mono text-[10px] text-faint-foreground">
+                <p className="mt-0.5 font-mono text-micro text-muted-foreground">
                   {ETICHETTE_DOMINIO[d].norma}
                 </p>
               </div>
@@ -130,7 +130,7 @@ export function ModuliAzienda({
                     Attivo · {censiti} adempimenti
                   </Link>
                 ) : (
-                  <span className="text-faint-foreground">
+                  <span className="text-muted-foreground">
                     Non attivo{censiti > 0 ? ` · ${censiti} adempimenti conservati` : ""}
                   </span>
                 )}

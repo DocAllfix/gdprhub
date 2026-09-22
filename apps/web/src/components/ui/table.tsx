@@ -4,9 +4,27 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+// ⚠️ IL CONTENITORE DI SHADCN ANNULLAVA `position: sticky` SULL'INTESTAZIONE.
+//
+// Questo involucro porta `overflow-x-auto` di serie, e un contenitore che scorre diventa
+// l'ancora di qualunque `sticky` al suo interno: l'intestazione si fissa rispetto a LUI
+// invece che alla finestra, e siccome lui non ha un'altezza massima, non si fissa affatto.
+// Nessun errore, nessun avviso — semplicemente scorre via.
+//
+// È lo stesso difetto già incontrato in F5d e scritto in DESIGN.md, in una seconda copia che
+// non si vedeva: l'avevo tolto dal pannello esterno e l'intestazione continuava a scappare,
+// perché il contenitore vero era qui dentro, dentro la primitiva.
+//
+// Da `lg` in su l'overflow sparisce e l'intestazione si àncora alla finestra. Sotto `lg`
+// resta, perché a quelle larghezze la tabella non ci sta e lo scorrimento orizzontale serve
+// davvero — e di righe se ne vedono comunque troppo poche perché l'intestazione fissata
+// cambi qualcosa.
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div
+      data-slot="table-container"
+      className="relative w-full overflow-x-auto lg:overflow-x-visible"
+    >
       <table data-slot="table" className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   );

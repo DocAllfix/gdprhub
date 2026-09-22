@@ -58,11 +58,11 @@ export function Evidenze({
           <Paperclip className="size-3.5" aria-hidden />
           Evidenze
         </h3>
-        <span className="font-mono text-[10px] text-faint-foreground tabular-nums">{elenco.length}</span>
+        <span className="font-mono text-micro text-muted-foreground tabular-nums">{elenco.length}</span>
       </div>
 
       {elenco.length === 0 ? (
-        <p className="text-[11px] leading-relaxed text-muted-foreground">
+        <p className="text-nota leading-relaxed text-muted-foreground">
           Nessun documento allegato. Un adempimento chiuso senza evidenza resta una dichiarazione: davanti a
           un&apos;ispezione conta la carta che lo dimostra.
         </p>
@@ -71,7 +71,7 @@ export function Evidenze({
           {elenco.map((e) => (
             <li key={e.id} className="rounded-lg bg-surface-sunken px-3 py-2">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[10px] text-faint-foreground">v{e.versione}</span>
+                <span className="font-mono text-micro text-muted-foreground">v{e.versione}</span>
                 <a
                   href={`/api/evidenze/${e.id}`}
                   className="min-w-0 flex-1 truncate text-xs hover:underline"
@@ -100,7 +100,7 @@ export function Evidenze({
                   </form>
                 ) : null}
               </div>
-              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-[10px] text-muted-foreground">
+              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-micro text-muted-foreground">
                 <span className="font-mono">{pesoLeggibile(e.dimensione)}</span>
                 {/* L'impronta si mostra troncata ma si mostra: è ciò che rende il documento
                     riconoscibile, e nasconderla vorrebbe dire chiedere fiducia. */}
@@ -119,7 +119,7 @@ export function Evidenze({
         <form action={azioneCarica} className="space-y-2 rounded-lg border border-border p-3">
           <input type="hidden" name="istanzaId" value={istanzaId} />
           <div>
-            <label htmlFor={`file-${istanzaId}`} className="text-[11px] font-medium">
+            <label htmlFor={`file-${istanzaId}`} className="text-nota font-medium">
               Allega un documento
             </label>
             <Input
@@ -133,13 +133,13 @@ export function Evidenze({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label htmlFor={`dal-${istanzaId}`} className="text-[11px] text-muted-foreground">
+              <label htmlFor={`dal-${istanzaId}`} className="text-nota text-muted-foreground">
                 Valido dal
               </label>
               <Input id={`dal-${istanzaId}`} type="date" name="validoDal" className="mt-1 h-8 text-xs" />
             </div>
             <div>
-              <label htmlFor={`al-${istanzaId}`} className="text-[11px] text-muted-foreground">
+              <label htmlFor={`al-${istanzaId}`} className="text-nota text-muted-foreground">
                 Valido fino al
               </label>
               <Input id={`al-${istanzaId}`} type="date" name="validoAl" className="mt-1 h-8 text-xs" />
@@ -148,7 +148,7 @@ export function Evidenze({
           <Button type="submit" size="sm" disabled={caricando} className="h-8 text-xs">
             {caricando ? "Caricamento…" : "Allega"}
           </Button>
-          <p className="text-[10px] leading-relaxed text-faint-foreground">
+          <p className="text-micro leading-relaxed text-muted-foreground">
             PDF, immagini e documenti Office fino a 25 MB. Il tipo si verifica dal contenuto, non
             dall&apos;estensione.
           </p>
@@ -156,12 +156,12 @@ export function Evidenze({
       ) : null}
 
       {errore ? (
-        <p role="alert" className="text-[11px] leading-relaxed text-scaduta">
+        <p role="alert" className="text-nota leading-relaxed text-scaduta">
           {errore}
         </p>
       ) : null}
       {carica?.ok ? (
-        <p role="status" className="flex items-center gap-1.5 text-[11px] text-regolare">
+        <p role="status" className="flex items-center gap-1.5 text-nota text-regolare">
           <FileCheck2 className="size-3.5" aria-hidden />
           {carica.nomeFile} allegato.
         </p>

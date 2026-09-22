@@ -43,6 +43,20 @@
       "when": 1785768604322,
       "tag": "0005_perfect_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789731612205,
+      "tag": "0006_flowery_wind_dancer",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789736384686,
+      "tag": "0007_eminent_mattie_franklin",
+      "breakpoints": true
     }
   ]
 }

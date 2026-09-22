@@ -3,7 +3,13 @@
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Copy, KeyRound, UserPlus } from "lucide-react";
-import { cambiaRuolo, creaUtente, reimpostaPassword, type EsitoUtente } from "@/features/utenti/azioni";
+import {
+  cambiaRuolo,
+  creaUtente,
+  invitaCollega,
+  reimpostaPassword,
+  type EsitoUtente,
+} from "@/features/utenti/azioni";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -41,16 +47,21 @@ export function GestioneUtenti({
     cambiaRuolo,
     null,
   );
+  const [invito, azioneInvita, invitando] = useActionState<EsitoUtente | null, FormData>(invitaCollega, null);
   const [reset, azioneReset, reimpostando] = useActionState<EsitoUtente | null, FormData>(
     reimpostaPassword,
     null,
   );
   const [copiato, setCopiato] = useState(false);
 
-  const consegna = creazione?.ok ? creazione : reset?.ok ? reset : null;
+  // La consegna e' il riquadro con la password da leggere una volta sola: riguarda solo i
+  // due esiti che una password ce l'hanno. Un invito non ne produce nessuna.
+  const consegna =
+    creazione?.ok && "password" in creazione ? creazione : reset?.ok && "password" in reset ? reset : null;
   const errore =
     (creazione && !creazione.ok && creazione.errore) ||
     (ruolo && !ruolo.ok && ruolo.errore) ||
+    (invito && !invito.ok && invito.errore) ||
     (reset && !reset.ok && reset.errore) ||
     null;
   const precedenti = creazione && !creazione.ok ? creazione.valori : undefined;
@@ -78,7 +89,7 @@ export function GestioneUtenti({
               <TableRow key={u.id} className="h-riga-comoda border-b border-border-subtle last:border-0">
                 <TableCell className="px-3 py-1.5 text-sm font-medium">
                   {u.nome}
-                  {u.io ? <span className="ml-2 text-[10px] text-faint-foreground">(tu)</span> : null}
+                  {u.io ? <span className="ml-2 text-micro text-muted-foreground">(tu)</span> : null}
                 </TableCell>
                 <TableCell className="px-3 py-1.5 font-mono text-xs text-muted-foreground">
                   {u.email}
@@ -157,6 +168,56 @@ export function GestioneUtenti({
             Non viene registrata da nessuna parte. Se la perdi, reimpostala.
           </p>
         </div>
+      ) : null}
+
+      {invito?.ok && "invitato" in invito ? (
+        <div className="pannello border-l-4 border-l-[var(--regolare)] p-5">
+          <p className="text-sm">
+            Invito inviato a <strong>{invito.invitato}</strong>. Scade fra sette giorni.
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            La password se la sceglie chi accetta: non passa da qui e non c&apos;è niente da consegnare a
+            voce.
+          </p>
+        </div>
+      ) : null}
+
+      {modificabile ? (
+        <form action={azioneInvita} className="pannello space-y-3 p-5">
+          <p className="text-xs font-semibold tracking-[0.09em] uppercase">Invita un collega</p>
+          <p className="text-muted-foreground max-w-prose text-sm">
+            Arriva una mail con un collegamento: la password se la sceglie chi accetta. È la via preferibile —
+            una password che non è mai passata per le mani di qualcun altro non va cambiata al primo accesso.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-1.5">
+              <label htmlFor="i-email" className="text-xs font-medium">
+                Indirizzo di posta
+              </label>
+              <Input id="i-email" name="email" type="email" required placeholder="mario@studio.it" />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="i-ruolo" className="text-xs font-medium">
+                Ruolo
+              </label>
+              <select
+                id="i-ruolo"
+                name="ruolo"
+                defaultValue="consulente"
+                className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm"
+              >
+                <option value="viewer">Sola lettura</option>
+                <option value="consulente">Consulente</option>
+                <option value="admin">Amministratore</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <Button type="submit" variant="outline" disabled={invitando}>
+                {invitando ? "Invio…" : "Invia invito"}
+              </Button>
+            </div>
+          </div>
+        </form>
       ) : null}
 
       {modificabile ? (

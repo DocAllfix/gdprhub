@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, Scale, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, CalendarClock, FileText, Scale, SlidersHorizontal, ToggleLeft } from "lucide-react";
+import { Vuoto } from "@/components/ui/vuoto";
 import {
   DOMINI,
   ETICHETTE_DOMINIO,
@@ -57,7 +58,7 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
 
       <header className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="titolo text-[1.7rem]">{a.nome}</h1>
+          <h1 className="titolo text-titolo">{a.nome}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {[a.settore, a.sede, a.piva ? `P.IVA ${a.piva}` : null].filter(Boolean).join(" · ") ||
               "Nessun dato anagrafico registrato."}
@@ -65,12 +66,12 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
         </div>
         {complessiva?.percentuale !== null && complessiva !== null ? (
           <div className="text-right">
-            <p className="cifra text-[2.1rem]">{complessiva.percentuale}%</p>
+            <p className="cifra text-cifra">{complessiva.percentuale}%</p>
             <p className="text-xs text-muted-foreground">
               conformità effettiva · {complessiva.numeratore}/{complessiva.applicabili}
             </p>
             {esp ? (
-              <p className="mt-0.5 text-[10px] text-faint-foreground">
+              <p className="mt-0.5 text-micro text-muted-foreground">
                 esposizione {esp.indice}/100 · {esp.giudizio.toLowerCase()}
               </p>
             ) : null}
@@ -111,7 +112,7 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
             Reati presupposto
           </Link>
         ) : null}
-        <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
+        <p className="max-w-md text-nota leading-relaxed text-muted-foreground">
           Il documento che si consegna. Congela i numeri del giorno in cui è generato: se i dati cambiano non
           cambia, se ne genera uno nuovo.
         </p>
@@ -131,7 +132,7 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
         <section className="mt-8">
           <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-sm font-semibold tracking-tight">Registri</h2>
-            <p className="max-w-xl text-[11px] leading-relaxed text-muted-foreground">
+            <p className="max-w-xl text-nota leading-relaxed text-muted-foreground">
               Gli adempimenti si fanno a scadenza; i registri raccolgono fatti che accadono quando accadono.
               Una violazione dei dati non ha una periodicità: ha 72 ore.
             </p>
@@ -159,23 +160,26 @@ export default async function PaginaAzienda({ params }: { params: Promise<{ id: 
           {c ? (
             <p className="text-xs">
               <span className="text-scaduta">{c.Scaduta} scadute</span>
-              <span className="text-faint-foreground"> · </span>
+              <span className="text-muted-foreground"> · </span>
               <span className="text-imminente">{c["In scadenza"]} in scadenza</span>
-              <span className="text-faint-foreground"> · </span>
+              <span className="text-muted-foreground"> · </span>
               <span className="text-regolare">{c.Regolare} regolari</span>
             </p>
           ) : null}
         </div>
 
         {attivi.length === 0 ? (
-          <p className="rounded-md border border-dashed border-border-strong bg-surface px-6 py-10 text-center text-sm text-muted-foreground">
-            Nessun modulo attivo. Attivane uno qui sopra per creare gli adempimenti del catalogo.
-          </p>
+          <Vuoto icona={ToggleLeft} titolo="Nessun modulo attivo">
+            Attivane uno qui sopra: gli adempimenti del catalogo per quel decreto vengono creati
+            subito, e da lì in poi questa pagina mostra le loro scadenze.
+          </Vuoto>
         ) : righe.length === 0 ? (
-          <p className="rounded-md border border-dashed border-border-strong bg-surface px-6 py-10 text-center text-sm text-muted-foreground">
-            Nessun adempimento con una scadenza da presidiare. I presidi continui e quelli mai programmati non
-            compaiono in agenda: appartengono all&apos;assessment, che arriva con la fase successiva.
-          </p>
+          // IL TESTO DICEVA «che arriva con la fase successiva», che era copy di sviluppo
+          // rimasto in produzione: l'assessment c'è da tempo, e ora questo vuoto ci porta.
+          <Vuoto icona={CalendarClock} titolo="Niente in agenda">
+            Nessun adempimento ha una scadenza da presidiare. I presidi continui e quelli mai
+            programmati non compaiono qui: si lavorano nell&apos;assessment di ciascun modulo.
+          </Vuoto>
         ) : (
           <TabellaAdempimenti righe={righe} mostraDominio={attivi.length > 1} />
         )}

@@ -63,14 +63,14 @@ export default async function PaginaReati({ params }: { params: Promise<{ id: st
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
             D.Lgs 231/2001
           </p>
-          <h1 className="titolo mt-1.5 text-[1.7rem]">Reati presupposto</h1>
+          <h1 className="titolo mt-1.5 text-titolo">Reati presupposto</h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Non l&apos;elenco degli adempimenti, ma la domanda che si fa un Organismo di Vigilanza: quali
             famiglie di reato sono presidiate, e da cosa. Un presidio completato ma scaduto non presidia.
           </p>
         </div>
         <div className="text-right">
-          <p className={cn("cifra text-[2.1rem] leading-none", scoperte.length > 0 && "text-scaduta")}>
+          <p className={cn("cifra text-cifra leading-none", scoperte.length > 0 && "text-scaduta")}>
             {scoperte.length}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -113,7 +113,7 @@ export default async function PaginaReati({ params }: { params: Promise<{ id: st
                 <span className="font-mono text-xs text-muted-foreground">{c.famiglia.articolo}</span>
                 <span className="text-sm font-medium">{c.famiglia.titolo}</span>
                 {c.famiglia.interdittive ? (
-                  <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">
+                  <span className="rounded border border-border px-1.5 py-0.5 font-mono text-micro tracking-wide text-muted-foreground uppercase">
                     interdittive
                   </span>
                 ) : null}
@@ -123,12 +123,12 @@ export default async function PaginaReati({ params }: { params: Promise<{ id: st
               </div>
 
               {c.famiglia.nota ? (
-                <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{c.famiglia.nota}</p>
+                <p className="mt-2 text-nota leading-relaxed text-muted-foreground">{c.famiglia.nota}</p>
               ) : null}
 
               {c.scoperti.length > 0 ? (
                 <div className="mt-2.5 border-t border-border-subtle pt-2.5">
-                  <p className="text-[11px] font-medium text-scaduta">
+                  <p className="text-nota font-medium text-scaduta">
                     Presìdi non in ordine — fatti ma scaduti, o mai fatti
                   </p>
                   <ul className="mt-1.5 space-y-1">
@@ -136,7 +136,7 @@ export default async function PaginaReati({ params }: { params: Promise<{ id: st
                       const [dominio, codice] = s.split(":") as [(typeof DOMINI)[number], string];
                       const t = templatePerCodice(dominio, codice);
                       return (
-                        <li key={s} className="flex flex-wrap items-baseline gap-2 text-[11px]">
+                        <li key={s} className="flex flex-wrap items-baseline gap-2 text-nota">
                           <Link
                             href={`/azienda/${id}/${dominio}?q=${codice}`}
                             className="font-mono text-muted-foreground underline hover:text-foreground"
@@ -158,14 +158,14 @@ export default async function PaginaReati({ params }: { params: Promise<{ id: st
       {senzaPresidi.length > 0 ? (
         <section className="mt-6">
           <h2 className="text-sm font-semibold tracking-tight">Famiglie senza presìdi censiti</h2>
-          <p className="mt-1 max-w-3xl text-[11px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 max-w-3xl text-nota leading-relaxed text-muted-foreground">
             Nessun adempimento dei moduli attivi presidia queste famiglie. Non significa che l&apos;ente non
             ne risponda: significa che il modello, per come è censito qui, non dichiara come le presidia. È
             una domanda da portare in riunione, non un risultato.
           </p>
           <ul className="mt-2 space-y-1">
             {senzaPresidi.map((c) => (
-              <li key={c.famiglia.articolo} className="flex flex-wrap items-baseline gap-2 text-[11px]">
+              <li key={c.famiglia.articolo} className="flex flex-wrap items-baseline gap-2 text-nota">
                 <span className="font-mono text-muted-foreground">{c.famiglia.articolo}</span>
                 <span>{c.famiglia.titolo}</span>
               </li>
@@ -174,7 +174,7 @@ export default async function PaginaReati({ params }: { params: Promise<{ id: st
         </section>
       ) : null}
 
-      <p className="mt-6 max-w-3xl text-[11px] leading-relaxed text-faint-foreground">
+      <p className="mt-6 max-w-3xl text-nota leading-relaxed text-muted-foreground">
         La mappa copre le famiglie che i cataloghi di questa suite presidiano davvero, non l&apos;intero arco
         degli artt. 24 – 25-duodevicies. Dichiarare una copertura totale sarebbe l&apos;affermazione più
         costosa che questo strumento possa fare: è esattamente quella su cui un ente si difenderebbe ai sensi

@@ -1,0 +1,42 @@
+# MODELLO — non viene letto da Gatus finche' si chiama cosi'.
+#
+# `monitor-add.sh` ne produce uno per cliente sostituendo __SLUG__ e __DOMINIO__.
+# Due sonde, che guardano cose diverse e non si sostituiscono a vicenda.
+
+endpoints:
+  # ── 1. DA FUORI ────────────────────────────────────────────────────────────────────────
+  # Vede la VPS spenta, il DNS scaduto, il certificato non rinnovato, il proxy caduto.
+  # Interroga `/api/health`, che TOCCA IL DATABASE: un «ok» qui significa che l'istanza puo'
+  # SERVIRE, non solo che il processo e' vivo.
+  - name: __SLUG__
+    group: istanze
+    url: "https://__DOMINIO__/api/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      # La parola chiave e non solo il codice: la rotta risponde 503 con `degradato` quando
+      # il database e' irraggiungibile, e un 200 con un corpo diverso non e' salute.
+      - "[BODY].stato == ok"
+      - "[BODY].studi == ok"
+      # Il certificato scade fra piu' di tre settimane. Caddy rinnova da solo finche' puo':
+      # quando smette — porta 80 chiusa, DNS spostato — non lo dice.
+      - "[CERTIFICATE_EXPIRATION] > 504h"
+    alerts:
+      - type: telegram
+
+  # ── 2. IL SILENZIO ─────────────────────────────────────────────────────────────────────
+  # `sentinella.sh` spinge qui ogni cinque minuti da dentro la VPS. Questa sonda non chiede
+  # niente a nessuno: aspetta. Se il battito non arriva entro quindici minuti, allarma.
+  #
+  # E' l'unica che vede il cron morto, il disco che si sta riempiendo, il backup che non
+  # parte piu' e il container che si riavvia ogni due minuti. Una VPS spenta non manda
+  # eccezioni: solo l'ASSENZA la segnala.
+  - name: __SLUG__-battito
+    group: battiti
+    enabled: true
+    interval: 15m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].livello != critico"
+    alerts:
+      - type: telegram

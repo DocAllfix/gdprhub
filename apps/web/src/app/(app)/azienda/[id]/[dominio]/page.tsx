@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ClipboardList, ToggleLeft } from "lucide-react";
+import { Vuoto } from "@/components/ui/vuoto";
 import { DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
 import { assessmentDi } from "@/features/assessment/dati";
 import { TabellaAssessment } from "@/components/assessment/tabella";
@@ -22,10 +23,16 @@ export async function generateMetadata({
 
 export default async function PaginaAssessment({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string; dominio: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id, dominio } = await params;
+  const cerca = await searchParams;
+  // Solo i due assi: sono i filtri che la matrice imposta con un clic. Gli altri cambiano
+  // dentro la tabella con `replaceState`, senza navigazione, e non devono rimontarla.
+  const chiaveAssi = `${cerca.lavoro ?? ""}|${cerca.scadenza ?? ""}`;
   if (!eDominio(dominio)) notFound();
 
   const dati = await assessmentDi(id, dominio);
@@ -49,7 +56,7 @@ export default async function PaginaAssessment({
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
             {etichetta.norma}
           </p>
-          <h1 className="titolo mt-1 text-[1.7rem]">{etichetta.esteso}</h1>
+          <h1 className="titolo mt-1 text-titolo">{etichetta.esteso}</h1>
         </div>
         {"misure" in dati && dati.misure ? (
           <div className="flex flex-wrap items-end gap-6 text-right">
@@ -90,22 +97,55 @@ export default async function PaginaAssessment({
 
       <div className="mt-5">
         {!attivo ? (
-          <p className="rounded-md border border-dashed border-border-strong bg-surface px-6 py-10 text-center text-sm text-muted-foreground">
-            Il modulo {etichetta.breve} non è attivo per questa azienda.{" "}
-            <Link href={`/azienda/${id}`} className="underline">
-              Attivalo dalla scheda
-            </Link>{" "}
-            per vedere e lavorare i suoi adempimenti.
-          </p>
+          <Vuoto
+            icona={ToggleLeft}
+            titolo={`Il modulo ${etichetta.breve} non è attivo`}
+            azione={
+              <Link
+                href={`/azienda/${id}`}
+                className="inline-flex items-center rounded-md border border-border bg-surface px-3 py-1.5 text-sm hover:bg-accent"
+              >
+                Attivalo dalla scheda dell&apos;azienda
+              </Link>
+            }
+          >
+            Finché il modulo è spento, per questa azienda non esistono adempimenti{" "}
+            {etichetta.breve}: attivandolo vengono creati dal catalogo, con le loro scadenze.
+          </Vuoto>
         ) : righe.length === 0 ? (
-          <p className="rounded-md border border-dashed border-border-strong bg-surface px-6 py-10 text-center text-sm text-muted-foreground">
-            Nessun adempimento censito per questo modulo.
-          </p>
+          // ERA IL VUOTO PEGGIORE DEL PRODOTTO: sette parole in un riquadro tratteggiato,
+          // senza dire se fosse normale né cosa fare. Un vicolo cieco.
+          <Vuoto
+            icona={ClipboardList}
+            titolo="Nessun adempimento censito"
+            azione={
+              <Link
+                href={`/azienda/${id}`}
+                className="inline-flex items-center rounded-md border border-border bg-surface px-3 py-1.5 text-sm hover:bg-accent"
+              >
+                Torna alla scheda dell&apos;azienda
+              </Link>
+            }
+          >
+            Il modulo è attivo ma non contiene adempimenti: di solito vuol dire che è stato
+            disattivato e riattivato, perché spegnendolo le sue righe vengono rimosse. Riattivarlo
+            dalla scheda li ricrea dal catalogo.
+          </Vuoto>
         ) : (
           // `useSearchParams` richiede un confine di sospensione: senza, la pagina
           // rinuncerebbe alla generazione statica di tutto ciò che le sta sopra.
           <Suspense fallback={<p className="text-sm text-muted-foreground">Caricamento…</p>}>
-            <TabellaAssessment righe={righe} modificabile={ctx.ruolo !== "viewer"} />
+            {/* LA CHIAVE SERVE, e senza la matrice non filtrerebbe niente.
+                `useFiltriUrl` legge l'indirizzo UNA volta, al montaggio. Un collegamento alla
+                stessa pagina con una query diversa è una navigazione che NON rimonta il
+                componente: la tabella resterebbe con i filtri di prima, e il clic sulla cella
+                cambierebbe l'indirizzo senza cambiare le righe. La chiave sui due assi la
+                rimonta proprio e solo quando la matrice li cambia. */}
+            <TabellaAssessment
+              key={chiaveAssi}
+              righe={righe}
+              modificabile={ctx.ruolo !== "viewer"}
+            />
           </Suspense>
         )}
       </div>
@@ -138,12 +178,12 @@ function DueAssi({ griglia }: { griglia: Readonly<Record<string, Readonly<Record
       <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
         <div className="max-w-md">
           <h2 className="text-sm font-semibold tracking-tight">I due assi</h2>
-          <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-nota leading-relaxed text-muted-foreground">
             Lo stato del lavoro lo decidi tu; lo stato della scadenza lo decide la data. Sono due cose diverse
             e vanno lette insieme.
           </p>
           {critica > 0 ? (
-            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-nota leading-relaxed text-muted-foreground">
               <b className="text-scaduta">{critica}</b>{" "}
               {critica === 1 ? "adempimento risulta" : "adempimenti risultano"} <b>completat</b>
               {critica === 1 ? "o" : "i"} e nondimeno <b>scadut</b>
@@ -151,7 +191,7 @@ function DueAssi({ griglia }: { griglia: Readonly<Record<string, Readonly<Record
               frequente e la più pericolosa, perché il registro dice «fatto».
             </p>
           ) : (
-            <p className="mt-2 text-[11px] leading-relaxed text-faint-foreground">
+            <p className="mt-2 text-nota leading-relaxed text-muted-foreground">
               Nessun adempimento completato risulta scaduto: i cicli chiusi sono tutti ancora validi.
             </p>
           )}
@@ -159,10 +199,10 @@ function DueAssi({ griglia }: { griglia: Readonly<Record<string, Readonly<Record
 
         <table className="text-xs">
           <thead>
-            <tr className="text-faint-foreground">
+            <tr className="text-muted-foreground">
               <th className="pr-3 text-left font-normal" />
               {colonne.map((c) => (
-                <th key={c} className="px-2 text-right text-[10px] font-normal">
+                <th key={c} className="px-2 text-right text-micro font-normal">
                   {c.toLowerCase()}
                 </th>
               ))}
@@ -176,17 +216,28 @@ function DueAssi({ griglia }: { griglia: Readonly<Record<string, Readonly<Record
                   const n = griglia[r]?.[c] ?? 0;
                   const allarme = r === "Completata" && c === "Scaduta" && n > 0;
                   return (
-                    <td
-                      key={c}
-                      className={`px-2 text-right font-mono tabular-nums ${
-                        allarme
-                          ? "font-semibold text-scaduta"
-                          : n === 0
-                            ? "text-faint-foreground"
-                            : "text-foreground"
-                      }`}
-                    >
-                      {n || "·"}
+                    <td key={c} className="px-0.5 text-right">
+                      {/* LA MATRICE ERA INERTE, ed era la tesi del prodotto. «Completata e
+                          scaduta» — il documento fu redatto, il ciclo è scaduto — è la
+                          situazione che PRODUCT.md chiama il problema di design centrale, e
+                          stava in una cella che non portava da nessuna parte, a pochi
+                          centimetri da una tabella con i filtri già nell'indirizzo.
+                          Una cella vuota non è un collegamento: portare a una tabella senza
+                          righe sarebbe un clic che promette e non mantiene. */}
+                      {n > 0 ? (
+                        <Link
+                          href={`?lavoro=${encodeURIComponent(r)}&scadenza=${encodeURIComponent(c)}`}
+                          scroll={false}
+                          aria-label={`${n} adempimenti ${r.toLowerCase()} con scadenza ${c.toLowerCase()}: mostrali`}
+                          className={`inline-block rounded-xs px-1.5 font-mono tabular-nums underline-offset-2 hover:bg-accent hover:underline ${
+                            allarme ? "font-semibold text-scaduta" : "text-foreground"
+                          }`}
+                        >
+                          {n}
+                        </Link>
+                      ) : (
+                        <span className="inline-block px-1.5 font-mono text-muted-foreground tabular-nums">·</span>
+                      )}
                     </td>
                   );
                 })}
@@ -213,8 +264,8 @@ function Cifra({
   return (
     <div>
       <p className={`cifra text-2xl ${tinta ?? ""}`}>{valore}</p>
-      <p className="text-[10px] text-muted-foreground">{etichetta}</p>
-      <p className="font-mono text-[10px] text-faint-foreground">{nota}</p>
+      <p className="text-micro text-muted-foreground">{etichetta}</p>
+      <p className="font-mono text-micro text-muted-foreground">{nota}</p>
     </div>
   );
 }

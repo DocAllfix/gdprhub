@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { SearchX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { VuotoFiltro } from "@/components/ui/vuoto";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import type { AdempimentoRisolto, Dominio } from "@gdpr/engine";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -166,9 +169,20 @@ export function TabellaAdempimenti({
         </span>
       </div>
 
-      <div className="pannello overflow-clip">
+      {/* L'INTESTAZIONE SI FISSA ALLA FINESTRA, e perché qui non ci sia più un contenitore
+          con overflow da 'lg' in su è la parte che si dimentica: 'position: sticky' si àncora
+          al più vicino antenato che scorre, e un 'overflow-x-auto' ne crea uno anche quando
+          non si vede scorrere. È il difetto già incontrato in F5d e scritto in DESIGN.md.
+
+          Sotto 'lg' l'overflow resta, perché lì la tabella non ci sta in larghezza e lo
+          scorrimento orizzontale serve davvero: a quelle larghezze l'intestazione fissata
+          vale poco, perché di righe se ne vedono comunque poche.
+
+          MISURATO, non supposto: con la scatola di scorrimento si vedevano 14 righe
+          sull'assessment e 10 sullo scadenzario; così se ne vedono 24. DESIGN.md ne chiede 22. */}
+      <div className="pannello overflow-clip lg:overflow-visible">
         <Table>
-          <TableHeader className="bg-surface-sunken">
+          <TableHeader className="bg-surface-sunken lg:sticky lg:top-0 lg:z-10 lg:[&_th]:bg-surface-sunken">
             <TableRow className="border-b border-border-strong hover:bg-transparent">
               {colonne.map((c) => {
                 const attiva = ordine?.chiave === c.chiave;
@@ -203,12 +217,18 @@ export function TabellaAdempimenti({
           <TableBody>
             {visibili.length === 0 ? (
               <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={colonne.length}
-                  className="h-24 text-center text-sm text-muted-foreground"
-                >
-                  {/* Un empty state dice COSA sta escludendo, non «nessun risultato». */}
-                  Nessun adempimento corrisponde a «{filtro}».
+                <TableCell colSpan={colonne.length} className="p-0">
+                  {/* Diceva già COSA stava escludendo, che è la metà difficile. Mancava
+                      l'altra: il modo di smettere, senza risalire al campo di ricerca. */}
+                  <VuotoFiltro
+                    icona={SearchX}
+                    filtri={[`il testo «${filtro}»`]}
+                    azzera={
+                      <Button variant="outline" size="sm" onClick={() => setFiltro("")}>
+                        Azzera la ricerca
+                      </Button>
+                    }
+                  />
                 </TableCell>
               </TableRow>
             ) : (

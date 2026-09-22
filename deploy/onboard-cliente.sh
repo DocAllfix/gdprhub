@@ -14,7 +14,7 @@
 #   DOMINIO_BASE   default compliancedesk.it
 #   ADMIN_EMAIL    email del referente del cliente (obbligatoria: è l'utenza di accesso)
 #   ADMIN_NOME     nome del referente
-#   NOME_STUDIO    ragione sociale dello studio, compare nella barra e sulle relazioni
+#   STUDIO_NOME    ragione sociale dello studio, compare nella barra e sulle relazioni
 #
 # Adattato da `WhistleBlower/deploy/onboard-client.sh`. Differenze: un dominio solo invece
 # di due, e la verifica finale controlla anche `X-Robots-Tag`, che lì non serviva e qui sì.
@@ -76,13 +76,36 @@ AUTH_SECRET=$(casuale 32)
 ADMIN_EMAIL=$ADMIN_EMAIL
 ADMIN_PASSWORD=$(casuale 12)
 ADMIN_NOME=${ADMIN_NOME:-Amministratore}
-NOME_STUDIO=${NOME_STUDIO:-Studio}
+STUDIO_NOME=${STUDIO_NOME:-Studio}
 
-RICHIEDI_CAMBIO_PASSWORD=false
+RICHIEDI_CAMBIO_PASSWORD=true
 ISTANZA_MODO=cliente
+
+# La posta. Si eredita dall'ambiente di chi lancia l'onboarding, come nel riferimento — ma
+# qui l'assenza si SEGNALA invece di passare inosservata: senza, le mail restano in coda e
+# nessuno puo' recuperare la propria password.
+SMTP_HOST=${SMTP_HOST:-}
+SMTP_PORT=${SMTP_PORT:-587}
+SMTP_USER=${SMTP_USER:-}
+SMTP_PASSWORD=${SMTP_PASSWORD:-}
+SMTP_MITTENTE=${SMTP_MITTENTE:-no-reply@${DOMINIO_BASE}}
 EOF
 chmod 600 "$ENV_FILE"
 echo "[onboard] creato $ENV_FILE (chmod 600), segreti generati."
+
+# SENZA POSTA L'ISTANZA PARTE LO STESSO, e questo e' il problema: le mail si accodano e non
+# partono, senza un errore. Il riferimento lo lasciava scoprire al primo recupero password.
+if [ -z "${SMTP_HOST:-}" ]; then
+  echo ""
+  echo "  ATTENZIONE: nessun relay di posta configurato."
+  echo "  Recupero password e inviti NON funzioneranno: le mail resteranno in coda."
+  echo ""
+  echo "  Esporta le credenziali della casella Hostinger e rilancia:"
+  echo "    export SMTP_HOST=smtp.hostinger.com SMTP_PORT=587"
+  echo "    export SMTP_USER=ops@${DOMINIO_BASE} SMTP_PASSWORD=<password>"
+  echo "    export SMTP_MITTENTE=no-reply@${DOMINIO_BASE}"
+  echo ""
+fi
 
 IP=$(curl -fsS -4 https://ifconfig.me 2>/dev/null || hostname -I | awk '{print $1}')
 cat <<EOF

@@ -10,6 +10,53 @@ Stato di partenza: F1-F16 chiuse, cancello visivo 90/90, prova dei registri in p
 
 ---
 
+## Aggiornamento del 2026-09-19 — lavoro sulla forma
+
+**Chiuse, e verificate eseguendo:** §1.1 (la schermata del secondo fattore esiste, con tre
+difetti corretti — vedi sotto), §1.2 (gli inviti hanno un'interfaccia; la pagina dell'invito è
+rifatta come gemella di `/accedi`). Next aggiornato a **16.3.5**: due CVE critici chiusi.
+
+**⚠️ Il «90/90» qui sopra non verificava niente**, e va letto con questo in mente. Il cancello
+apriva le pagine su `127.0.0.1`; in sviluppo Next 16 blocca quell'origine e React non si
+idratava mai, quindi ogni clic cadeva su HTML senza gestori e passava. Corretto — il cancello
+ora pretende come primo controllo che la pagina sia interattiva. Dettagli in `DESIGN.md`
+§Verifica. **Da registrare in `deploy/GUASTI.md`**, che per la sessione della forma è fuori
+perimetro.
+
+### Nuove voci emerse, in ordine di peso
+
+**Il cambio cliente non esiste — decisione del committente.** Il codice lo dichiara due volte
+il comando più usato del prodotto — `components/ricerca/palette.tsx` («il secondo comando più
+usato dopo il cambio cliente») e `app/varianti/barra/page.tsx` («venti volte al giorno») — e non
+c'è. Dentro `/azienda/<id>` la barra laterale non attiva nessuna voce e il nome del cliente è un
+collegamento grigio da 12px; per cambiarlo si passa dalla palette ⌘K, che nessun elemento
+visibile annuncia, o si risale al portafoglio. È progettazione di prodotto, non vestizione: se
+si fa, si fa con il metodo di `04-stato-fasi.md` §F5d — alternative costruite e guardate.
+
+**La build di produzione ha bisogno della rete verso `fonts.googleapis.com`.** `next/font/google`
+scarica i caratteri in fase di build e poi li serve da sé, quindi la CSP resta rispettata a
+runtime — ma una build su una macchina di rilascio senza accesso a Google fallisce. Sei delle
+sette pagine che ne dipendono sono i prototipi sotto `/varianti`: rimuoverle (§5) riduce il
+problema a `app/layout.tsx`, e passare a `next/font/local` lo elimina.
+
+**Il QR del secondo fattore continua a mancare.** Oggi il segreto si presenta in base32 a gruppi
+di quattro, più un collegamento `otpauth://` che da telefono apre l'app: funziona, ma non si
+scansiona. La strada a costo zero sul bundle è un'azione di server che restituisce l'SVG; è una
+decisione sulle dipendenze.
+
+### Lavoro sulla forma — chiuso, con due voci decise in senso contrario al piano
+
+| Cosa | Esito |
+| --- | --- |
+| **Aggiornamento ottimistico sul cambio di stato**, con ricevuta | **Fatto.** La riga cambia prima della risposta del server, si blocca solo lei, le altre restano azionabili. E un difetto trovato strada facendo: **l'esito di `cambiaStato` era ignorato** — un rifiuto del server faceva tornare la riga al valore vecchio senza una parola. Ora si legge e compare. |
+| **Ordinamento** | **Fatto sullo scadenzario** (azienda, priorità, scadenza; nell'indirizzo). **Non sull'assessment**, di proposito: lì le righe sono raggruppate per categoria, e ordinare per colonna romperebbe il raggruppamento che organizza la pagina. Se serve, va progettato — non aggiunto. |
+| **Filtri del portafoglio nell'indirizzo** | **Fatto**, filtro e ordinamento. |
+| `.cresce` sulle barre | **Fatto**, e corretto: animava `flex-basis`, cioè la geometria che DESIGN.md vieta di animare. Ora anima `transform`. |
+| `.tocca` sulle schede del cruscotto | **Deciso di no.** Le tre schede sono le parti di UNA lastra; `.tocca` solleva ciò che tocca con ombra e anello, e sollevarne una la staccherebbe dalla superficie — il contrario di «un fatto in tre parti». L'effetto fatto a mano, senza ombra, è quello giusto per una parte di lastra. |
+| `Tooltip` al posto di `title=` | **Deciso di no per la conversione di massa.** Sono undici, quasi tutti su elementi che hanno già un nome accessibile; `stato.tsx` sta in ogni riga di ogni tabella e diventerebbe un componente client in sessantaquattro celle. **Chiuso invece l'unico buco vero**: il trattino «nessuna scadenza» portava il significato solo nel `title`, che i lettori di schermo non annunciano in modo affidabile. |
+
+---
+
 ## 1. Bloccano la consegna a un cliente vero
 
 ### 1.1 Attivazione del secondo fattore — **manca la schermata**

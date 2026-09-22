@@ -9,6 +9,23 @@
 # Si esegue dalla RADICE del repository: il contesto di build deve comprendere `apps/` e
 # `packages/`, e da `deploy/` non li vedrebbe.
 
+# IL NOME DEL PROGETTO SI DICHIARA, non si deduce.
+#
+# Senza questa riga Docker Compose lo ricava dalla CARTELLA che contiene il file: `deploy`.
+# Tutti e tre i prodotti della casa hanno una cartella `deploy/`, quindi per Docker erano lo
+# stesso progetto e si contendevano lo stesso spazio di nomi dei container. Non da' errore:
+# un `up` RICREA i servizi omonimi dell'altro con la propria configurazione. E' successo
+# davvero, e ha reinizializzato il database di sviluppo di un altro progetto su questa
+# macchina.
+#
+# In produzione la collisione non si presenta — una VPS, uno stack — ma si presenta su
+# qualunque macchina che ne ospiti piu' di uno: quella di chi sviluppa e quella di
+# controllo. Costa una riga.
+#
+# Serve anche al backup: `backup.sh` ricava il nome del volume delle evidenze da
+# `COMPOSE_PROJECT_NAME`, e un nome dedotto male salva una cartella vuota senza lamentarsi.
+name: gdprhub-prod
+
 services:
   db:
     image: postgres:17-alpine
@@ -51,7 +68,10 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       ADMIN_NOME: ${ADMIN_NOME}
-      NOME_STUDIO: ${NOME_STUDIO}
+      # Il nome della chiave è quello dello schema. Prima il compose passava `NOME_STUDIO` e
+      # il codice leggeva `STUDIO_NOME`: zod scartava la chiave sconosciuta senza dire niente
+      # e ogni istanza si sarebbe chiamata «Studio», slug compreso.
+      STUDIO_NOME: ${STUDIO_NOME}
     depends_on:
       db:
         condition: service_healthy
@@ -70,8 +90,16 @@ services:
       # con «Invalid origin» quando `APP_URL` non coincide con l'indirizzo da cui arrivano.
       # È il difetto che ha bloccato il committente al primo accesso sulla vetrina.
       APP_URL: https://${DOMINIO}
-      RICHIEDI_CAMBIO_PASSWORD: ${RICHIEDI_CAMBIO_PASSWORD:-false}
+      RICHIEDI_CAMBIO_PASSWORD: ${RICHIEDI_CAMBIO_PASSWORD:-true}
       ISTANZA_MODO: ${ISTANZA_MODO:-cliente}
+      # POSTA IN USCITA. Senza `SMTP_HOST` la mail si stampa e non parte: e' il driver
+      # `registro`, e su un'istanza senza relay l'invito lo dice invece di accodare un
+      # messaggio che resterebbe in coda per sempre.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_MITTENTE: ${SMTP_MITTENTE:-no-reply@compliancedesk.it}
     volumes:
       # Le evidenze documentali. Un volume, non il filesystem del contenitore: un
       # aggiornamento dell'immagine non deve portarsi via i documenti di un cliente.

@@ -121,7 +121,7 @@ export function Simulatore({
           ) : null}
         </div>
 
-        <p className="mt-4 border-t border-border-subtle pt-3 text-[11px] leading-relaxed text-faint-foreground">
+        <p className="mt-4 border-t border-border-subtle pt-3 text-nota leading-relaxed text-muted-foreground">
           È una proiezione e non si salva: chiudere un adempimento davvero si fa dall&apos;assessment,
           registrando l&apos;ultima esecuzione. Tenere memoria di uno scenario significherebbe non poter più
           distinguere ciò che è stato fatto da ciò che era stato ipotizzato.
@@ -131,7 +131,7 @@ export function Simulatore({
       <section className="pannello overflow-clip">
         <div className="border-b border-border px-5 py-3">
           <h2 className="text-sm font-semibold tracking-tight">Da dove conviene cominciare</h2>
-          <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
+          <p className="mt-0.5 text-nota leading-relaxed text-muted-foreground">
             Ordinati per rischio pesato, che è il criterio con cui l&apos;esposizione è costruita. La colonna
             «resa» è misurata simulando davvero la chiusura di quel solo adempimento, non stimata.
           </p>
@@ -161,7 +161,7 @@ export function Simulatore({
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm">{v.titolo}</span>
-                    <span className="block text-[10px] text-muted-foreground">
+                    <span className="block text-micro text-muted-foreground">
                       {v.ruolo} · {v.periodicita} · {v.scadenza ? formattaIt(v.scadenza) : "mai programmato"}
                     </span>
                   </span>
@@ -170,7 +170,7 @@ export function Simulatore({
                   </span>
                   <span className="w-16 shrink-0 text-right">
                     <span className="block font-mono text-sm font-medium tabular-nums">−{v.guadagno}</span>
-                    <span className="block text-[10px] text-faint-foreground">resa</span>
+                    <span className="block text-micro text-muted-foreground">resa</span>
                   </span>
                 </label>
               </li>
@@ -215,7 +215,7 @@ function Misura({
   return (
     <div>
       <p className="flex items-baseline gap-2">
-        <span className={cn("cifra text-[1.9rem] leading-none", cambiato && "text-muted-foreground")}>
+        <span className={cn("cifra text-cifra leading-none", cambiato && "text-muted-foreground")}>
           {prima === null ? "—" : prima}
           {prima === null ? "" : suffisso}
         </span>
@@ -224,7 +224,7 @@ function Misura({
             <ArrowRight className="size-4 shrink-0 text-faint-foreground" aria-hidden />
             <span
               className={cn(
-                "cifra text-[1.9rem] leading-none",
+                "cifra text-cifra leading-none",
                 migliorato ? "text-regolare" : "text-scaduta",
               )}
             >

@@ -64,13 +64,16 @@ function Campione({ nome, variabile }: { nome: string; variabile: string }) {
       />
       <span className="min-w-0">
         <span className="block truncate text-xs font-medium">{nome}</span>
-        <span className="block truncate font-mono text-[10px] text-faint-foreground">{variabile}</span>
+        <span className="block truncate font-mono text-micro text-muted-foreground">{variabile}</span>
       </span>
     </div>
   );
 }
 
+import { soloFuoriProduzione } from "@/lib/solo-sviluppo";
+
 export default function PaginaDesign() {
+  soloFuoriProduzione();
   const gdpr = risolti("gdpr");
   const d81 = risolti("d81");
   const scadenzario = agenda(tutti).slice(0, 22);
@@ -105,7 +108,7 @@ export default function PaginaDesign() {
             <Campione nome="GDPR · indaco" variabile="--gdpr" />
             <Campione nome="231 · prugna" variabile="--d231" />
             <Campione nome="81/08 · acciaio" variabile="--d81" />
-            <p className="pt-1 text-[10px] leading-relaxed text-faint-foreground">
+            <p className="pt-1 text-micro leading-relaxed text-muted-foreground">
               Separati in tinta <em>e</em> in luminosità: in deuteranopia le tinte collassano verso il blu e
               resta il valore a distinguerli.
             </p>
@@ -186,7 +189,7 @@ export default function PaginaDesign() {
               <div key={d} className="bg-surface p-4">
                 <div className="flex items-center justify-between">
                   <PastigliaDominio dominio={d} />
-                  <span className="text-[10px] text-faint-foreground">{ETICHETTE_DOMINIO[d].norma}</span>
+                  <span className="text-micro text-muted-foreground">{ETICHETTE_DOMINIO[d].norma}</span>
                 </div>
                 <p className="mt-3 text-2xl font-semibold tracking-tight tabular-nums">{q.percentuale}%</p>
                 <p className="text-xs text-muted-foreground">
@@ -194,7 +197,7 @@ export default function PaginaDesign() {
                 </p>
                 <p className="mt-2 text-xs">
                   <span className="text-scaduta">{c.Scaduta} scadute</span>
-                  <span className="text-faint-foreground"> · </span>
+                  <span className="text-muted-foreground"> · </span>
                   <span className="text-imminente">{c["In scadenza"]} in scadenza</span>
                 </p>
               </div>
@@ -204,10 +207,10 @@ export default function PaginaDesign() {
             <p className="text-xs font-medium text-muted-foreground">Indice di esposizione</p>
             <p className="mt-3 text-2xl font-semibold tracking-tight tabular-nums">
               {esposizione(tutti).indice}
-              <span className="text-base font-normal text-faint-foreground">/100</span>
+              <span className="text-base font-normal text-muted-foreground">/100</span>
             </p>
             <p className="text-xs text-muted-foreground">{esposizione(tutti).giudizio}</p>
-            <p className="mt-2 text-[10px] leading-relaxed text-faint-foreground">
+            <p className="mt-2 text-micro leading-relaxed text-muted-foreground">
               Indice derivato, non una cifra in euro.
             </p>
           </div>
@@ -248,7 +251,7 @@ export default function PaginaDesign() {
               className="rounded-md border border-border bg-surface px-3 py-2 text-sm hover:bg-accent"
             >
               {nome}
-              <span className="ml-2 font-mono text-xs text-faint-foreground">{pagine}</span>
+              <span className="ml-2 font-mono text-xs text-muted-foreground">{pagine}</span>
             </a>
           ))}
         </div>
@@ -256,7 +259,7 @@ export default function PaginaDesign() {
 
       <Sezione
         titolo="Tipografia"
-        nota="IBM Plex Sans per l'interfaccia, Plex Mono per i codici. Cifre tabellari ovunque: una colonna di numeri che non si allinea è il primo segnale che il prodotto non è preciso."
+        nota="Geist per l'interfaccia, Geist Mono per codici, date e cifre grandi. Cifre tabellari ovunque: una colonna di numeri che non si allinea è il primo segnale che il prodotto non è preciso."
       >
         <div className="space-y-3">
           <p className="text-2xl font-semibold tracking-tight">Relazione integrata di conformità</p>

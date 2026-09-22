@@ -30,6 +30,8 @@ screenshot/
 .vercel/
 deploy/.env.prod
 deploy/fleet.txt
+controllo/.env
+deploy/.dns-snapshot/
 
 # sistema
 .DS_Store
@@ -40,3 +42,14 @@ Thumbs.db
 # `.env.example` è l'unico file d'ambiente che va versionato (non contiene segreti).
 !.env.example
 !**/.env.example
+!deploy/.env.prod.example
+!controllo/.env.example
+
+# L'ARCHIVIO DELLE EVIDENZE NON SI VERSIONA MAI.
+#
+# `.archivio` è il percorso di ripiego dell'archivio su disco (`lib/storage/index.ts`):
+# ogni documento caricato in sviluppo — un DVR, un certificato medico, una nomina — vi
+# finisce dentro. Senza questa regola compare in `git status`, e al primo `git add -A` è
+# nella storia per sempre. Tre file di prova c'erano già.
+.archivio/
+.dati/

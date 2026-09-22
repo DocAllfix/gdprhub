@@ -53,3 +53,21 @@ Thumbs.db
 # I prototipi di partenza e la documentazione: servono all'analisi, non all'applicazione.
 archivio
 docs
+
+# L'ARCHIVIO DELLE EVIDENZE, e non basta la riga `archivio` qui sopra.
+#
+# Quella esclude la cartella `archivio/` della radice — i prototipi HTML di partenza. NON
+# esclude `apps/web/.archivio/`, che è un nome diverso in un percorso diverso: i pattern di
+# Docker confrontano il percorso relativo per intero.
+#
+# Senza queste righe i documenti caricati in sviluppo entrano nel contesto, finiscono nello
+# strato `compilato` via `COPY . .`, e **ogni immagine consegnata a un cliente conterrebbe
+# le evidenze accumulate sul portatile** — anche se lo strato finale non le copia, perché
+# gli strati sono additivi e chiunque abbia l'immagine può leggerli tutti. È lo stesso
+# ragionamento che questo file fa per i segreti, applicato ai documenti.
+#
+# Il `.gitignore` non copre questo caso: il contesto di build è il filesystem, non git.
+.archivio
+**/.archivio
+.dati
+**/.dati

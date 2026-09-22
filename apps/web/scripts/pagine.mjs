@@ -130,4 +130,41 @@ export const PAGINE = [
     atteso: "main",
   },
   { percorso: "/design", nome: "Sistema di design", fase: 5, atteso: "main" },
+
+  // --- Le schermate di confine (fase 2 del lavoro di forma, 2026-09-19) -------------------
+  //
+  // Erano state scritte per funzionare, non per essere guardate, e NESSUNA era in questo
+  // elenco: il «novanta su novanta» era vero e non copriva niente di tutto questo.
+  //
+  // `data-schermata` è un marcatore nuovo e serve proprio a ciò che dice il commento in
+  // testa: senza, l'`atteso` di queste due sarebbe `main`, che è vero su qualunque pagina
+  // renda qualcosa — cioè un controllo che non può fallire.
+  {
+    percorso: "/questa-pagina-non-esiste",
+    nome: "Pagina non trovata",
+    fase: 2,
+    // `stato` perché questa pagina risponde 404 ed è il suo mestiere. Senza, il cancello la
+    // bocciava per aver fatto esattamente ciò che deve.
+    stato: 404,
+    atteso: "[data-schermata=non-trovata]",
+  },
+  {
+    // L'IDENTIFICATIVO È FINTO APPOSTA: rende il ramo «invito non valido», che è uno stato
+    // che gli utenti incontrano davvero — un collegamento vecchio in una email vecchia — e
+    // che non richiede di seminare nulla in banca dati.
+    //
+    // ⚠️ IL RAMO VALIDO RESTA SCOPERTO, e va detto invece che lasciato intendere. Per
+    // verificarlo il cancello dovrebbe creare un invito in sospeso prima di navigare e
+    // cancellarlo dopo, come già fa con `ripristinaModuli`. È lavoro sul cancello, non su
+    // questo elenco, ed è la parte di `/invito` che conta di più.
+    percorso: "/invito/00000000-0000-0000-0000-000000000000",
+    nome: "Invito non valido o scaduto",
+    fase: 2,
+    atteso: "[data-schermata=invito-non-valido]",
+  },
+
+  // NON SONO QUI, e non per dimenticanza: `app/error.tsx`, `app/(app)/error.tsx` e
+  // `app/global-error.tsx` sono confini d'errore, e a un confine d'errore non si naviga —
+  // ci si finisce. Verificarli col cancello richiederebbe una rotta che solleva un'eccezione
+  // apposta, che in produzione sarebbe una porta aperta su niente. Restano verificati a mano.
 ];

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Building2 } from "lucide-react";
+import { Vuoto } from "@/components/ui/vuoto";
 import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
 import { portafoglio } from "@/features/portafoglio/dati";
+import { Suspense } from "react";
 import { TabellaPortafoglio } from "@/components/portafoglio/tabella";
 import { NuovaAzienda } from "@/components/portafoglio/nuova-azienda";
 
@@ -24,7 +26,7 @@ export default async function PaginaPortafoglio() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Portafoglio</p>
-          <h1 className="titolo mt-1.5 text-[1.7rem]">Aziende assistite</h1>
+          <h1 className="titolo mt-1.5 text-titolo">Aziende assistite</h1>
           <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
             Una riga per azienda, una colonna per decreto. La percentuale è la conformità effettiva: fatto{" "}
             <em>e</em> ancora valido.
@@ -67,7 +69,15 @@ export default async function PaginaPortafoglio() {
         </div>
       ) : null}
 
-      <div className="mt-3">{righe.length === 0 ? <Vuoto /> : <TabellaPortafoglio righe={righe} />}</div>
+      <div className="mt-3">{righe.length === 0 ? (
+          <VuotoPortafoglio />
+        ) : (
+          // Come assessment e scadenzario: la tabella legge i filtri dall indirizzo con
+          // `useSearchParams`, che vuole un confine di sospensione attorno.
+          <Suspense fallback={<p className="text-sm text-muted-foreground">Caricamento…</p>}>
+            <TabellaPortafoglio righe={righe} />
+          </Suspense>
+        )}</div>
     </div>
   );
 }
@@ -85,9 +95,9 @@ function Indicatore({
 }) {
   return (
     <div className="bg-surface px-4 py-3">
-      <p className={`cifra text-[1.6rem] leading-none ${tinta ?? ""}`}>{valore}</p>
+      <p className={`cifra text-cifra-sm leading-none ${tinta ?? ""}`}>{valore}</p>
       <p className="mt-1.5 text-xs text-muted-foreground">{etichetta}</p>
-      <p className="mt-0.5 text-[10px] text-faint-foreground">{nota}</p>
+      <p className="mt-0.5 text-micro text-muted-foreground">{nota}</p>
     </div>
   );
 }
@@ -106,18 +116,11 @@ function mediana(righe: readonly { conformita: { percentuale: number | null } | 
   return valori.length % 2 === 1 ? valori[meta]! : Math.round((valori[meta - 1]! + valori[meta]!) / 2);
 }
 
-function Vuoto() {
+function VuotoPortafoglio() {
   return (
-    <div className="rounded-md border border-dashed border-border-strong bg-surface px-6 py-16 text-center">
-      <Building2 className="mx-auto size-6 text-faint-foreground" aria-hidden />
-      <h2 className="mt-3 text-sm font-semibold">Il portafoglio è vuoto</h2>
-      <p className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">
-        Aggiungi la prima azienda assistita. Scegliendo i moduli, gli adempimenti dei decreti selezionati
-        vengono creati subito: {DOMINI.map((d) => ETICHETTE_DOMINIO[d].breve).join(", ")}.
-      </p>
-      <div className="mt-5 flex justify-center">
-        <NuovaAzienda />
-      </div>
-    </div>
+    <Vuoto icona={Building2} titolo="Il portafoglio è vuoto" azione={<NuovaAzienda />}>
+      Aggiungi la prima azienda assistita. Scegliendo i moduli, gli adempimenti dei decreti
+      selezionati vengono creati subito: {DOMINI.map((d) => ETICHETTE_DOMINIO[d].breve).join(", ")}.
+    </Vuoto>
   );
 }

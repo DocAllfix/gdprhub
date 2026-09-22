@@ -7,6 +7,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uuid,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { organization, user } from "./auth";
@@ -283,3 +284,45 @@ export const instanceConfig = pgTable("instance_config", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
+
+/**
+ * LA POSTA IN USCITA, e perché non parte in linea.
+ *
+ * Una mail si accoda qui dentro la STESSA transazione dell'operazione che la provoca, e un
+ * drenatore la consegna dopo. Non è una raffinatezza: è ciò che impedisce il guasto peggiore
+ * che questo prodotto possa avere.
+ *
+ * Il caso: la registrazione pubblica è chiusa (`disableSignUp: true`), quindi nessuno può
+ * rifarsi un'utenza da solo. Se un timeout SMTP facesse fallire l'invio durante un recupero
+ * password, l'utente resterebbe **chiuso fuori in modo definitivo**, e l'unico rimedio
+ * sarebbe un nostro accesso a mano al database del cliente — cioè un nostro accesso ai suoi
+ * dati per un guasto nostro.
+ *
+ * Con l'outbox l'operazione riesce o fallisce per intero, e la consegna si ritenta.
+ *
+ * È anche ciò che rende la posta SORVEGLIABILE: la sentinella guarda le righe con troppi
+ * tentativi o ferme da troppo tempo. Con l'invio in linea non ci sarebbe niente da guardare.
+ */
+export const outbox = pgTable(
+  "outbox",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    organizationId: text("organization_id").references(() => organization.id, {
+      onDelete: "cascade",
+    }),
+    destinatario: text("destinatario").notNull(),
+    oggetto: text("oggetto").notNull(),
+    corpoTesto: text("corpo_testo").notNull(),
+    corpoHtml: text("corpo_html"),
+    /** `attesa` → `inviata` | `fallita`. Una fallita non si ritenta più: va guardata. */
+    stato: text("stato", { enum: ["attesa", "inviata", "fallita"] })
+      .default("attesa")
+      .notNull(),
+    tentativi: integer("tentativi").default(0).notNull(),
+    /** L'ultimo errore, spogliato: serve a capire perché, non a rileggere il messaggio. */
+    ultimoErrore: text("ultimo_errore"),
+    creataIl: timestamp("creata_il", { withTimezone: true }).defaultNow().notNull(),
+    inviataIl: timestamp("inviata_il", { withTimezone: true }),
+  },
+  (t) => [index("outbox_stato_idx").on(t.stato, t.creataIl)],
+);

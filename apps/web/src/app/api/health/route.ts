@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { CATALOGHI, DOMINI, TUTTI_I_TEMPLATES } from "@gdpr/engine";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
+import { verificaStudioUnico } from "@/features/auth/guards";
 
 // Controllo di salute dell'istanza. Lo interrogano il collaudo di installazione, il
 // `healthcheck` di Docker e l'aggiornamento della flotta: se non risponde `ok`, il rilascio
@@ -31,11 +32,38 @@ export async function GET() {
     banca = "irraggiungibile";
   }
 
-  const sano = banca === "ok";
+  // L'ISTANZA DEVE CONTENERE UNA SOLA ORGANIZZAZIONE, e qui si verifica che sia vero.
+  //
+  // E' il presupposto su cui si regge la scelta di non usare RLS: `requireStudio()` risolve
+  // «l'unica organizzazione esistente» invece di leggerne l'identificativo dalla sessione.
+  // Se ne comparisse una seconda — un ripristino sbagliato, un seed lanciato due volte —
+  // quella query fa `limit(1)` SENZA `order by`: restituirebbe un'organizzazione non
+  // deterministica, e un utente vedrebbe i dati dell'altra.
+  //
+  // `verificaStudioUnico()` esisteva gia' in `guards.ts` ed era dichiarata come la rete di
+  // sicurezza di questa scelta. Non la chiamava NESSUNO: compariva solo nella propria
+  // definizione e in un test. Una difesa mai invocata e' una difesa che non c'e'.
+  //
+  // Si verifica QUI e non a ogni richiesta perche' questa rotta la interrogano gia' il
+  // `healthcheck` di Docker ogni trenta secondi, il collaudo d'installazione e
+  // l'aggiornamento di flotta: un'istanza in questo stato diventa «degradata», Docker smette
+  // di considerarla sana e il rilascio sulle istanze successive si ferma. E' esattamente il
+  // «fermarsi e indagare» che il commento di quella funzione chiede.
+  let studi = "ok";
+  if (banca === "ok") {
+    try {
+      await verificaStudioUnico();
+    } catch {
+      studi = "piu-di-uno";
+    }
+  }
+
+  const sano = banca === "ok" && studi === "ok";
   return Response.json(
     {
       stato: sano ? "ok" : "degradato",
       database: banca,
+      studi,
       ambiente: env.NODE_ENV,
       driver: { storage: env.STORAGE_DRIVER, pdf: env.PDF_DRIVER },
       catalogo: {

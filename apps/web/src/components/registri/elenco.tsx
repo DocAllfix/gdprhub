@@ -74,9 +74,9 @@ export function ElencoRegistro({
       <section className="pannello p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
-            <p className="font-mono text-[11px] text-muted-foreground">{def.norma}</p>
+            <p className="font-mono text-nota text-muted-foreground">{def.norma}</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{def.scopo}</p>
-            <p className="mt-2 text-[11px] text-faint-foreground">
+            <p className="mt-2 text-nota text-muted-foreground">
               <b className="text-muted-foreground">Termine:</b> {def.termine.obbligo}
               {def.termine.tipo === "ore" ? ` · entro ${def.termine.ore} ore dalla conoscenza` : null}
               {def.termine.tipo === "giorni"
@@ -85,7 +85,7 @@ export function ElencoRegistro({
             </p>
           </div>
           <div className="text-right">
-            <p className="cifra text-[1.9rem] leading-none">{voci.length}</p>
+            <p className="cifra text-cifra leading-none">{voci.length}</p>
             <p className="text-xs text-muted-foreground">
               {voci.length === 1 ? "voce" : "voci"}
               {daPresidiare > 0 ? (
@@ -137,7 +137,7 @@ export function ElencoRegistro({
                     disattenzione sposta la scadenza di giorni. Meglio obbligare a dirlo. */}
                 <Input name="conosciutoIl" type="datetime-local" required className="mt-1" />
                 {def.termine.tipo === "ore" ? (
-                  <span className="mt-1 block text-[10px] leading-relaxed text-faint-foreground">
+                  <span className="mt-1 block text-micro leading-relaxed text-muted-foreground">
                     Il termine decorre da QUI, non dal momento in cui il fatto è avvenuto: l&apos;art. 33 dice
                     «da quando ne viene a conoscenza».
                   </span>
@@ -149,7 +149,7 @@ export function ElencoRegistro({
               <label className="block sm:w-1/2">
                 <span className="text-xs font-medium">Avvenuto il (se noto)</span>
                 <Input name="avvenutoIl" type="datetime-local" className="mt-1" />
-                <span className="mt-1 block text-[10px] text-faint-foreground">
+                <span className="mt-1 block text-micro text-muted-foreground">
                   Serve alla ricostruzione dei fatti, non al calcolo del termine.
                 </span>
               </label>
@@ -195,7 +195,7 @@ export function ElencoRegistro({
                     />
                   )}
                   {c.nota ? (
-                    <span className="mt-1 block text-[10px] leading-relaxed text-faint-foreground">
+                    <span className="mt-1 block text-micro leading-relaxed text-muted-foreground">
                       {c.nota}
                     </span>
                   ) : null}
@@ -234,7 +234,7 @@ export function ElencoRegistro({
             <Link2 className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
             <div className="min-w-0 flex-1">
               <p className="text-sm leading-relaxed">{l.avviso}</p>
-              <p className="mt-1 font-mono text-[10px] text-faint-foreground">{l.norma}</p>
+              <p className="mt-1 font-mono text-micro text-muted-foreground">{l.norma}</p>
             </div>
             <Link
               href={`/azienda/${aziendaId}/registro/${l.a}`}
@@ -280,10 +280,10 @@ export function ElencoRegistro({
                   ) : null}
                   {v.termine.descrizione}
                 </span>
-                <span className="font-mono text-[11px] text-faint-foreground">n. {v.numero}</span>
+                <span className="font-mono text-nota text-muted-foreground">n. {v.numero}</span>
                 <span className="text-sm font-medium">{v.titolo}</span>
                 <span className="ml-auto flex items-center gap-2">
-                  <span className="font-mono text-[11px] text-muted-foreground">
+                  <span className="font-mono text-nota text-muted-foreground">
                     {formattaIt(v.conosciutoIl.toISOString().slice(0, 10))}
                   </span>
                   <button
@@ -305,7 +305,7 @@ export function ElencoRegistro({
                 <div className="mt-3 space-y-3 border-t border-border-subtle pt-3">
                   {v.descrizione ? <p className="text-sm leading-relaxed">{v.descrizione}</p> : null}
 
-                  <dl className="grid gap-x-6 gap-y-1.5 text-[11px] sm:grid-cols-2">
+                  <dl className="grid gap-x-6 gap-y-1.5 text-nota sm:grid-cols-2">
                     {def.campi.map((c) => {
                       const valore = v.dettagli[c.chiave];
                       if (valore === undefined || valore === "" || valore === null) return null;
@@ -321,7 +321,7 @@ export function ElencoRegistro({
                   </dl>
 
                   {v.assoltoIl ? (
-                    <p className="rounded-lg bg-surface-sunken p-3 text-[11px] leading-relaxed">
+                    <p className="rounded-lg bg-surface-sunken p-3 text-nota leading-relaxed">
                       <b>{def.termine.obbligo}</b> · {formattaIt(v.assoltoIl.toISOString().slice(0, 10))}
                       <span className="mt-1 block text-muted-foreground">{v.esito}</span>
                     </p>
@@ -337,7 +337,7 @@ export function ElencoRegistro({
                           placeholder="Come è stato assolto: a chi, quando, con quale atto"
                           className="mt-1 w-full rounded-md border border-border bg-surface px-2.5 py-2 text-sm"
                         />
-                        <span className="mt-1 block text-[10px] text-faint-foreground">
+                        <span className="mt-1 block text-micro text-muted-foreground">
                           Una spunta senza descrizione non è dimostrabile: in sede di verifica vale quanto una
                           casella vuota.
                         </span>
@@ -352,7 +352,7 @@ export function ElencoRegistro({
                   {modificabile ? (
                     <form action={azioneStato} className="flex items-center gap-2">
                       <input type="hidden" name="voceId" value={v.id} />
-                      <span className="text-[11px] text-muted-foreground">Stato</span>
+                      <span className="text-nota text-muted-foreground">Stato</span>
                       <select
                         name="stato"
                         defaultValue={v.stato}
@@ -368,7 +368,7 @@ export function ElencoRegistro({
                         Applica
                       </Button>
                       {v.apertoDa ? (
-                        <span className="ml-auto text-[10px] text-faint-foreground">
+                        <span className="ml-auto text-micro text-muted-foreground">
                           aperta da {v.apertoDa}
                         </span>
                       ) : null}

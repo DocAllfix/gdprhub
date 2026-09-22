@@ -7,6 +7,7 @@ import { requireStudio } from "@/features/auth/guards";
 import { PRODOTTO } from "@/lib/brand";
 import { FormMarchio } from "@/components/impostazioni/form-marchio";
 import { GestioneUtenti, type RigaUtente } from "@/components/impostazioni/utenti";
+import { SecondoFattore } from "@/components/impostazioni/secondo-fattore";
 
 export const metadata: Metadata = { title: "Impostazioni" };
 export const dynamic = "force-dynamic";
@@ -20,13 +21,19 @@ export default async function PaginaImpostazioni() {
   // sola non si nota; sotto il carico del cancello — novanta richieste in volo — questa è
   // l'unica che ha superato i novanta secondi di attesa. Non è la causa di quel caso
   // isolato, ma è un viaggio che non serviva fare.
-  const [versione, membri] = await Promise.all([
+  const [versione, membri, io] = await Promise.all([
     db.query.catalogVersion.findFirst({ where: eq(catalogVersion.attiva, "si") }),
     db
       .select({ id: user.id, nome: user.name, email: user.email, ruolo: member.role })
       .from(member)
       .innerJoin(user, eq(user.id, member.userId))
       .where(eq(member.organizationId, ctx.organizationId)),
+    // Lo stato del secondo fattore di chi sta guardando, non di tutti: e' una scelta
+    // personale e la si accende sulla propria utenza.
+    db.query.user.findFirst({
+      columns: { twoFactorEnabled: true },
+      where: eq(user.id, ctx.userId),
+    }),
   ]);
 
   const utenti: RigaUtente[] = membri
@@ -37,7 +44,7 @@ export default async function PaginaImpostazioni() {
     <div className="mx-auto max-w-5xl px-6 py-8">
       <header>
         <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Impostazioni</p>
-        <h1 className="titolo mt-1.5 text-[1.7rem]">Istanza e studio</h1>
+        <h1 className="titolo mt-1.5 text-titolo">Istanza e studio</h1>
       </header>
 
       <section className="mt-7">
@@ -56,6 +63,15 @@ export default async function PaginaImpostazioni() {
           al momento della creazione, e non viene registrata da nessuna parte.
         </p>
         <GestioneUtenti utenti={utenti} modificabile={ctx.ruolo === "admin"} />
+      </section>
+
+      <section className="mt-9">
+        <h2 className="text-sm font-semibold tracking-tight">Secondo fattore</h2>
+        <p className="text-muted-foreground mt-1 mb-3 max-w-prose text-sm">
+          Un codice temporaneo dal telefono, oltre alla password. Vale per la tua utenza soltanto: ogni
+          persona lo accende sulla propria.
+        </p>
+        <SecondoFattore attivo={Boolean(io?.twoFactorEnabled)} />
       </section>
 
       <section className="mt-9">

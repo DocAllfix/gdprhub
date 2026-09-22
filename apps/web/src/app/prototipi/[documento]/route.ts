@@ -1,5 +1,6 @@
 import { rendiPdf } from "@/lib/pdf";
 import { htmlPrototipo, isPrototipo, PROTOTIPI } from "@/lib/documenti/prototipi";
+import { soloFuoriProduzione } from "@/lib/solo-sviluppo";
 
 // I quattro prototipi di documento, resi al volo.
 //
@@ -23,6 +24,8 @@ export async function GET(
   richiesta: Request,
   { params }: { params: Promise<{ documento: string }> },
 ): Promise<Response> {
+  soloFuoriProduzione();
+
   const { documento } = await params;
   if (!isPrototipo(documento)) {
     return new Response(`Prototipo sconosciuto. Disponibili: ${PROTOTIPI.join(", ")}.`, { status: 404 });

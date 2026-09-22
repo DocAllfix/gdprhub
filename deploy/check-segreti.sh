@@ -22,7 +22,7 @@ echo "Controllo dei segreti"
 echo "──────────────────────────────────────────────────────────"
 
 # 1. I file che non devono esistere nell'indice di git, mai.
-for f in deploy/.env.prod deploy/fleet.txt apps/web/.env.local apps/web/.env; do
+for f in deploy/.env.prod deploy/fleet.txt controllo/.env apps/web/.env.local apps/web/.env .env.local .env; do
   if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
     segnala "$f è TRACCIATO da git"
   fi
@@ -55,6 +55,70 @@ fi
 if git grep -nI "sviluppo-non-usare-in-produzione" \
   -- ':!apps/web/src/lib/env.ts' ':!*.md' ':!deploy/check-segreti.sh' >/dev/null 2>&1; then
   segnala "il segreto di sviluppo compare fuori da env.ts"
+fi
+
+# 4-bis. L'ARCHIVIO DELLE EVIDENZE, che è il caso che questo controllo NON aveva visto.
+#
+#     Tre PDF di prova erano tracciati da git, e `.archivio` non era fra i file ignorati.
+#     È il percorso di ripiego dell'archivio su disco, quindi ogni documento caricato in
+#     sviluppo — un DVR, un certificato medico, una nomina — vi finisce dentro e sarebbe
+#     entrato nella storia al primo `git add -A`. Erano 87 byte di stub: il danno non c'era
+#     ancora, il meccanismo sì.
+if git ls-files | grep -qE '(^|/)\.archivio/'; then
+  segnala "un file sotto .archivio/ è TRACCIATO da git: è un'evidenza documentale"
+fi
+
+# 4-ter. Le passphrase lasciate come file nella radice, tracciate o no.
+#
+#     `.gitignore` non protegge da questo, perché il problema non è git: è il file. Nel
+#     progetto di riferimento un `.backup-passphrase.tmp` è rimasto nella radice, ignorato
+#     da git e leggibile da chiunque abbia accesso alla macchina.
+for f in .backup-passphrase* *passphrase*.txt *PASSPHRASE*; do
+  [ -e "$f" ] && segnala "$f nella radice: una passphrase non si tiene in un file qui"
+done
+
+# 6. CREDENZIALI NELLE TABELLE DI CONSEGNA, che il controllo 3 non vede.
+#
+#     Il controllo 3 cerca una FORMA: `CHIAVE=valore` con esadecimale lungo. Una fuga reale
+#     avvenuta nel progetto gemello FlowCRM aveva un'altra forma — una riga di tabella
+#     markdown in un documento di consegna:
+#
+#         | `mario@studio.it` | `Manutenzione2026!` |
+#
+#     Nessun `=`, nessun esadecimale, nessuna parola chiave: invisibile al controllo 3. E i
+#     nostri `CONSEGNA-CLIENTE.md` sono esattamente documenti di quella forma.
+#
+#     Il segnale è COMPOSTO: sulla stessa riga un indirizzo di posta E un valore fra apici
+#     inversi lungo almeno otto caratteri, con lettere e cifre insieme.
+#
+#     LE EMAIL SI TOLGONO PRIMA di cercare la password, e non è un dettaglio di stile:
+#     `mario@studio.it` ha lettere e cifre, quindi si segnalerebbe da solo e il controllo
+#     diventerebbe rumore che si impara a ignorare. Un cancello che grida sempre è un
+#     cancello spento. (Lezione pagata da FlowCRM al primo giro, su un file già bonificato.)
+EMAIL='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+GETTONE='`[A-Za-z0-9!@#$%^&*()_+=-]{8,}`'
+
+#     L'esito si RACCOGLIE in una variabile invece di segnalare dentro il ciclo: `grep |
+#     while` gira in una sottoshell, e lì l'incremento di `trovati` non tornerebbe indietro.
+#     Il controllo direbbe di aver trovato qualcosa e uscirebbe con zero.
+CREDENZIALI_MD=$(
+  for f in $(git ls-files '*.md' 2>/dev/null); do
+    grep -nE "$EMAIL" "$f" 2>/dev/null | while IFS= read -r riga; do
+      numero="${riga%%:*}"
+      resto=$(printf '%s' "${riga#*:}" | sed -E "s/$EMAIL//g")
+      gettone=$(printf '%s' "$resto" | grep -oE "$GETTONE" | head -1)
+      [ -n "$gettone" ] || continue
+      printf '%s' "$gettone" | grep -q '[A-Za-z]' || continue
+      printf '%s' "$gettone" | grep -q '[0-9]'   || continue
+      echo "$f:$numero"
+    done
+  done
+)
+if [ -n "$CREDENZIALI_MD" ]; then
+  echo "$CREDENZIALI_MD" | while IFS= read -r r; do
+    echo "  ✗ $r: credenziale accanto a un indirizzo di posta"
+  done
+  trovati=$((trovati + 1))
 fi
 
 # 5. Chiavi private, ovunque.

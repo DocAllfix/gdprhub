@@ -93,7 +93,7 @@ export function ElencoRelazioni({
             <Plus className="size-4" aria-hidden />
             {generando ? "Generazione…" : "Genera bozza"}
           </Button>
-          <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
+          <p className="max-w-md text-nota leading-relaxed text-muted-foreground">
             La bozza congela i numeri di oggi e si rifà quante volte serve. Pubblicandola diventa un atto: da
             quel momento il contenuto non si tocca più, nemmeno dal database.
           </p>
@@ -111,7 +111,7 @@ export function ElencoRelazioni({
           <ShieldCheck className="size-4 text-muted-foreground" aria-hidden />
           Fascicolo ispettivo
         </h2>
-        <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-1 max-w-2xl text-nota leading-relaxed text-muted-foreground">
           Si genera sul momento e riporta lo stato di oggi. Elenca gli adempimenti ordinati per articolo di
           norma — non per categoria interna — con la casella di riscontro stampata vuota e lo spazio per le
           annotazioni: chi verifica non vuole essere convinto, vuole controllare.
@@ -153,12 +153,12 @@ export function ElencoRelazioni({
                 <span className="cifra text-lg">n. {r.numero}</span>
                 <span className="text-sm font-medium">{nomeAmbito(r.ambito)}</span>
                 {r.stato === "pubblicata" ? (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-selected px-2 py-0.5 text-[11px] font-medium">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-selected px-2 py-0.5 text-nota font-medium">
                     <Lock className="size-3" aria-hidden />
                     Pubblicata
                   </span>
                 ) : (
-                  <span className="rounded-md border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+                  <span className="rounded-md border border-border px-2 py-0.5 text-nota text-muted-foreground">
                     Bozza
                   </span>
                 )}
@@ -199,7 +199,7 @@ export function ElencoRelazioni({
                 </span>
               </div>
 
-              <dl className="mt-2.5 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-muted-foreground">
+              <dl className="mt-2.5 flex flex-wrap gap-x-6 gap-y-1 text-nota text-muted-foreground">
                 <span>
                   <dt className="inline">conformità </dt>
                   <dd className="inline font-mono font-medium text-foreground tabular-nums">

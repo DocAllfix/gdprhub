@@ -55,9 +55,9 @@ export function IndiceRegistri({
                         />
                       </span>
                     </div>
-                    <p className="mt-1 font-mono text-[10px] text-faint-foreground">{r.norma}</p>
+                    <p className="mt-1 font-mono text-micro text-muted-foreground">{r.norma}</p>
                     {s && s.daPresidiare > 0 ? (
-                      <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-scaduta">
+                      <p className="mt-1.5 flex items-center gap-1 text-nota font-medium text-scaduta">
                         <AlertTriangle className="size-3.5" aria-hidden />
                         {s.daPresidiare} da presidiare
                       </p>

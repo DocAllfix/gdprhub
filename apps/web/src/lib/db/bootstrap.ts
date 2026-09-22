@@ -76,9 +76,10 @@ export async function inizializzaIstanza(): Promise<EsitoBootstrap> {
       id: randomUUID(),
       organizationId: studioId,
       profilo: "consulente",
-      // `full` è il default anche sulla vetrina: i blocchi si attivano solo su conferma
-      // esplicita del committente, cambiando questa riga e non il codice.
-      mode: "full",
+      // La modalità si decide QUI e una volta sola, alla prima installazione: dopo, la
+      // fonte è questa colonna. `ISTANZA_MODO=vetrina` scrive `demo`, che oggi non blocca
+      // niente (`assertNotDemo` è un no-op) e si attiva solo su conferma del committente.
+      mode: env.ISTANZA_MODO === "vetrina" ? "demo" : "full",
       brandNome: env.STUDIO_NOME,
       catalogVersionId: catalogo?.id ?? null,
     });

@@ -2,8 +2,14 @@
 #
 # Un solo dominio per istanza. `{$DOMINIO}` arriva da `.env.prod`; `{$CADDY_TLS}` resta
 # vuoto in produzione — e allora Caddy prende il certificato da Let's Encrypt — mentre vale
-# `internal` quando si collauda l'installazione su una macchina senza DNS pubblico, che è
-# esattamente il caso in cui si prova un ripristino da backup.
+# `tls internal` quando si collauda l'installazione su una macchina senza DNS pubblico, che
+# è esattamente il caso in cui si prova un ripristino da backup.
+#
+# LA VARIABILE CONTIENE LA DIRETTIVA INTERA, `tls internal` e non `internal`, perché qui
+# viene sostituita così com'è. Con il solo `internal` Caddy rifiuta il file con
+# «unrecognized directive: internal» e il proxy resta in crash-loop: il ripiego documentato
+# per collaudare senza DNS pubblico non ha quindi mai funzionato, e lo si scopre solo
+# alzando lo stack.
 
 {$DOMINIO} {
 	{$CADDY_TLS}

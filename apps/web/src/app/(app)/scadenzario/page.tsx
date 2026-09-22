@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CalendarClock } from "lucide-react";
+import { Vuoto } from "@/components/ui/vuoto";
 import { ETICHETTE_DOMINIO } from "@gdpr/engine";
 import { scadenzario } from "@/features/scadenzario/dati";
 import { TabellaScadenzario } from "@/components/scadenzario/tabella";
@@ -16,7 +17,7 @@ export default async function PaginaScadenzario() {
     <div className="mx-auto max-w-[1600px] px-6 py-8">
       <header>
         <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Scadenzario</p>
-        <h1 className="titolo mt-1.5 text-[1.7rem]">Cosa scade, su tutto il portafoglio</h1>
+        <h1 className="titolo mt-1.5 text-titolo">Cosa scade, su tutto il portafoglio</h1>
         <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
           Una lista sola sui tre decreti e su tutte le aziende. Un consulente non pensa «oggi faccio GDPR»:
           pensa «cosa scade questa settimana». Finora doveva aprire tre strumenti e incrociare a mano.
@@ -27,7 +28,7 @@ export default async function PaginaScadenzario() {
 
       <div className="mt-6">
         {voci.length === 0 && senzaData.length === 0 ? (
-          <Vuoto />
+          <VuotoScadenzario />
         ) : (
           // `useSearchParams` richiede un confine di sospensione.
           <Suspense fallback={<p className="text-sm text-muted-foreground">Caricamento…</p>}>
@@ -49,16 +50,16 @@ export default async function PaginaScadenzario() {
                 key={`${v.aziendaId}-${v.dominio}-${v.codice}`}
                 className="flex items-baseline gap-2 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs"
               >
-                <span className="font-mono text-[10px] text-faint-foreground">
+                <span className="font-mono text-micro text-muted-foreground">
                   {ETICHETTE_DOMINIO[v.dominio].breve} {v.codice}
                 </span>
                 <span className="min-w-0 flex-1 truncate">{v.titolo}</span>
-                <span className="truncate text-[10px] text-muted-foreground">{v.azienda}</span>
+                <span className="truncate text-micro text-muted-foreground">{v.azienda}</span>
               </li>
             ))}
           </ul>
           {senzaData.length > 24 ? (
-            <p className="mt-2 text-xs text-faint-foreground">
+            <p className="mt-2 text-xs text-muted-foreground">
               e altri {senzaData.length - 24}. L&apos;elenco completo è nell&apos;assessment di ciascun
               modulo.
             </p>
@@ -141,11 +142,11 @@ function FasciaOrizzonte({
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold tracking-tight">Orizzonte di novanta giorni</h2>
-          <p className="mt-0.5 text-[11px] text-faint-foreground">
+          <p className="mt-0.5 text-nota text-muted-foreground">
             La larghezza è quanto lavoro contiene ogni fascia, non quanto dura.
           </p>
         </div>
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-nota text-muted-foreground">
           <span className="cifra text-lg text-foreground">{totale}</span> adempimenti da presidiare
         </p>
       </div>
@@ -163,13 +164,13 @@ function FasciaOrizzonte({
               <span className={`block h-1.5 ${f.k}`} />
               <span className="block bg-surface-sunken px-2.5 py-2 group-hover:bg-surface-raised">
                 <span className={`cifra block text-xl ${f.t}`}>{f.n}</span>
-                <span className="block truncate text-[10px] text-muted-foreground">{f.e}</span>
+                <span className="block truncate text-micro text-muted-foreground">{f.e}</span>
               </span>
             </Link>
           ))}
       </div>
 
-      <div className="mt-1.5 flex text-[10px] text-faint-foreground">
+      <div className="mt-1.5 flex text-micro text-muted-foreground">
         <span style={{ width: `${(fasce[0]!.n / totale) * 100}%` }}>passato</span>
         <span className="relative -ml-3 text-foreground">
           <span className="mr-1 inline-block h-2 w-px bg-foreground align-middle" aria-hidden />
@@ -181,14 +182,22 @@ function FasciaOrizzonte({
   );
 }
 
-function Vuoto() {
+function VuotoScadenzario() {
   return (
-    <div className="rounded-md border border-dashed border-border-strong bg-surface px-6 py-16 text-center">
-      <CalendarClock className="mx-auto size-6 text-faint-foreground" aria-hidden />
-      <h2 className="mt-3 text-sm font-semibold">Nessuna scadenza da presidiare</h2>
-      <p className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">
-        Lo scadenzario si popola quando le aziende hanno moduli attivi con adempimenti censiti.
-      </p>
-    </div>
+    <Vuoto
+      icona={CalendarClock}
+      titolo="Nessuna scadenza da presidiare"
+      azione={
+        <Link
+          href="/portafoglio"
+          className="inline-flex items-center rounded-md border border-border bg-surface px-3 py-1.5 text-sm hover:bg-accent"
+        >
+          Vai al portafoglio
+        </Link>
+      }
+    >
+      Lo scadenzario raccoglie le scadenze dei tre decreti di tutte le aziende: si popola quando
+      almeno una ha un modulo attivo con adempimenti censiti.
+    </Vuoto>
   );
 }

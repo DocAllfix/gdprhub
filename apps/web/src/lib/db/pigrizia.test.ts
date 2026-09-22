@@ -20,7 +20,18 @@ describe("il client del database è pigro", () => {
     // Se l'importazione aprisse la connessione, questa riga lancerebbe.
     const modulo = await import("./index");
     expect(modulo.db).toBeDefined();
-  });
+    // IL TEMPO NON E' L'ASSERZIONE, ed e' per questo che il limite e' largo.
+    //
+    // Questa prova dice una cosa sola: che importare il modulo NON apre la connessione. Il
+    // limite predefinito di cinque secondi non misura quello — misura quanto ci mette Node a
+    // caricare a freddo drizzle, il driver Neon, `postgres` e `ws`. Su questa macchina sono
+    // due secondi a vuoto e oltre cinque mentre compila qualcos'altro, quindi la prova
+    // falliva a caso senza che niente fosse rotto.
+    //
+    // Un test che diventa rosso per il carico della macchina insegna a non guardare il
+    // rosso, ed e' esattamente il difetto che questo progetto si e' gia' annotato una volta:
+    // «la CI era rossa da almeno tre spinte e io riferivo verde».
+  }, 30_000);
 
   it("ma la prima query senza DATABASE_URL fallisce, con il messaggio che spiega dove metterla", async () => {
     vi.doMock("@/lib/env", () => ({ env: { DATABASE_URL: "" }, isVetrinaServerless: false }));
@@ -28,5 +39,5 @@ describe("il client del database è pigro", () => {
     // Toccare una qualunque proprietà forza la creazione: è il momento in cui il rifiuto
     // deve arrivare, ed è l'unica cosa che rende sicuro l'aver spostato il controllo.
     expect(() => db.query).toThrow(/DATABASE_URL mancante/);
-  });
+  }, 30_000);
 });

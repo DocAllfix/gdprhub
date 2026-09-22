@@ -51,7 +51,7 @@ export default async function PaginaAccesso() {
               >
                 <dt className="text-sm">
                   <span className="font-medium">{ETICHETTE_DOMINIO[d].esteso}</span>
-                  <span className="ml-2 font-mono text-[10px] text-sidebar-muted/80">
+                  <span className="ml-2 font-mono text-micro text-sidebar-muted/80">
                     {ETICHETTE_DOMINIO[d].norma}
                   </span>
                 </dt>

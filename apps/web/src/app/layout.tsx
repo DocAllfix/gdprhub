@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { PRODOTTO } from "@/lib/brand";
 import "./globals.css";
@@ -63,7 +64,31 @@ const SCRIPT_TEMA = `
 })();
 `;
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+// IL NONCE ARRIVA DAL MIDDLEWARE, che lo genera per ogni richiesta e lo mette nella CSP.
+//
+// Senza questo attributo lo script del tema verrebbe bloccato dalla politica e la pagina
+// comparirebbe con il tema sbagliato al primo disegno — un lampo bianco su chi ha scelto il
+// tema scuro, che non e' un guasto di sicurezza ma si vede a ogni caricamento.
+//
+// LA RESA DINAMICA SI DICHIARA, invece di ottenerla per effetto collaterale.
+//
+// Leggere le intestazioni rende il layout dinamico da sé, e finora bastava: la build mostra
+// trentacinque rotte su trentacinque dinamiche. Ma è una garanzia che dipende da una riga di
+// codice il cui scopo è un altro, e il giorno in cui qualcuno togliesse la lettura del nonce
+// — o la spostasse — tutto tornerebbe pre-renderizzabile in silenzio.
+//
+// Il sintomo non sarebbe un errore: una pagina pre-renderizzata non può portare un nonce per
+// richiesta, quindi la CSP bloccherebbe lo script del tema e il risultato è **HTTP 200 con
+// pagina bianca**, senza niente in console. È un guasto documentato da un altro prodotto di
+// questo studio, che l'ha incontrato davvero.
+//
+// Una riga toglie la dipendenza dall'effetto collaterale. Non cambia niente oggi — ed è
+// esattamente il punto: quando cambierà qualcosa, questa riga sarà ancora qui.
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="it"
@@ -71,7 +96,21 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
+        {/* `suppressHydrationWarning` QUI, e non si eredita da <html>.
+            Senza, React segnala una mancata corrispondenza di idratazione su OGNI pagina del
+            prodotto — 690 occorrenze al primo giro del cancello in cui l'idratazione avveniva
+            davvero. La causa non è un difetto nostro ed è misurata: l'HTML servito contiene il
+            nonce, ma il browser AZZERA l'attributo dopo il parsing, tenendone il valore solo
+            nella proprietà `script.nonce`. Lo impone la specifica, per impedire che un
+            selettore CSS lo esfiltri. React confronta l'attributo del DOM ("") con il valore
+            del render client (quello vero) e dichiara la differenza.
+            Sonda: attributo "" · proprietà "Imi4Cuyi2JY23fzZ…". L'unica cosa da fare è dire a
+            React di non confrontare proprio questo elemento. */}
+        <script
+          nonce={nonce}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }}
+        />
       </head>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>

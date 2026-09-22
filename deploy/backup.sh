@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Backup cifrato di un'istanza cliente.
+# Backup di un'istanza cliente, su Hetzner Storage Box, in sola aggiunta.
 #
 # COSA SALVA, e perché ognuna delle tre cose serve:
 #
@@ -7,98 +7,125 @@
 #                                registro degli eventi. È il prodotto del lavoro.
 #   2. il volume dell'archivio — le EVIDENZE documentali. Senza, il database conserva
 #                                l'impronta SHA-256 di file che non esistono più, e ogni
-#                                scaricamento fallisce: peggio di un archivio vuoto,
-#                                perché il sistema continua a dichiarare che il documento
-#                                c'è.
+#                                scaricamento fallisce: peggio di un archivio vuoto, perché
+#                                il sistema continua a dichiarare che il documento c'è.
 #   3. `deploy/.env.prod`      — contiene `AUTH_SECRET`. Perderlo non perde dati, ma
-#                                invalida ogni sessione e va rigenerato; e soprattutto
-#                                contiene la password del database, senza la quale il
-#                                dump non si ripristina.
-#
-# TUTTO CIFRATO, con GPG simmetrico. Un backup in chiaro su una macchina qualunque è un
-# secondo trattamento non censito degli stessi dati, e in un prodotto che vende conformità
-# al GDPR sarebbe una contraddizione difficile da spiegare a un ispettore.
+#                                invalida ogni sessione; e contiene la password del
+#                                database, senza la quale il dump non si ripristina.
 #
 # Uso (dalla radice del repository, tipicamente da cron):
-#   BACKUP_PASSPHRASE_FILE=/root/.compliance-backup ./deploy/backup.sh
+#   ./deploy/backup.sh
 #
-# Variabili:
-#   BACKUP_PASSPHRASE_FILE  file (chmod 600, fuori dal repository) con la passphrase
-#   BACKUP_DIR              default /var/backups/compliance
-#   GIORNI_RITENZIONE       default 30
-#   RCLONE_REMOTE           es. "b2-eu:backup/verdi" → copia fuori sede, in UE
+# `RESTIC_REPOSITORY` e `RESTIC_PASSWORD_FILE` arrivano da `/etc/cron.d/compliance-backup`,
+# scritto da `backup-init.sh`.
 #
-# I messaggi non contengono dati: nomi di file e conteggi, niente contenuti.
+# ─────────────────────────────────────────────────────────────────────────────────────────
+# PERCHÉ restic E NON PIÙ GPG + rclone
+#
+# Lo schema precedente funzionava ed era provato. Aveva un punto debole solo, e decisivo:
+# le credenziali `rclone` stavano SULLA VPS, quindi chi entrava nella VPS poteva cancellare
+# anche le copie remote. È ciò che fa il 76% dei ransomware prima di toccare i dati.
+#
+# Con restic dietro una chiave in sola aggiunta, questa macchina può SCRIVERE e non può
+# CANCELLARE. La potatura la fa la macchina di controllo, con una chiave che qui non esiste.
+#
+# In più: deduplicazione. Uno snapshot orario di un database che cambia poco costa quasi
+# niente, ed è ciò che porta l'RPO da ventiquattro ore a una.
+#
+# I messaggi non contengono dati: nomi, conteggi e byte, mai contenuti.
+# ─────────────────────────────────────────────────────────────────────────────────────────
 
-set -euo pipefail
+set -uo pipefail
 
 COMPOSE_FILE="${COMPOSE_FILE:-deploy/docker-compose.prod.yml}"
 ENV_FILE="${ENV_FILE:-deploy/.env.prod}"
-BACKUP_DIR="${BACKUP_DIR:-/var/backups/compliance}"
-GIORNI_RITENZIONE="${GIORNI_RITENZIONE:-30}"
-PASS_FILE="${BACKUP_PASSPHRASE_FILE:?Imposta BACKUP_PASSPHRASE_FILE (file con la passphrase GPG, chmod 600)}"
+BATTITO="${BATTITO_URL:-}"
 
-[ -f "$PASS_FILE" ] || { echo "ERRORE: passphrase '$PASS_FILE' non trovata" >&2; exit 1; }
-[ -f "$ENV_FILE" ] || { echo "ERRORE: '$ENV_FILE' non trovato (esegui dalla radice del repository)" >&2; exit 1; }
+: "${RESTIC_REPOSITORY:?manca RESTIC_REPOSITORY — lo imposta backup-init.sh in /etc/cron.d}"
+: "${RESTIC_PASSWORD_FILE:?manca RESTIC_PASSWORD_FILE}"
+[ -f "$RESTIC_PASSWORD_FILE" ] || { echo "ERRORE: passphrase non trovata." >&2; exit 1; }
+[ -f "$ENV_FILE" ] || { echo "ERRORE: '$ENV_FILE' non trovato (esegui dalla radice)." >&2; exit 1; }
 
 POSTGRES_USER=$(grep -E '^POSTGRES_USER=' "$ENV_FILE" | cut -d= -f2-)
 POSTGRES_DB=$(grep -E '^POSTGRES_DB=' "$ENV_FILE" | cut -d= -f2-)
+SLUG=$(grep -E '^DOMINIO=' "$ENV_FILE" | cut -d= -f2- | cut -d. -f1)
 
-TIMBRO=$(date +%F-%H%M%S)
-DEST="$BACKUP_DIR/$TIMBRO"
-mkdir -p "$DEST"
-chmod 700 "$BACKUP_DIR" "$DEST"
+dc() { docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" "$@"; }
 
-cifra() { gpg --batch --quiet --symmetric --cipher-algo AES256 --passphrase-file "$PASS_FILE" -o "$1"; }
+esito="ok"
+guasto=""
+fallisci() { esito="errore"; guasto="$1"; echo "ERRORE: $1" >&2; }
 
-echo "[backup] dump del database"
+# ── 1. Il database ───────────────────────────────────────────────────────────────────────
 # `--format=custom` e non SQL semplice: si ripristina con `pg_restore`, che sa saltare
-# oggetti e riordinare le dipendenze. Un dump testuale di uno schema con trigger e vincoli
-# incrociati va ripristinato tutto o niente.
-docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T db \
-  pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom --no-owner \
-  | cifra "$DEST/database.dump.gpg"
-
-echo "[backup] volume delle evidenze"
-# Compose antepone il nome del progetto ai volumi, e il nome del progetto è per
-# impostazione predefinita quello della cartella. Si dichiara invece di dedurlo con una
-# catena di comandi: un backup che sbaglia il nome del volume non fallisce, salva una
-# cartella vuota — ed è il modo in cui ci si accorge del problema il giorno del ripristino.
-PROGETTO="${COMPOSE_PROJECT_NAME:-$(basename "$PWD")}"
-VOLUME="${PROGETTO}_archivio"
-docker volume inspect "$VOLUME" >/dev/null 2>&1 || {
-  echo "ERRORE: volume '$VOLUME' inesistente. Imposta COMPOSE_PROJECT_NAME." >&2
-  exit 1
-}
-
-# Si legge il volume da un contenitore usa e getta invece che dal contenitore vivo: non
-# richiede che l'applicazione sia in piedi, e funziona anche mentre si sta riavviando.
-docker run --rm -v "$VOLUME":/dati:ro alpine tar -czf - -C /dati . \
-  | cifra "$DEST/archivio.tar.gz.gpg"
-
-echo "[backup] configurazione"
-cifra "$DEST/env.prod.gpg" < "$ENV_FILE"
-
-# LE IMPRONTE SI CALCOLANO SUI FILE CIFRATI, non su quelli in chiaro: servono a dire che il
-# backup è arrivato integro, e per verificarlo non si deve decifrare niente.
-( cd "$DEST" && sha256sum ./*.gpg > SHA256SUMS )
-
-echo "[backup] completato in $DEST"
-ls -la "$DEST"
-
-if [ -n "${RCLONE_REMOTE:-}" ]; then
-  echo "[backup] copia fuori sede su $RCLONE_REMOTE"
-  rclone copy "$DEST" "$RCLONE_REMOTE/$TIMBRO"
+# oggetti e riordinare le dipendenze.
+#
+# `--compress=0` NON È UNA SVISTA. Comprimendo prima di restic la deduplicazione non aggancia
+# niente e ogni snapshot diventa un blocco nuovo: si perderebbe esattamente la ragione per cui
+# restic è stato scelto. Comprime restic, e lo fa dopo aver deduplicato.
+# (Segnalazione di sistemacommercialisti.)
+echo "[backup] database"
+if ! dc exec -T db pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+      --format=custom --compress=0 --no-owner \
+   | restic backup --stdin --stdin-filename database.dump \
+       --tag database --tag "$SLUG" --host "$SLUG"; then
+  fallisci "dump del database"
 fi
 
-# La rotazione cancella per ULTIMA cosa. Farlo prima significherebbe, nel giorno in cui il
-# dump fallisce, restare senza il vecchio e senza il nuovo.
-find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 -type d -mtime "+$GIORNI_RITENZIONE" -exec rm -rf {} +
+# ── 2. Le evidenze ───────────────────────────────────────────────────────────────────────
+# Si legge il volume da un contenitore usa e getta invece che dal contenitore vivo: non
+# richiede che l'applicazione sia in piedi, e funziona anche mentre si sta riavviando.
+#
+# Il nome del volume si DICHIARA invece di dedurlo. Compose antepone il nome del progetto, e
+# un nome dedotto male non fa fallire il backup: gli fa salvare una cartella vuota, e lo si
+# scopre il giorno del ripristino. È il guasto A1 del registro, ed è successo davvero.
+echo "[backup] evidenze"
+PROGETTO="${COMPOSE_PROJECT_NAME:-gdprhub-prod}"
+VOLUME="${PROGETTO}_archivio"
+if ! docker volume inspect "$VOLUME" >/dev/null 2>&1; then
+  fallisci "volume '$VOLUME' inesistente — imposta COMPOSE_PROJECT_NAME"
+else
+  MONTATO=$(docker volume inspect "$VOLUME" --format '{{.Mountpoint}}')
+  QUANTI=$(find "$MONTATO" -type f 2>/dev/null | wc -l)
+  echo "[backup] ${QUANTI} file nell'archivio"
+  # ZERO EVIDENZE SU UN'ISTANZA VIVA È UN SEGNALE, non un'informazione. Il conteggio finisce
+  # nel battito e la sentinella lo guarda: è il modo in cui si scopre B2 prima del ripristino.
+  if ! restic backup "$MONTATO" --tag evidenze --tag "$SLUG" --host "$SLUG"; then
+    fallisci "archivio delle evidenze"
+  fi
+fi
 
-# --- Da mettere in cron ------------------------------------------------------------------
-#   0 3 * * *  cd /srv/compliance && BACKUP_PASSPHRASE_FILE=/root/.compliance-backup \
-#              ./deploy/backup.sh >> /var/log/compliance-backup.log 2>&1
+# ── 3. La configurazione ─────────────────────────────────────────────────────────────────
+echo "[backup] configurazione"
+restic backup "$ENV_FILE" --tag config --tag "$SLUG" --host "$SLUG" >/dev/null \
+  || fallisci "file di configurazione"
+
+# ── 4. Ritenzione: SI DICHIARA, NON SI APPLICA ───────────────────────────────────────────
+# `forget` qui fallirebbe — e deve fallire: la chiave di questa macchina è in sola aggiunta.
+# La potatura la fa la macchina di controllo con `controllo/prune.sh`, che ha la chiave piena.
+#
+# Se un giorno questo comando riuscisse, vorrebbe dire che l'append-only si è rotto.
+echo "[backup] ritenzione: --keep-hourly 24 --keep-daily 14 --keep-weekly 8 --keep-monthly 12"
+echo "         (la potatura la esegue la macchina di controllo)"
+
+# ── 5. Il battito ────────────────────────────────────────────────────────────────────────
+# Il `backup.sh` del progetto di riferimento fallisce in silenzio su un log che nessuno
+# legge. Qui l'esito esce dalla macchina: se non arriva un backup riuscito da due notti, la
+# sorveglianza allarma da sola, senza che nessuno debba ricordarsi di guardare.
+ULTIMO=$(restic snapshots --json --latest 1 2>/dev/null | grep -oE '"time":"[^"]+"' | head -1 | cut -d'"' -f4)
+echo "[backup] esito: ${esito}${guasto:+ — $guasto} · ultimo snapshot: ${ULTIMO:-nessuno}"
+
+if [ -n "$BATTITO" ]; then
+  curl -fsS -m 15 -X POST "$BATTITO" -H 'Content-Type: application/json' \
+    -d "{\"slug\":\"${SLUG}\",\"livello\":\"$([ "$esito" = ok ] && echo ok || echo critico)\",\"dettaglio\":\"backup ${esito} ${guasto}\",\"evidenze\":${QUANTI:-0}}" \
+    >/dev/null 2>&1 || echo "[backup] AVVISO: battito non recapitato"
+fi
+
+[ "$esito" = "ok" ] || exit 1
+
+# --- Da mettere in cron, e lo fa `backup-init.sh` ----------------------------------------
+#   0 3 * * *  cd /srv/compliance && ./deploy/backup.sh >> /var/log/compliance-backup.log 2>&1
 #
 # UN BACKUP MAI RIPRISTINATO NON È UN BACKUP. Accanto a questo va programmato
-# `restore-prova.sh`, almeno mensile: è l'unico modo di sapere che i file cifrati che si
-# stanno accumulando contengono davvero qualcosa.
+# `restore-prova.sh`, almeno mensile: è l'unico modo di sapere che gli snapshot che si stanno
+# accumulando contengono davvero qualcosa.
