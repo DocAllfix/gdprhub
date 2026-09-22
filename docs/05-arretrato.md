@@ -44,6 +44,24 @@ di quattro, più un collegamento `otpauth://` che da telefono apre l'app: funzio
 scansiona. La strada a costo zero sul bundle è un'azione di server che restituisce l'SVG; è una
 decisione sulle dipendenze.
 
+**Una connessione a Neon caduta a metà query, e il risultato è una pagina 500** *(misurato il
+2026-09-22)*. In un giro completo del cancello — 1676 richieste in quaranta minuti — la
+connessione è caduta **una volta**, alle 16:57:28, producendo due 500 (`/scadenzario` e
+`/azienda/:id/d81?q=S03`). La causa sotto è `Connection terminated unexpectedly`; l'errore
+arriva da `requireSessione`, cioè dalla **lettura della sessione**, che sta su ogni pagina
+protetta. Non c'è ritentativo: una connessione che muore diventa una schermata d'errore.
+
+**Perché non è stato corretto, e perché va comunque scritto.** Il driver che cade è quello
+serverless di Neon, su WebSocket, dentro un processo acceso da quaranta minuti — una
+combinazione che **non esiste in nessuna delle due topologie di produzione**: su Vercel i
+processi vivono pochi secondi, e sull'istanza dietro Caddy il driver è `postgres-js` su TCP,
+scelto lì proprio per questo (`lib/db/index.ts` lo spiega). Quindi la probabilità che il
+sintomo si ripresenti a un cliente è molto più bassa di 2 su 1676, ma **non è zero**, e la
+correzione — un ritentativo sugli errori di connessione transitori — sta nello strato di
+database, che è lavoro di un'altra sessione.
+
+**Da registrare in `deploy/GUASTI.md`**, che per la sessione della forma è fuori perimetro.
+
 ### Lavoro sulla forma — chiuso, con due voci decise in senso contrario al piano
 
 | Cosa | Esito |
@@ -59,28 +77,33 @@ decisione sulle dipendenze.
 
 ## 1. Bloccano la consegna a un cliente vero
 
-### 1.1 Attivazione del secondo fattore — **manca la schermata**
+### 1.1 Attivazione del secondo fattore — **c'è, manca solo il QR**
 
-Il plugin `twoFactor` di Better Auth è configurato e la schermata di accesso **sa già
-verificare un codice TOTP** (`apps/web/src/app/accedi/modulo.tsx`, riga 67). Ma non esiste
-nessuna pagina per **accenderlo**: non c'è il codice QR, non c'è la conferma, non ci sono i
-codici di recupero. Nessuno può attivarlo.
+*Riscritta il 2026-09-22: questa voce dichiarava «manca la schermata», e non è più vero.*
 
-Il piano lo dava per «forzato al primo accesso». Il committente ha tolto il cambio password
-forzato (2026-08-03), ma non ha detto niente sul secondo fattore: la lacuna è mia, non una
-sua scelta.
+`components/impostazioni/secondo-fattore.tsx` attiva il secondo fattore in tre passi
+dichiarati: password, verifica di un codice, codici di recupero. Il segreto si presenta in
+base32 a gruppi di quattro — la forma che le app di autenticazione accettano digitata — e
+l'URI `otpauth://` resta come collegamento, che da telefono apre l'app e la compila da solo.
+I codici di recupero si copiano, con conferma, e il caso «non ha funzionato» è detto invece
+che finto.
 
-**Perché blocca**: uno strumento che tiene i dati dei clienti di uno studio legale deve poter
-offrire il secondo fattore. Non offrirlo è una domanda a cui non si vuole rispondere in fase
-di vendita.
+**Resta il QR**, ed è l'unica parte mancante. La strada costa zero al bundle — un'azione di
+server che restituisce l'SVG, la libreria resta sul server — ma è una decisione sulle
+dipendenze. Chi attiva oggi digita il base32: funziona, ed è più lento.
 
-### 1.2 Inviti — **manca l'interfaccia**
+### 1.2 Inviti — **chiuso**
 
-I ruoli funzionano (titolare, consulente, sola lettura) e sono verificati lato server.
-`invitationExpiresIn` è configurato in Better Auth. Ma non esiste l'azione «invita un
-collega»: ogni utenza va creata da riga di comando sulla VPS.
+*Riscritta il 2026-09-22: questa voce dichiarava «manca l'interfaccia», e non è più vero.*
 
-**Perché blocca**: uno studio con quattro persone non può chiamarci ogni volta che assume.
+Il giro è completo in tutte e tre le parti: `invitaCollega` in `features/utenti/azioni.ts`,
+il modulo «Invita un collega» in `components/impostazioni/utenti.tsx`, e la pagina di
+accettazione `/invito/[id]` con il suo segnaposto. La mail si accoda, così un relay lento non
+fa fallire l'invito; se l'istanza non ha un relay configurato l'azione lo dice invece di
+fingere di aver spedito.
+
+**L'invito non porta una password**, ed è il suo pregio: la sceglie l'invitato accettando,
+quindi non passa mai per le mani di chi invita né per un canale da custodire.
 
 ### 1.3 F17 — l'installazione su una macchina vera
 
