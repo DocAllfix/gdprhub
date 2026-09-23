@@ -9,6 +9,7 @@ import { SelettoreTema } from "@/components/shell/tema";
 import { Guida } from "@/components/tour/guida";
 import { Palette } from "@/components/ricerca/palette";
 import { cn } from "@/lib/utils";
+import { PRODOTTO } from "@/lib/brand";
 
 // La shell. Una sola, per tutte le schermate: passando dal portafoglio al 231 cambia il
 // contenuto e l'accento, mai la disposizione. Il consulente impara l'interfaccia una volta.
@@ -261,7 +262,7 @@ export function Shell({
               <p className="truncate text-sm font-semibold tracking-tight" title={studio}>
                 {studio}
               </p>
-              <p className="text-micro tracking-[0.1em] text-sidebar-muted uppercase">Suite Compliance</p>
+              <p className="text-micro tracking-[0.1em] text-sidebar-muted uppercase">{PRODOTTO.nome}</p>
             </div>
             <button
               type="button"

@@ -1,19 +1,26 @@
 // Identità del prodotto, in un posto solo.
 //
-// Il nome commerciale non è ancora deciso: lo screening dei domini ha dato
-// `compliancedesk.it` libero come prima scelta e `compliancedossier.it` come seconda.
-// Finché non si decide, «Suite Compliance» è il nome di lavoro.
+// Ogni titolo, metadato, intestazione di relazione e testo di posta legge da qui.
 //
-// Ogni titolo, metadato, intestazione di relazione e testo di posta legge da qui: il giorno
-// della decisione si cambia questo file, non si va a caccia di stringhe.
+// IL NOME È DECISO _(2026-09-23)_. `legisboard.it` e `legisboard.eu` sono stati registrati il
+// 14 settembre; `docs/05-arretrato.md` §2.2 raccomandava `compliancedesk.it`, mai comprato, e
+// la raccomandazione è stata superata dal committente. Il nome di lavoro «Suite Compliance»
+// non esiste più.
+//
+// `nomeBreve` è stato tolto: non lo leggeva nessuno, e un secondo nome che nessuno usa è solo
+// un invito a introdurre un'incoerenza il giorno che qualcuno lo scopre.
 
 export const PRODOTTO = {
-  nome: "Suite Compliance",
-  nomeBreve: "Suite",
+  nome: "Legisboard",
   descrizione:
     "Gestione integrata degli adempimenti GDPR, D.Lgs 231/2001 e D.Lgs 81/2008 per consulenti, DPO e organismi di vigilanza.",
-  /** Dominio di marca su cui poggiano i sottodomini delle istanze. Da registrare. */
-  dominio: "da-definire.it",
+  /**
+   * Dominio di marca su cui poggiano i sottodomini delle istanze: `verdi.legisboard.it`.
+   *
+   * La vetrina gira ancora su `gdprhub.vercel.app`. Il dominio è registrato e per ora
+   * parcheggiato su Hostinger.
+   */
+  dominio: "legisboard.it",
 } as const;
 
 /**

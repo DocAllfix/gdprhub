@@ -6,6 +6,7 @@ import { env } from "@/lib/env";
 import { accoda } from "@/lib/posta";
 import { invito, reimpostaPassword } from "@/lib/posta/modelli";
 import { nomeStudio } from "@/lib/posta/studio";
+import { PRODOTTO } from "@/lib/brand";
 
 // Autenticazione dell'istanza.
 //
@@ -159,7 +160,7 @@ export const auth = betterAuth({
       },
     }),
     twoFactor({
-      issuer: "Suite Compliance",
+      issuer: PRODOTTO.nome,
     }),
   ],
 });
