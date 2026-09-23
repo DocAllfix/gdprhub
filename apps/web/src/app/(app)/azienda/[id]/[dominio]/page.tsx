@@ -228,6 +228,21 @@ function DueAssi({ griglia }: { griglia: Readonly<Record<string, Readonly<Record
                         <Link
                           href={`?lavoro=${encodeURIComponent(r)}&scadenza=${encodeURIComponent(c)}`}
                           scroll={false}
+                          /* NIENTE PRELIEVO ANTICIPATO SU QUESTE SEDICI CELLE.
+                             Misurato in produzione il 2026-09-23: la pagina apre tredici
+                             richieste RSC — una per cella non vuota — verso una rotta
+                             `force-dynamic` che il visitatore forse non aprirà mai. Sono
+                             tredici invocazioni serverless regalate a ogni apertura della
+                             schermata più visitata del prodotto.
+                             Una di quelle tredici non si chiudeva MAI: ancora in volo dopo
+                             149 secondi, mentre la stessa URL chiesta da sola — comprese le
+                             intestazioni del router — rispondeva in 80-255 ms. La pagina
+                             intanto era resa e idratata in 1,3 s: l'utente non vedeva
+                             niente, ma `networkidle` non arrivava e il cancello non poteva
+                             verificare la pagina online.
+                             Il prelievo anticipato serve a rendere istantaneo un percorso
+                             probabile. Un affondo su una cella di una matrice non lo è. */
+                          prefetch={false}
                           aria-label={`${n} adempimenti ${r.toLowerCase()} con scadenza ${c.toLowerCase()}: mostrali`}
                           className={`inline-block rounded-xs px-1.5 font-mono tabular-nums underline-offset-2 hover:bg-accent hover:underline ${
                             allarme ? "font-semibold text-scaduta" : "text-foreground"

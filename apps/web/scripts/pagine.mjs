@@ -129,7 +129,18 @@ export const PAGINE = [
     autenticata: true,
     atteso: "main",
   },
-  { percorso: "/design", nome: "Sistema di design", fase: 5, atteso: "main" },
+  // `soloSviluppo` marca le rotte che in produzione NON DEVONO esistere.
+  //
+  // `/design`, `/varianti`, lo spike PDF e i prototipi chiamano `soloFuoriProduzione()`,
+  // che risponde 404 quando `NODE_ENV` vale `production`: su un'istanza venduta a uno
+  // studio quelle pagine regalerebbero a chiunque il catalogo del prodotto e il sistema di
+  // design. È una decisione, non un guasto — ma il cancello non la conosceva e ha bocciato
+  // sei combinazioni la prima volta che è stato puntato sulla produzione.
+  //
+  // Il cancello NON lo deduce dall'indirizzo: chiede a `/api/health` qual è l'ambiente.
+  // Un indirizzo può ingannare — una build di produzione servita su localhost è proprio il
+  // caso in cui questa regola conta — mentre l'applicazione sa sempre cosa è.
+  { percorso: "/design", nome: "Sistema di design", fase: 5, atteso: "main", soloSviluppo: true },
 
   // --- Le schermate di confine (fase 2 del lavoro di forma, 2026-09-19) -------------------
   //

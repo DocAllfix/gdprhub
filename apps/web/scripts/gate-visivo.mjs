@@ -795,8 +795,56 @@ async function ripristinaModuli(browser, pagine, quando = "") {
   if (riaccesi > 0) console.log(`\n  ${quando}: riaccesi ${riaccesi} moduli spenti da clic del cancello`);
 }
 
+/**
+ * Chiede all'applicazione in quale ambiente gira.
+ *
+ * NON si deduce dall'indirizzo. Una build di produzione servita su `localhost` è proprio il
+ * caso in cui questa distinzione conta, e l'indirizzo direbbe il contrario. L'applicazione
+ * invece lo sa sempre, e lo dichiara in `/api/health`.
+ *
+ * Se la salute non risponde non si indovina: si assume «non produzione», che è il caso in
+ * cui il cancello verifica DI PIÙ. Un cancello che per un errore di rete salta delle pagine
+ * è il difetto peggiore che possa avere.
+ */
+async function ambienteBersaglio() {
+  try {
+    const r = await fetch(new URL("/api/health", base).toString(), { signal: AbortSignal.timeout(20_000) });
+    if (!r.ok) return null;
+    return (await r.json()).ambiente ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
-  const selezionate = soloPercorso ? PAGINE.filter((p) => p.percorso === soloPercorso) : PAGINE;
+  let selezionate = soloPercorso ? PAGINE.filter((p) => p.percorso === soloPercorso) : PAGINE;
+
+  // LE ROTTE CHE IN PRODUZIONE NON DEVONO ESISTERE.
+  //
+  // `/design` e `/varianti` chiamano `soloFuoriProduzione()`, che risponde 404 quando
+  // `NODE_ENV` vale `production`. È una decisione di sicurezza — su un'istanza cliente
+  // quelle pagine regalerebbero il catalogo del prodotto — e il cancello, la prima volta che
+  // è stato puntato sulla produzione, l'ha riportata come sei difetti.
+  //
+  // Non si esentano dal controllo: si VERIFICA CHE SIANO SPARITE. Un 200 su `/design` in
+  // produzione è un difetto grave quanto un 404 in sviluppo, e questa riga lo troverebbe.
+  const ambiente = await ambienteBersaglio();
+  if (ambiente === "production") {
+    const solose = selezionate.filter((p) => p.soloSviluppo);
+    selezionate = selezionate.filter((p) => !p.soloSviluppo);
+    for (const pagina of solose) {
+      const url = new URL(pagina.percorso, base).toString();
+      let stato = 0;
+      try {
+        stato = (await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(20_000) })).status;
+      } catch (e) {
+        segnala(pagina.percorso, `rotta di sviluppo irraggiungibile: ${e instanceof Error ? e.message : e}`);
+        continue;
+      }
+      if (stato === 404) console.log(`  --  ${pagina.percorso} · assente in produzione, come deve essere`);
+      else segnala(pagina.percorso, `rotta di sviluppo ANCORA RAGGIUNGIBILE in produzione: risponde ${stato}, atteso 404`);
+    }
+  }
   if (!selezionate.length) {
     console.error(`Nessuna pagina da verificare${soloPercorso ? ` per '${soloPercorso}'` : ""}.`);
     process.exit(1);
