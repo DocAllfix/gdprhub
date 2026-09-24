@@ -29,6 +29,11 @@
 
 ## CONTESTO DEL PROGETTO
 
+Il prodotto si chiama **Legisboard** _(dal 2026-09-23)_: landing su `legisboard.eu`, demo pubblica su
+`demo.legisboard.eu`, istanze clienti sui sottodomini di `legisboard.it`. Repository `DocAllfix/legisboard`,
+progetti Vercel `legisboard-demo` e `legisboard-landing`, pacchetti `@legisboard/*`. «GDPR Compliance Hub» qui
+sotto è il nome del prototipo di partenza, e «gdprhub» quello della cartella locale.
+
 Progetto SaaS su commissione destinato a consulenti privacy, studi legali e DPO. Il sistema nasce dal prototipo React/HTML "GDPR Compliance Hub" presente nell'archivio. Il lavoro iniziale consiste nell'analizzare attentamente l'HTML, decodificare le logiche di calcolo del rischio, l'esposizione sanzionatoria e la gestione dei task per i vari ruoli (Titolare, Responsabile, DPO). L'obiettivo è ricostruire una piattaforma moderna, , adottando standard UI/UX premium ("Corporate Tech") che si distanzino nettamente dai layout raw.
 Ovviamente man mano che definirai il progetto potrai modificare e aggiornare questo claude.md.
 
