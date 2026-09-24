@@ -229,6 +229,20 @@ Misura: **Lighthouse CI** con asserzioni sui bersagli, la sonda CLS del cancello
 e un controllo **senza JavaScript**: `curl` dell'HTML deve contenere l'`h1`, i numeri 171 · 42 ·
 65 · 64, il JSON-LD valido e il testo delle domande.
 
+**Misurato il 2026-09-24 sulla landing vera** (`legisboard-landing.vercel.app`, servita dalla CDN,
+Lighthouse mobile in simulazione 4G lenta, due giri): **Prestazioni 88–89 · Accessibilità 100 ·
+Best Practices 100 · CLS 0** · LCP 2,8–2,9 s · TBT 230–260 ms. Il SEO a 66 è il `noindex` voluto
+sull'indirizzo provvisorio.
+
+Due bersagli di questa tabella erano sbagliati, e lo scrivo invece di fingere di averli
+raggiunti:
+- **JS < 90 KB** non è raggiungibile con l'App Router: il runtime di React e del router pesa
+  circa 143 KB anche con **zero** componenti client nostri, che è il caso di questa pagina.
+- **LCP < 1,8 s** in quella simulazione non è stato raggiunto. Non precaricare il carattere mono
+  non ha cambiato niente (misurato e annullato): il mono è sopra la piega, nel mazzo. La leva
+  rimasta è il peso dei caratteri variabili; da misurare con PageSpeed Insights, oggi fuori
+  quota.
+
 **Analitiche: nessuna al lancio.** Anche un'analitica senza cookie è un trattamento da scrivere
 nell'informativa, e l'informativa non c'è ancora. Senza cookie non tecnici **non serve un banner**.
 
