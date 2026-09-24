@@ -3,5 +3,5 @@
   "regions": [
     "fra1"
   ],
-  "ignoreCommand": "[ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ] && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- . ../../packages ../../pnpm-lock.yaml"
+  "ignoreCommand": "[ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ] && [ \"$VERCEL_GIT_PREVIOUS_SHA\" != \"$VERCEL_GIT_COMMIT_SHA\" ] && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- . ../../packages ../../pnpm-lock.yaml"
 }
