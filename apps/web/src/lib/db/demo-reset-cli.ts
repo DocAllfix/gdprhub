@@ -11,12 +11,13 @@ import { assicuraUtenteDemo, ripristinaDemo } from "./demo";
 //
 // Uso:  pnpm --filter web db:demo-reset
 
-const { eliminate, esito } = await ripristinaDemo();
-if (esito.stato !== "creata") {
-  console.error(`Ricreazione non riuscita: ${esito.stato}`);
+const esito = await ripristinaDemo();
+if (esito.stato === "ripristinata") console.log(`Azienda di esempio ripristinata: ${esito.campi} campi riportati ai valori iniziali.`);
+else if (esito.stato === "creata") console.log(`Azienda di esempio creata: ${esito.adempimenti} adempimenti.`);
+else {
+  console.error(`Ripristino non riuscito: ${esito.stato}`);
   process.exit(1);
 }
-console.log(`Azienda di esempio ricreata (${eliminate} precedente eliminata): ${esito.adempimenti} adempimenti.`);
 
 const utente = await assicuraUtenteDemo();
 if (utente !== "non_configurato") console.log(`Utente della demo: ${utente}.`);

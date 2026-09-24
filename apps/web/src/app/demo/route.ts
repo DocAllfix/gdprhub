@@ -1,11 +1,11 @@
 import { auth } from "@/lib/auth";
-import { istanzaDemo, sessioniDemoRecenti } from "@/lib/db/demo";
+import { aziendaDemoId, istanzaDemo, sessioniDemoRecenti } from "@/lib/db/demo";
 import { env } from "@/lib/env";
 
 // L'INGRESSO CON UN CLIC NELLA DEMO PUBBLICA _(docs/07 §5)_.
 //
 // La landing porta qui con «Entra nella demo». Si apre una sessione sull'utente dimostrativo e
-// si entra nel cruscotto, senza digitare niente: un pulsante che promette la demo e sbatte
+// si entra nell'assessment dell'azienda d'esempio, senza digitare niente: un pulsante che promette la demo e sbatte
 // contro un login senza credenziali è peggio di nessun pulsante.
 //
 // Esiste solo sulla vetrina in modalità demo. Su un'istanza venduta risponde 404 — non 403,
@@ -45,8 +45,12 @@ export async function GET(richiesta: Request) {
     });
   }
 
-  // Si inoltrano i cookie di sessione e si entra nel cruscotto con il giro guidato.
-  const destinazione = new URL("/cruscotto?giro=1", richiesta.url);
+  // DRITTI NELL'ASSESSMENT 81/08 dell'azienda d'esempio, non nel cruscotto: è lì che stanno i
+  // casi «Completata e Scaduta» che la landing ha appena promesso, ed è una delle schermate con
+  // un giro guidato che parte da solo. Il cruscotto non ne ha uno — la prima versione portava lì,
+  // con un '?giro=1' che nessun componente leggeva.
+  const azienda = await aziendaDemoId();
+  const destinazione = new URL(azienda ? `/azienda/${azienda}/d81` : "/portafoglio", richiesta.url);
   const uscita = new Response(null, { status: 303, headers: { location: destinazione.toString() } });
   for (const cookie of risposta.headers.getSetCookie()) uscita.headers.append("set-cookie", cookie);
   return uscita;

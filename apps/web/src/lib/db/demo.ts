@@ -1,9 +1,20 @@
 import { randomUUID } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { CATALOGHI, CLIENTI_DIMOSTRATIVI, costruisciDemo, oggiA, type Dominio } from "@gdpr/engine";
+import { and, eq, inArray } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { db } from "./index";
-import { account, clientCompany, member, user } from "./schema";
+import {
+  account,
+  assessment,
+  clientCompany,
+  companyModule,
+  instanceHistory,
+  member,
+  obligationInstance,
+  obligationTemplate,
+  user,
+} from "./schema";
 import { seminaAziendaDimostrativa, type EsitoDemo } from "./seed-demo";
 
 // LA DEMO PUBBLICA: ripristino dei dati e utente dimostrativo _(docs/07 §5)_.
@@ -14,19 +25,95 @@ import { seminaAziendaDimostrativa, type EsitoDemo } from "./seed-demo";
 
 const NOME = "Fondiaria Meccanica Verdi S.p.A.";
 
-/** Riporta l'azienda di esempio allo stato iniziale. */
-export async function ripristinaDemo(): Promise<{ eliminate: number; esito: EsitoDemo }> {
+/**
+ * Riporta l'azienda di esempio allo stato iniziale, SENZA CANCELLARE NIENTE.
+ *
+ * La prima versione cancellava l'azienda e la riseminava. Funzionava finché nessuno cambiava
+ * uno stato: la cancellazione si propaga fino a `instance_history`, che è in SOLA AGGIUNTA —
+ * un trigger rifiuta ogni DELETE, per chiunque, proprietario dello schema compreso. Con i
+ * visitatori della demo il ripristino notturno sarebbe fallito ogni notte, per sempre.
+ *
+ * Il trigger ha ragione e resta com'è: lo storico di un adempimento è una prova. Un interruttore
+ * per aggirarlo sarebbe utilizzabile anche su un'istanza cliente. Quindi si fa ciò che il
+ * trigger chiede: il passato non si corregge, gli si AGGIUNGE una riga. Ogni campo riportato al
+ * valore iniziale è una modifica come le altre, registrata nello storico con autore vuoto — il
+ * sistema.
+ *
+ * I valori iniziali sono quelli del seme (`costruisciDemo` sul catalogo, relativi a OGGI): le
+ * date si rinfrescano ogni notte, così «Completata e scaduta» resta un esempio vero invece di
+ * scivolare nel passato un giorno alla volta.
+ */
+export type EsitoRipristino = { readonly stato: "ripristinata"; readonly campi: number } | EsitoDemo;
+
+export async function ripristinaDemo(): Promise<EsitoRipristino> {
   const studio = await db.query.organization.findFirst();
-  if (!studio) return { eliminate: 0, esito: { stato: "istanza_non_inizializzata" } };
+  if (!studio) return { stato: "istanza_non_inizializzata" };
+  const azienda = await db.query.clientCompany.findFirst({
+    where: and(eq(clientCompany.organizationId, studio.id), eq(clientCompany.nome, NOME)),
+  });
+  if (!azienda) return seminaAziendaDimostrativa();
 
-  // La cancellazione si propaga a moduli, assessment, istanze ed evidenze: sono tutte in
-  // `on delete cascade` dall'azienda, che è la ragione per cui quel vincolo esiste.
-  const eliminate = await db
-    .delete(clientCompany)
-    .where(and(eq(clientCompany.organizationId, studio.id), eq(clientCompany.nome, NOME)))
-    .returning({ id: clientCompany.id });
+  const oggi = oggiA();
+  let campi = 0;
+  await db.transaction(async (tx) => {
+    // I moduli: il cancello visivo li spegne e li riaccende; qui si riaccendono comunque.
+    await tx.update(companyModule).set({ attivo: true }).where(eq(companyModule.clientCompanyId, azienda.id));
+    await tx.update(assessment).set({ dataRiferimento: oggi }).where(eq(assessment.clientCompanyId, azienda.id));
 
-  return { eliminate: eliminate.length, esito: await seminaAziendaDimostrativa() };
+    const valutazioni = await tx.query.assessment.findMany({ where: eq(assessment.clientCompanyId, azienda.id) });
+    for (const v of valutazioni) {
+      const dominio = v.dominio as Dominio;
+      const demo = new Map(
+        costruisciDemo(CATALOGHI[dominio], CLIENTI_DIMOSTRATIVI[dominio], oggi).map((a) => [a.codice, a]),
+      );
+      const istanze = await tx.query.obligationInstance.findMany({ where: eq(obligationInstance.assessmentId, v.id) });
+      if (istanze.length === 0) continue;
+      const modelli = new Map(
+        (
+          await tx.query.obligationTemplate.findMany({
+            where: inArray(
+              obligationTemplate.id,
+              istanze.map((i) => i.templateId),
+            ),
+          })
+        ).map((t) => [t.id, t]),
+      );
+
+      for (const i of istanze) {
+        const d = demo.get(i.codice);
+        const t = modelli.get(i.templateId);
+        const voluti = {
+          stato: d?.stato ?? ("Da fare" as const),
+          ultimaEsecuzione: d?.ultimaEsecuzione ?? null,
+          scadenzaEsplicita: d?.scadenzaEsplicita ?? null,
+          priorita: d?.priorita ?? t?.prioritaDefault ?? i.priorita,
+          rischio: d?.rischio ?? t?.rischioDefault ?? i.rischio,
+          note: null,
+          motivazioneNonApplicabile: null,
+        };
+        const attuali = i as unknown as Record<string, unknown>;
+        const testo = (x: unknown) => (x === null || x === undefined ? null : String(x));
+        const tracce = Object.entries(voluti)
+          .map(([campo, a]) => ({ campo, da: testo(attuali[campo]), a: testo(a) }))
+          .filter((x) => x.da !== x.a);
+        if (tracce.length === 0) continue;
+
+        await tx.update(obligationInstance).set(voluti).where(eq(obligationInstance.id, i.id));
+        await tx.insert(instanceHistory).values(
+          tracce.map((x) => ({
+            organizationId: studio.id,
+            obligationInstanceId: i.id,
+            campo: x.campo,
+            da: x.da,
+            a: x.a,
+            userId: null,
+          })),
+        );
+        campi += tracce.length;
+      }
+    }
+  });
+  return { stato: "ripristinata", campi };
 }
 
 /**
@@ -103,3 +190,17 @@ export async function istanzaDemo(): Promise<boolean> {
   return riga?.mode === "demo";
 }
 
+
+/**
+ * L'identificativo dell'azienda d'esempio. Stabile: il ripristino notturno la riporta ai valori
+ * iniziali senza cancellarla, quindi l'ingresso `/demo` può portare dritto al suo assessment.
+ */
+export async function aziendaDemoId(): Promise<string | null> {
+  const studio = await db.query.organization.findFirst({ columns: { id: true } });
+  if (!studio) return null;
+  const a = await db.query.clientCompany.findFirst({
+    where: and(eq(clientCompany.organizationId, studio.id), eq(clientCompany.nome, NOME)),
+    columns: { id: true },
+  });
+  return a?.id ?? null;
+}

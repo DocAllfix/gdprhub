@@ -17,8 +17,8 @@ export async function GET(richiesta: Request) {
   }
   if (!(await istanzaDemo())) return new Response("Non trovato", { status: 404 });
 
-  const { eliminate, esito } = await ripristinaDemo();
+  const esito = await ripristinaDemo();
   const utente = await assicuraUtenteDemo();
-  const stato = esito.stato === "creata" ? 200 : 500;
-  return Response.json({ eliminate, esito, utente }, { status: stato });
+  const riuscito = esito.stato === "ripristinata" || esito.stato === "creata";
+  return Response.json({ esito, utente }, { status: riuscito ? 200 : 500 });
 }
