@@ -137,3 +137,29 @@ indicatori: le colonne di numeri devono allinearsi.
 - **Tema chiaro e scuro, entrambi verificati** a ogni cancello di fase.
 - **Distribuzione per istanza** dietro Caddy: branding per studio (logo, colore, intestazione
   delle relazioni) previsto dal primo giorno.
+
+## Landing e demo pubblica — direzione nuova _(2026-09-24)_
+
+Fino a questa data il registro non conosceva una pagina pubblica: la direttiva era
+distribuzione per istanza, senza registrazione pubblica. Il committente ha deciso due cose che
+**si affiancano** a quel modello senza cambiarlo.
+
+- **Una landing di prodotto su `legisboard.eu`.** È la vetrina commerciale. `legisboard.it` e i
+  `www` rimandano lì. Nessun prezzo, nessuna registrazione, nessun pagamento: resta vero tutto
+  ciò che è scritto sopra sulla distribuzione. Le istanze clienti restano per istanza, sui
+  sottodomini di `legisboard.it`.
+- **Una demo pubblica su `demo.legisboard.eu`**, in cui si entra con un clic, senza
+  credenziali. Dalla demo si rimanda a «Fissa un appuntamento» o «Richiedi l'acquisto». È la
+  conferma esplicita dei **blocchi demo** che `CLAUDE.md` attendeva.
+
+Tre regole che discendono dal resto di questo documento, e valgono per la landing come per il
+prodotto:
+
+1. **Nessun numero scritto a mano.** I conteggi arrivano dal motore e sono già al valore finale
+   nell'HTML servito: un crawler che non esegue JavaScript deve leggere 171, non 0.
+2. **Nessuna prova sociale inventata.** Niente testimonianze, loghi di clienti o contatori di
+   utenti finché non esistono. Al loro posto la specificità: i decreti, gli articoli, i numeri.
+3. **Rosso, ambra e verde restano dati** anche sulla landing: compaiono solo dentro gli estratti
+   veri del prodotto, dove significano ciò che significano.
+
+Il piano completo, con architettura, SEO e pipeline di rilascio, è in `docs/07-landing-e-demo.md`.

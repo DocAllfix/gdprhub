@@ -39,9 +39,10 @@ Ovviamente man mano che definirai il progetto potrai modificare e aggiornare que
   niente registrazione pubblica, niente layer entitlement a pagamento. Modello applicativo di riferimento:
   `C:\Users\user\sistemacommercialisti`.
 - **Prima istanza online = vetrina.** Il **tour di onboarding** (driver.js, attributi `data-tour` scritti
-  insieme ai componenti) entra **dalla prima fase, su tutte le istanze**. I **blocchi demo** si
-  implementano **solo dopo conferma esplicita** del committente: fino ad allora si predispone soltanto il
-  flag `instance_config.mode` con helper no-op.
+  insieme ai componenti) entra **dalla prima fase, su tutte le istanze**. I **blocchi demo** sono
+  **confermati dal committente il 2026-09-24**: demo pubblica su `demo.legisboard.eu`, ingresso con un clic.
+- **Landing di prodotto su `legisboard.eu`** _(2026-09-24)_: app separata `apps/landing`, nessun prezzo.
+  Vedi `docs/07-landing-e-demo.md`.
 
 ### Documenti di fase
 
@@ -55,6 +56,7 @@ Ovviamente man mano che definirai il progetto potrai modificare e aggiornare que
 - `docs/06-consegna-al-frontend.md` — **da leggere prima di toccare l'interfaccia**: cosa è
   già stato deciso sulla forma e con quale metodo, i divieti, il vincolo della CSP sulle
   librerie, il cancello visivo
+- `docs/07-landing-e-demo.md` — landing su legisboard.eu e demo pubblica: architettura, SEO, pipeline di rilascio
 - `deploy/GUASTI.md` — registro dei guasti incontrati davvero, con sintomo, causa e rimedio
 - `deploy/PLAYBOOK-DEPLOY.md` — la sequenza per attivare un'istanza, comando per comando
 - `docs/politica-scoring.md` — ogni numero e ogni scostamento dai prototipi, con l'aritmetica
