@@ -6,7 +6,8 @@
   "description": "Token di marca e componenti dei due assi, condivisi dal prodotto e dalla landing. Sorgente TypeScript, transpilato da chi lo usa.",
   "exports": {
     "./tokens.css": "./tokens.css",
-    "./stato": "./src/stato.tsx"
+    "./stato": "./src/stato.tsx",
+    "./marchio": "./src/marchio.tsx"
   },
   "dependencies": {
     "@gdpr/engine": "workspace:*"

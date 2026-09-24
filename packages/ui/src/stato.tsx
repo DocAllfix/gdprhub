@@ -82,7 +82,11 @@ export function Scadenza({
   return (
     <span className={`inline-flex items-baseline gap-2 ${COLORE_SCADENZA[statoScadenza]}`}>
       <span className="font-mono text-sm tabular-nums">{formattaIt(data)}</span>
-      <span className="text-xs tabular-nums opacity-80">{residuo(giorni)}</span>
+      {/* Senza `opacity-80` _(2026-09-24)_: sull'ambra di «In scadenza» portava il residuo a
+          4,06:1, sotto AA. Lo ha trovato axe sulla landing; la sonda di contrasto del progetto
+          leggeva il colore ignorando l'opacità. Il residuo resta secondario per DIMENSIONE
+          (`text-xs` accanto a `text-sm`), la stessa regola adottata per il token tenue. */}
+      <span className="text-xs tabular-nums">{residuo(giorni)}</span>
       {/* Il colore non è mai l'unico canale: l'etichetta esiste per chi non lo distingue,
           per chi legge con uno screen reader, e per chi stampa in bianco e nero. */}
       <span className="sr-only">{statoScadenza}</span>
