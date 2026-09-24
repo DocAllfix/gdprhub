@@ -24,7 +24,7 @@
 #
 # Serve anche al backup: `backup.sh` ricava il nome del volume delle evidenze da
 # `COMPOSE_PROJECT_NAME`, e un nome dedotto male salva una cartella vuota senza lamentarsi.
-name: gdprhub-prod
+name: legisboard-prod
 
 services:
   db:
@@ -99,7 +99,7 @@ services:
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-      SMTP_MITTENTE: ${SMTP_MITTENTE:-no-reply@compliancedesk.it}
+      SMTP_MITTENTE: ${SMTP_MITTENTE:-no-reply@legisboard.it}
     volumes:
       # Le evidenze documentali. Un volume, non il filesystem del contenitore: un
       # aggiornamento dell'immagine non deve portarsi via i documenti di un cliente.

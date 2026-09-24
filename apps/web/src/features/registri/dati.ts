@@ -6,7 +6,7 @@ import {
   type Dominio,
   type Termine,
   type TipoRegistro,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { clientCompany, companyModule, registro, user } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";

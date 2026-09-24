@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ArrowLeft, ShieldCheck } from "lucide-react";
-import { DOMINI, ETICHETTE_DOMINIO, coperturaReati, templatePerCodice } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO, coperturaReati, templatePerCodice } from "@legisboard/engine";
 import { azienda } from "@/features/portafoglio/dati";
 import { cn } from "@/lib/utils";
 

@@ -80,7 +80,7 @@ fi
 # un nome dedotto male non fa fallire il backup: gli fa salvare una cartella vuota, e lo si
 # scopre il giorno del ripristino. È il guasto A1 del registro, ed è successo davvero.
 echo "[backup] evidenze"
-PROGETTO="${COMPOSE_PROJECT_NAME:-gdprhub-prod}"
+PROGETTO="${COMPOSE_PROJECT_NAME:-legisboard-prod}"
 VOLUME="${PROGETTO}_archivio"
 if ! docker volume inspect "$VOLUME" >/dev/null 2>&1; then
   fallisci "volume '$VOLUME' inesistente — imposta COMPOSE_PROJECT_NAME"

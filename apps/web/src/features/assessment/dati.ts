@@ -21,7 +21,7 @@ import {
   type Dominio,
   type Priorita,
   type StatoLavoro,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { db } from "@/lib/db";
 import {
   assessment,

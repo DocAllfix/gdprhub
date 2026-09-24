@@ -5,7 +5,7 @@ import { SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VuotoFiltro } from "@/components/ui/vuoto";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
-import type { AdempimentoRisolto, Dominio } from "@gdpr/engine";
+import type { AdempimentoRisolto, Dominio } from "@legisboard/engine";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Codice, PastigliaDominio, Priorita, Scadenza, StatoLavoroEtichetta } from "@/components/stato";

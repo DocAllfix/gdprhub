@@ -1,4 +1,4 @@
-import { Logotipo, Simbolo } from "@gdpr/ui/marchio";
+import { Logotipo, Simbolo } from "@legisboard/ui/marchio";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { CONTATTO_POSSIBILE, INGRESSO_DEMO } from "@/lib/sito";

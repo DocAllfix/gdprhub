@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { and, desc, eq } from "drizzle-orm";
-import { registroPerTipo } from "@gdpr/engine";
+import { registroPerTipo } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { auditLog, clientCompany, companyModule, registro } from "@/lib/db/schema";
 import { bloccoDemo, requireConsulente } from "@/features/auth/guards";

@@ -14,7 +14,7 @@ import {
   oggiA,
   risolviTutti,
   templatePerCodice,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 
 // SPIKE DELLA FASE 0 — da rimuovere alla Fase 10, quando esisterà il generatore vero.
 //

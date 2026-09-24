@@ -103,7 +103,7 @@ export const auth = betterAuth({
   // è la protezione giusta contro il CSRF: non si disattiva, si dichiarano le eccezioni.
   //
   // Le eccezioni sono reali e sono tre:
-  //   1. Su Vercel il dominio di produzione (gdprhub.vercel.app) NON è quello del singolo
+  //   1. Su Vercel il dominio di produzione (demo.legisboard.eu) NON è quello del singolo
   //      deploy, che è ciò che `VERCEL_URL` contiene. Senza questa riga l'accesso sulla
   //      vetrina risponderebbe 403 pur funzionando in locale.
   //   2. Un'istanza dietro Caddy può rispondere su più nomi legittimi.

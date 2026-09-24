@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowUpRight } from "lucide-react";
-import { DOMINI, ETICHETTE_DOMINIO, REGISTRI, type Dominio } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO, REGISTRI, type Dominio } from "@legisboard/engine";
 import { PastigliaDominio } from "@/components/stato";
 
 // L'INDICE DEI REGISTRI, sulla scheda azienda.

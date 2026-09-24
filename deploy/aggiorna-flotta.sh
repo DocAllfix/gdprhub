@@ -10,8 +10,8 @@
 # contiene gli indirizzi dei clienti.
 #
 #   <nome>  <utente@host>      <percorso>        <dominio>
-#   verdi   root@81.2.3.4      /srv/compliance   verdi.compliancedesk.it
-#   rossi   deploy@10.0.0.7    /srv/compliance   rossi.compliancedesk.it
+#   verdi   root@81.2.3.4      /srv/compliance   verdi.legisboard.it
+#   rossi   deploy@10.0.0.7    /srv/compliance   rossi.legisboard.it
 #
 # Uso:  ./deploy/aggiorna-flotta.sh [--prova]
 #   --prova  dice cosa farebbe senza toccare niente

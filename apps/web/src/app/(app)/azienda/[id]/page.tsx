@@ -12,7 +12,7 @@ import {
   descriviPeriodicita,
   esposizione,
   templatePerCodice,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { azienda } from "@/features/portafoglio/dati";
 import { sommarioRegistri } from "@/features/registri/dati";
 import { IndiceRegistri } from "@/components/registri/indice";

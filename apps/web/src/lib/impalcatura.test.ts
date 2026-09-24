@@ -13,7 +13,7 @@ import {
   STATI_SCADENZA,
   TUTTI_I_TEMPLATES,
   templatesPerCategoria,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 
 describe("impalcatura del monorepo", () => {
   it("l'applicazione raggiunge il motore e i tre cataloghi", () => {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { eq } from "drizzle-orm";
-import { DOMINI, ETICHETTE_DOMINIO, TUTTI_I_TEMPLATES } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO, TUTTI_I_TEMPLATES } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { catalogVersion, member, user } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";

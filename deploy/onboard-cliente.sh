@@ -11,7 +11,7 @@
 #   ./deploy/onboard-cliente.sh verdi --avvia          ...e alza lo stack + collaudo
 #
 # Variabili:
-#   DOMINIO_BASE   default compliancedesk.it
+#   DOMINIO_BASE   default legisboard.it
 #   ADMIN_EMAIL    email del referente del cliente (obbligatoria: è l'utenza di accesso)
 #   ADMIN_NOME     nome del referente
 #   STUDIO_NOME    ragione sociale dello studio, compare nella barra e sulle relazioni
@@ -23,7 +23,7 @@ set -euo pipefail
 
 CLIENTE="${1:?Uso: onboard-cliente.sh <slug> [--avvia]   (es. verdi)}"
 AVVIA="${2:-}"
-DOMINIO_BASE="${DOMINIO_BASE:-compliancedesk.it}"
+DOMINIO_BASE="${DOMINIO_BASE:-legisboard.it}"
 ENV_FILE="deploy/.env.prod"
 COMPOSE_FILE="deploy/docker-compose.prod.yml"
 

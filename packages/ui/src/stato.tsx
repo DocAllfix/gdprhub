@@ -4,7 +4,7 @@ import {
   type Dominio,
   type StatoLavoro,
   type StatoScadenza,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 
 // Il momento firmato del prodotto: i due assi, leggibili senza legenda.
 //

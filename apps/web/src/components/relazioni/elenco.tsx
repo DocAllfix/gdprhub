@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { Download, FileText, Lock, Plus, ShieldCheck, Trash2 } from "lucide-react";
-import { ETICHETTE_DOMINIO, formattaIt, type Dominio } from "@gdpr/engine";
+import { ETICHETTE_DOMINIO, formattaIt, type Dominio } from "@legisboard/engine";
 import {
   eliminaBozza,
   generaRelazione,

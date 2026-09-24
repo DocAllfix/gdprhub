@@ -12,7 +12,7 @@
 // Uso:  pnpm --filter web db:seed-registri
 
 import { eq } from "drizzle-orm";
-import type { Dominio } from "@gdpr/engine";
+import type { Dominio } from "@legisboard/engine";
 import { db } from "./index";
 import { clientCompany, companyModule, registro } from "./schema";
 import { seminaVociRegistro } from "./seed-demo";

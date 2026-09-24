@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Vuoto, VuotoFiltro } from "@/components/ui/vuoto";
 import Link from "next/link";
 import { ArrowDown, ArrowUp, ChevronsUpDown, Search } from "lucide-react";
-import { DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@legisboard/engine";
 import type { QuadroModulo, RigaPortafoglio } from "@/features/portafoglio/dati";
 import { cn } from "@/lib/utils";
 

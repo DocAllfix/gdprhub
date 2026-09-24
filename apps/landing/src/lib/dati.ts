@@ -15,7 +15,7 @@ import {
   type Dominio,
   type StatoLavoro,
   type StatoScadenza,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 
 // OGNI NUMERO DELLA LANDING NASCE QUI, DAL MOTORE. Nessuno è scritto a mano.
 //

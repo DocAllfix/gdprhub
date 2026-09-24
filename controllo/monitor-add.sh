@@ -3,7 +3,7 @@
 #
 # Si esegue sulla MACCHINA DI CONTROLLO, non sulla VPS del cliente.
 #
-#   ./controllo/monitor-add.sh   verdi verdi.compliancedesk.it
+#   ./controllo/monitor-add.sh   verdi verdi.legisboard.it
 #   ./controllo/monitor-add.sh --togli verdi
 #
 # ─────────────────────────────────────────────────────────────────────────────────────────

@@ -11,7 +11,7 @@ Sostituire i segnaposto `<…>` e cancellare questa riga e la precedente.
 
 |                   |                                       |
 | ----------------- | ------------------------------------- |
-| Indirizzo         | **https://\<slug>.compliancedesk.it** |
+| Indirizzo         | **https://\<slug>.legisboard.it** |
 | Utenza iniziale   | `<email del referente>`               |
 | Password iniziale | `<generata dall'onboarding>`          |
 | Attivata il       | `<data>`                              |

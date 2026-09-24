@@ -1,5 +1,5 @@
-import { formattaIt } from "@gdpr/engine";
-import { Codice, PastigliaDominio, Scadenza } from "@gdpr/ui/stato";
+import { formattaIt } from "@legisboard/engine";
+import { Codice, PastigliaDominio, Scadenza } from "@legisboard/ui/stato";
 import { ArrowRight } from "lucide-react";
 import { Confronto } from "@/components/confronto";
 import { Contatti } from "@/components/contatti";

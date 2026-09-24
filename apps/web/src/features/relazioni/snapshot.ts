@@ -17,7 +17,7 @@ import {
   templatePerCodice,
   type Adempimento,
   type Dominio,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, evidence, obligationInstance } from "@/lib/db/schema";
 import { adempimentoDaRiga } from "@/features/scadenzario/dati";

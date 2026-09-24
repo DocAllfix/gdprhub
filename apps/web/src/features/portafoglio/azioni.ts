@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { and, eq } from "drizzle-orm";
-import { DOMINI, ETICHETTE_DOMINIO, oggiA, type Dominio } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO, oggiA, type Dominio } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import {
   assessment,

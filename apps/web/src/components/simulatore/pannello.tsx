@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { ArrowRight, RotateCcw } from "lucide-react";
-import { ETICHETTE_DOMINIO, formattaIt, type Dominio } from "@gdpr/engine";
+import { ETICHETTE_DOMINIO, formattaIt, type Dominio } from "@legisboard/engine";
 import { simula } from "@/features/simulatore/azioni";
 import type { Proiezione, VoceSimulabile } from "@/features/simulatore/dati";
 import { Button } from "@/components/ui/button";

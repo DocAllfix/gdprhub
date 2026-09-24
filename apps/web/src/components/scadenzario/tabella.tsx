@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useFiltriUrl } from "@/lib/filtri-url";
 import { ArrowDown, ArrowUp, CalendarClock, ChevronsUpDown, SearchX, X } from "lucide-react";
-import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO } from "@legisboard/engine";
 import type { VoceScadenzario } from "@/features/scadenzario/dati";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

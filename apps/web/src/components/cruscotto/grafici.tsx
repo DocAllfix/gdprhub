@@ -1,4 +1,4 @@
-import type { Dominio } from "@gdpr/engine";
+import type { Dominio } from "@legisboard/engine";
 import { cn } from "@/lib/utils";
 
 // I grafici del cruscotto. SVG e CSS, nessuna libreria.

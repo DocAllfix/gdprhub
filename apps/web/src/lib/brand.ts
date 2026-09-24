@@ -17,8 +17,8 @@ export const PRODOTTO = {
   /**
    * Dominio di marca su cui poggiano i sottodomini delle istanze: `verdi.legisboard.it`.
    *
-   * La vetrina gira ancora su `gdprhub.vercel.app`. Il dominio è registrato e per ora
-   * parcheggiato su Hostinger.
+   * La landing sta su `legisboard.eu` e la demo pubblica su `demo.legisboard.eu` _(2026-09-24)_.
+   * I sottodomini di `legisboard.it` restano per le istanze dei clienti.
    */
   dominio: "legisboard.it",
 } as const;

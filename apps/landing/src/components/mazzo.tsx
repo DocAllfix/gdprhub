@@ -1,5 +1,5 @@
-import { formattaIt } from "@gdpr/engine";
-import { Codice, PastigliaDominio, Scadenza, StatoLavoroEtichetta } from "@gdpr/ui/stato";
+import { formattaIt } from "@legisboard/engine";
+import { Codice, PastigliaDominio, Scadenza, StatoLavoroEtichetta } from "@legisboard/ui/stato";
 import { ADEMPIMENTI_GDPR, OGGI_ISO, SETTIMANA, TESI } from "@/lib/dati";
 
 // IL MAZZO — l'eroe mostra ciò che il consulente PRODUCE, non l'interfaccia in cui lavora.

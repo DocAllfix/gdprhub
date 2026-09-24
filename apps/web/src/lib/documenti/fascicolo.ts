@@ -1,4 +1,4 @@
-import { formattaIt } from "@gdpr/engine";
+import { formattaIt } from "@legisboard/engine";
 import type { Snapshot, VoceCritica } from "@/features/relazioni/snapshot";
 import { componi, distribuisci, esc, type Documento, type Pagina } from "./impaginazione";
 

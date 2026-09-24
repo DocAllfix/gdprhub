@@ -1,5 +1,5 @@
 {
-  "name": "@gdpr/ui",
+  "name": "@legisboard/ui",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "./marchio": "./src/marchio.tsx"
   },
   "dependencies": {
-    "@gdpr/engine": "workspace:*"
+    "@legisboard/engine": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19"

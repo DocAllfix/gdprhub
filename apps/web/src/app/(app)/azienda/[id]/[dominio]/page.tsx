@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ArrowLeft, ClipboardList, ToggleLeft } from "lucide-react";
 import { Vuoto } from "@/components/ui/vuoto";
-import { DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@legisboard/engine";
 import { assessmentDi } from "@/features/assessment/dati";
 import { TabellaAssessment } from "@/components/assessment/tabella";
 

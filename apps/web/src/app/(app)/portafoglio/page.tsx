@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Building2 } from "lucide-react";
 import { Vuoto } from "@/components/ui/vuoto";
-import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO } from "@legisboard/engine";
 import { portafoglio } from "@/features/portafoglio/dati";
 import { Suspense } from "react";
 import { TabellaPortafoglio } from "@/components/portafoglio/tabella";

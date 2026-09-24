@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { CATALOGHI, DOMINI, TUTTI_I_TEMPLATES } from "@gdpr/engine";
+import { CATALOGHI, DOMINI, TUTTI_I_TEMPLATES } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { verificaStudioUnico } from "@/features/auth/guards";

@@ -8,7 +8,7 @@ import {
   costruisciDemo,
   oggiA,
   type Dominio,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { auth } from "@/lib/auth";
 import { db } from "./index";
 import {
@@ -36,7 +36,7 @@ import {
 //       pnpm --filter web db:collaudatori --azzera   (rimuove tutti i collaudatori)
 
 const PREFISSO = "collaudo";
-const DOMINIO_POSTA = "compliancedesk.it";
+const DOMINIO_POSTA = "legisboard.it";
 
 /** Nomi di aziende plausibili e distinguibili: «Azienda 7» non aiuta nessuno a orientarsi. */
 const AZIENDE = [

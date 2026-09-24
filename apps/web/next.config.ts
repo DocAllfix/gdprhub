@@ -10,7 +10,7 @@ const CHROMIUM_BIN = "../../node_modules/.pnpm/@sparticuz+chromium@*/node_module
 const nextConfig: NextConfig = {
   // Motore e componenti condivisi sono pubblicati come sorgente TypeScript dal workspace:
   // niente passo di build separato, né in sviluppo né su Vercel.
-  transpilePackages: ["@gdpr/engine", "@gdpr/ui"],
+  transpilePackages: ["@legisboard/engine", "@legisboard/ui"],
 
   // Serve al Dockerfile della distribuzione per istanza (Fase 16). Vercel lo ignora,
   // quindi tenerlo qui non costa nulla e impedisce che produzione e vetrina divergano.

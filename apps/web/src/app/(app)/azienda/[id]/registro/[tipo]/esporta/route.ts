@@ -1,4 +1,4 @@
-import { registroPerTipo } from "@gdpr/engine";
+import { registroPerTipo } from "@legisboard/engine";
 import { registroDi } from "@/features/registri/dati";
 import { requireStudio } from "@/features/auth/guards";
 import { registra } from "@/lib/audit";

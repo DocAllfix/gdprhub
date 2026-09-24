@@ -14,10 +14,10 @@ importers:
 
   apps/landing:
     dependencies:
-      '@gdpr/engine':
+      '@legisboard/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@gdpr/ui':
+      '@legisboard/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       geist:
@@ -81,10 +81,10 @@ importers:
       '@fontsource/geist-sans':
         specifier: ^5.3.0
         version: 5.3.0
-      '@gdpr/engine':
+      '@legisboard/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@gdpr/ui':
+      '@legisboard/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@neondatabase/serverless':
@@ -226,7 +226,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@gdpr/engine':
+      '@legisboard/engine':
         specifier: workspace:*
         version: link:../engine
       react:

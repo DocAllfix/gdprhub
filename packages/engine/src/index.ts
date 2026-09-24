@@ -1,4 +1,4 @@
-// @gdpr/engine — motore di calcolo della suite di compliance.
+// @legisboard/engine — motore di calcolo della suite di compliance.
 //
 // Unica fonte di verità di formule, soglie e giudizi per i tre domini (GDPR, D.Lgs 231/01,
 // D.Lgs 81/08). Cruscotti, scadenzario, relazioni, simulatore e import leggono da qui:

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, TUTTI_I_TEMPLATES } from "@gdpr/engine";
+import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, TUTTI_I_TEMPLATES } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { sessioneCorrente } from "@/features/auth/guards";
 import { PRODOTTO } from "@/lib/brand";

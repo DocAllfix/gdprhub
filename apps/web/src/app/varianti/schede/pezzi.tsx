@@ -1,4 +1,4 @@
-import type { Dominio } from "@gdpr/engine";
+import type { Dominio } from "@legisboard/engine";
 import { cn } from "@/lib/utils";
 
 // I pezzi della direzione «schede evolute».

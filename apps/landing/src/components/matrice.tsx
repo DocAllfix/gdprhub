@@ -1,4 +1,4 @@
-import { Codice, PastigliaDominio, Scadenza, StatoLavoroEtichetta } from "@gdpr/ui/stato";
+import { Codice, PastigliaDominio, Scadenza, StatoLavoroEtichetta } from "@legisboard/ui/stato";
 import { CELLA_PREDEFINITA, LAVORI, MATRICE, SCADENZE } from "@/lib/dati";
 
 const COLORE_SCADENZA = {

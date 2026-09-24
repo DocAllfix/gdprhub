@@ -1,5 +1,5 @@
-import { formattaIt } from "@gdpr/engine";
-import { Codice, PastigliaDominio, Scadenza, StatoLavoroEtichetta } from "@gdpr/ui/stato";
+import { formattaIt } from "@legisboard/engine";
+import { Codice, PastigliaDominio, Scadenza, StatoLavoroEtichetta } from "@legisboard/ui/stato";
 import { Check } from "lucide-react";
 import { TESI } from "@/lib/dati";
 

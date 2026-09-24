@@ -1,5 +1,5 @@
 import { AlertTriangle, ArrowRight, Check, Plus, Power, Search, SlidersHorizontal } from "lucide-react";
-import { formattaIt } from "@gdpr/engine";
+import { formattaIt } from "@legisboard/engine";
 import type { DatiVarianti } from "../dati";
 import {
   Anello,

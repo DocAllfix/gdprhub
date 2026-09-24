@@ -1,4 +1,4 @@
-import { Logotipo } from "@gdpr/ui/marchio";
+import { Logotipo } from "@legisboard/ui/marchio";
 import { INGRESSO_DEMO } from "@/lib/sito";
 import { ANCORE } from "./intestazione";
 

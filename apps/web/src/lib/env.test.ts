@@ -6,10 +6,10 @@ import { predefinitiDellAmbiente } from "./env";
 
 describe("riconoscimento dell'ambiente", () => {
   it("su Vercel sceglie i driver serverless", () => {
-    const e = predefinitiDellAmbiente({ VERCEL: "1", VERCEL_URL: "gdprhub.vercel.app" });
+    const e = predefinitiDellAmbiente({ VERCEL: "1", VERCEL_URL: "legisboard-demo.vercel.app" });
     expect(e.STORAGE_DRIVER).toBe("blob");
     expect(e.PDF_DRIVER).toBe("serverless");
-    expect(e.APP_URL).toBe("https://gdprhub.vercel.app");
+    expect(e.APP_URL).toBe("https://legisboard-demo.vercel.app");
   });
 
   it("fuori da Vercel non tocca nulla: decide il file .env dell'istanza", () => {

@@ -7,7 +7,7 @@ import {
   FAMIGLIE_REATO,
   TUTTI_I_TEMPLATES,
   type Dominio,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { db } from "./index";
 import {
   catalogVersion,
@@ -20,7 +20,7 @@ import {
 // Semina il catalogo di piattaforma: i 171 adempimenti, i 16 collegamenti fra domini e le
 // 8 famiglie di reati presupposto.
 //
-// Il contenuto arriva SEMPRE da `@gdpr/engine`, che a sua volta lo estrae dai prototipi con
+// Il contenuto arriva SEMPRE da `@legisboard/engine`, che a sua volta lo estrae dai prototipi con
 // `scripts/extract-seed.mjs`. Non esiste un secondo elenco: se il catalogo cambia, cambia in
 // un posto solo e `pnpm seed:check` in CI se ne accorge.
 //

@@ -1,4 +1,4 @@
-import type { Dominio } from "@gdpr/engine";
+import type { Dominio } from "@legisboard/engine";
 
 // Il modello dati è uno, il lessico è quello di chi legge.
 //

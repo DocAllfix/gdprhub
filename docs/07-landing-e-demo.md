@@ -120,14 +120,14 @@ illustrazioni, passi numerati con un esempio concreto in mono.
 
 ## 2. Design System e cura anti-slop
 
-### 2.1 Una fonte sola per i token: `packages/ui` (`@gdpr/ui`)
+### 2.1 Una fonte sola per i token: `packages/ui` (`@legisboard/ui`)
 
 Se l'oliva della landing deriva da quella del prodotto, il marchio si divide in due. Quindi:
 
 - **si spostano** in `packages/ui/tokens.css` i blocchi `:root` (riga 46), `:root[data-theme="dark"]`
   (241), `@custom-variant dark` (22) e `@theme inline` (465) di `apps/web/src/app/globals.css`;
 - **si sposta** `apps/web/src/components/stato.tsx` in `packages/ui/src/stato.tsx`. Il vecchio
-  percorso resta come `export * from "@gdpr/ui/stato"`: **zero import da cambiare** in `apps/web`;
+  percorso resta come `export * from "@legisboard/ui/stato"`: **zero import da cambiare** in `apps/web`;
 - in entrambe le app, `@source` verso `packages/ui/src`, perché Tailwind v4 scansiona solo la
   cartella dell'app.
 
@@ -419,7 +419,7 @@ prodotto, e viceversa.
 
 **Fase C — Landing**
 - [ ] C0 spike CSP a hash → decisione scritta
-- [ ] C1 impalcatura `apps/landing`: Next 16.3.5 come `web`, Tailwind v4, `geist`, `@gdpr/engine`, `@gdpr/ui`, `lucide-react`, `vercel.json` con `fra1`
+- [ ] C1 impalcatura `apps/landing`: Next 16.3.5 come `web`, Tailwind v4, `geist`, `@legisboard/engine`, `@legisboard/ui`, `lucide-react`, `vercel.json` con `fra1`
 - [ ] C2 sezioni S0–S10, modulo dietro interruttore
 - [ ] C3 metadati, JSON-LD, robots, sitemap, llms.txt, OG, icone
 - [ ] C4 intestazione con la scritta in Geist, in attesa del marchio
@@ -475,8 +475,8 @@ prodotto, e viceversa.
 | Cosa | Dove |
 | --- | --- |
 | Catalogo e conteggi 42 / 65 / 64 | `CATALOGHI` in `packages/engine/src/index.ts` |
-| Dati della demo per estratto e matrice | `CLIENTI_DIMOSTRATIVI`, `lettoDa`, `ETICHETTE_DOMINIO`, `formattaIt` (`@gdpr/engine`) |
-| I due assi resi come nel prodotto | `Scadenza`, `StatoLavoroEtichetta`, `PastigliaDominio`, `Codice` da `components/stato.tsx` → `@gdpr/ui` |
+| Dati della demo per estratto e matrice | `CLIENTI_DIMOSTRATIVI`, `lettoDa`, `ETICHETTE_DOMINIO`, `formattaIt` (`@legisboard/engine`) |
+| I due assi resi come nel prodotto | `Scadenza`, `StatoLavoroEtichetta`, `PastigliaDominio`, `Codice` da `components/stato.tsx` → `@legisboard/ui` |
 | Nome e dominio | `PRODOTTO` in `apps/web/src/lib/brand.ts` |
 | Blocchi demo | `assertNotDemo` in `features/auth/guards.ts`, `instance_config.mode` in `lib/db/schema/tenancy.ts` |
 | Ripristino | `lib/db/demo-reset-cli.ts`, `seed-demo.ts` |

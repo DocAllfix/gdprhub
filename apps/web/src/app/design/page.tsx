@@ -15,7 +15,7 @@ import {
   risolviTutti,
   templatePerCodice,
   type Dominio,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { Codice, PastigliaDominio, Scadenza } from "@/components/stato";
 import { TabellaAdempimenti, type RigaAdempimento } from "@/components/tabella-adempimenti";
 import { Badge } from "@/components/ui/badge";

@@ -1,5 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { ETICHETTE_DOMINIO, REGISTRI, templatePerCodice, type Dominio } from "@gdpr/engine";
+import { ETICHETTE_DOMINIO, REGISTRI, templatePerCodice, type Dominio } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, obligationInstance } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";

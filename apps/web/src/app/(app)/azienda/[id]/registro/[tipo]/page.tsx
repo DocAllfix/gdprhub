@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Download } from "lucide-react";
-import { legamiDa, registroPerTipo } from "@gdpr/engine";
+import { legamiDa, registroPerTipo } from "@legisboard/engine";
 import { registroDi } from "@/features/registri/dati";
 import { ElencoRegistro } from "@/components/registri/elenco";
 

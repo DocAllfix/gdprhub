@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
 import { Vuoto } from "@/components/ui/vuoto";
-import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO } from "@legisboard/engine";
 import { cruscotto } from "@/features/cruscotto/dati";
 import { cn } from "@/lib/utils";
 import {

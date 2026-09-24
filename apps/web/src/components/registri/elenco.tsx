@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { AlertTriangle, Check, ChevronDown, Clock, Link2, Plus } from "lucide-react";
 import Link from "next/link";
-import { formattaIt, registroPerTipo, type DefinizioneRegistro, type LegameRegistri } from "@gdpr/engine";
+import { formattaIt, registroPerTipo, type DefinizioneRegistro, type LegameRegistri } from "@legisboard/engine";
 import { apriVoce, assolviVoce, cambiaStatoVoce, type EsitoRegistro } from "@/features/registri/azioni";
 import type { VoceRegistro } from "@/features/registri/dati";
 import { Button } from "@/components/ui/button";

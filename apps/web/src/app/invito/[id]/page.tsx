@@ -2,7 +2,7 @@ import { and, eq, gt, sql } from "drizzle-orm";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MailX } from "lucide-react";
-import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, formattaIt } from "@gdpr/engine";
+import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, formattaIt } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { invitation, organization } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";

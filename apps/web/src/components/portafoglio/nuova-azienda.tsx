@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Plus } from "lucide-react";
-import { DOMINI, ETICHETTE_DOMINIO } from "@gdpr/engine";
+import { DOMINI, ETICHETTE_DOMINIO } from "@legisboard/engine";
 import { creaAzienda, type Esito } from "@/features/portafoglio/azioni";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

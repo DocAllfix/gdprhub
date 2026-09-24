@@ -1,4 +1,4 @@
-import { PastigliaDominio } from "@gdpr/ui/stato";
+import { PastigliaDominio } from "@legisboard/ui/stato";
 import { MAPPA, QUANTE_TESI, TOTALE } from "@/lib/dati";
 
 const TINTA = { gdpr: "bg-gdpr/25", d231: "bg-d231/25", d81: "bg-d81/25" } as const;

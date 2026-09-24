@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { AlertCircle, Check, History } from "lucide-react";
-import { ETICHETTE_DOMINIO, STATI_LAVORO, formattaIt, type StatoLavoro } from "@gdpr/engine";
+import { ETICHETTE_DOMINIO, STATI_LAVORO, formattaIt, type StatoLavoro } from "@legisboard/engine";
 import type { RigaAssessment } from "@/features/assessment/dati";
 import { ETICHETTA_CAMPO } from "@/features/assessment/etichette";
 import {

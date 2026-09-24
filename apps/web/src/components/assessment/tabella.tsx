@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useFiltriUrl } from "@/lib/filtri-url";
 import { Link2, SearchX, X } from "lucide-react";
-import { ETICHETTE_DOMINIO, STATI_LAVORO, STATI_SCADENZA, type StatoLavoro } from "@gdpr/engine";
+import { ETICHETTE_DOMINIO, STATI_LAVORO, STATI_SCADENZA, type StatoLavoro } from "@legisboard/engine";
 import type { RigaAssessment } from "@/features/assessment/dati";
 import { cambiaStato } from "@/features/assessment/azioni";
 import { Input } from "@/components/ui/input";

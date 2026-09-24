@@ -90,7 +90,7 @@ conto proprio — non lo può scavalcare. È la ragione per cui il muro vero è 
 
 ```bash
 set -a; . ~/.config/flotta/hostinger.env; set +a
-./deploy/dns-hostinger.sh crea verdi compliancedesk.it <IP>
+./deploy/dns-hostinger.sh crea verdi legisboard.it <IP>
 ```
 
 **Atteso**:
@@ -99,7 +99,7 @@ set -a; . ~/.config/flotta/hostinger.env; set +a
 [dns] salvata in deploy/.dns-snapshot/… — N record
 [dns] record nella zona: N → N+1
 [dns] controllo che gli altri slug risolvano ancora…
-  ok  rossi.compliancedesk.it
+  ok  rossi.legisboard.it
 ```
 
 🛑 **Se il conteggio DIMINUISCE, fermati.** Lo script esce con 1 e dice da quale istantanea
@@ -109,7 +109,7 @@ l'**intera zona** e risponde 200.
 **Aspetta la propagazione prima del passo 5**:
 
 ```bash
-until [ -n "$(dig +short verdi.compliancedesk.it)" ]; do sleep 10; done
+until [ -n "$(dig +short verdi.legisboard.it)" ]; do sleep 10; done
 ```
 
 Caddy chiede il certificato all'avvio: senza risoluzione il rilascio si ferma lì.
@@ -142,8 +142,8 @@ cd /srv/compliance
 # nessuno puo' recuperare la propria password: lo script lo segnala, ma meglio
 # non arrivarci.
 export SMTP_HOST=smtp.hostinger.com SMTP_PORT=587
-export SMTP_USER=ops@compliancedesk.it SMTP_PASSWORD='<dal gestore>'
-export SMTP_MITTENTE=no-reply@compliancedesk.it
+export SMTP_USER=ops@legisboard.it SMTP_PASSWORD='<dal gestore>'
+export SMTP_MITTENTE=no-reply@legisboard.it
 
 ADMIN_EMAIL=mario.rossi@studioverdi.it \
 STUDIO_NOME="Studio Legale Verdi" \
@@ -154,10 +154,10 @@ STUDIO_NOME="Studio Legale Verdi" \
 
 ```
 [onboard] creato deploy/.env.prod (chmod 600), segreti generati.
- Container gdprhub-prod-db-1  Healthy
- Container gdprhub-prod-preparazione-1  Exited
- Container gdprhub-prod-app-1  Started
-[onboard] salute OK su https://verdi.compliancedesk.it
+ Container legisboard-prod-db-1  Healthy
+ Container legisboard-prod-preparazione-1  Exited
+ Container legisboard-prod-app-1  Started
+[onboard] salute OK su https://verdi.legisboard.it
   ok      Content-Security-Policy: … nonce-…
 Tutte presenti.
 [onboard] COMPLETATO
@@ -209,7 +209,7 @@ Poi il cron: backup notturno e prova di ripristino mensile.
 ## 7 · Monitoraggio
 
 ```bash
-./deploy/monitor-add.sh verdi verdi.compliancedesk.it
+./deploy/monitor-add.sh verdi verdi.legisboard.it
 crontab -l | grep sentinella   # */5 * * * * … sentinella.sh
 ```
 
@@ -281,7 +281,7 @@ docker compose … exec -T db psql -U compliance -d compliance -tA \
 **In quest'ordine, e il primo passo è il primo per una ragione:**
 
 ```bash
-./deploy/dns-hostinger.sh togli verdi compliancedesk.it   # PER PRIMO
+./deploy/dns-hostinger.sh togli verdi legisboard.it   # PER PRIMO
 docker compose … down -v
 hcloud server delete compliance-verdi
 ./deploy/monitor-del.sh verdi

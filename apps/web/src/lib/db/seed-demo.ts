@@ -10,7 +10,7 @@ import {
   oggiA,
   registroPerTipo,
   type Dominio,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { db } from "./index";
 import {
   assessment,

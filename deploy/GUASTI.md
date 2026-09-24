@@ -30,7 +30,7 @@ sovrascrive, mescola o attribuisce male, in silenzio.
                Tutti i prodotti della casa hanno una cartella `deploy/`: per Docker sono lo
                stesso progetto e condividono lo spazio dei nomi dei container.
     RIMEDIO    `name: <prodotto>-<ambiente>` come prima riga del compose.
-               Già applicato: `name: gdprhub-prod`.
+               Già applicato: `name: legisboard-prod`.
     CONTA      Vale anche per il BACKUP: `backup.sh` ricava il nome del volume delle
                evidenze da `COMPOSE_PROJECT_NAME`. Un nome dedotto male non fa fallire il
                backup, gli fa salvare una cartella vuota, e lo si scopre il giorno del

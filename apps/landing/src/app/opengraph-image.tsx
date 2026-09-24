@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { formattaIt } from "@gdpr/engine";
+import { formattaIt } from "@legisboard/engine";
 import { token } from "@/lib/colori";
 import { TESI } from "@/lib/dati";
 

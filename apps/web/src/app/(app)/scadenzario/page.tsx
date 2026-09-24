@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CalendarClock } from "lucide-react";
 import { Vuoto } from "@/components/ui/vuoto";
-import { ETICHETTE_DOMINIO } from "@gdpr/engine";
+import { ETICHETTE_DOMINIO } from "@legisboard/engine";
 import { scadenzario } from "@/features/scadenzario/dati";
 import { TabellaScadenzario } from "@/components/scadenzario/tabella";
 

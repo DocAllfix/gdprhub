@@ -16,9 +16,9 @@ Dettagli: [RUNBOOK.md](RUNBOOK.md). Struttura ripresa da
 
 ## 0. Una tantum, prima del primo cliente
 
-- [ ] **Dominio registrato** e pannello DNS accessibile.
-      `compliancedesk.it` è libero; `compliancedossier` e `complianceledger` sono liberi su
-      `.it` **e** `.eu`. La verifica non prenota: va registrato.
+- [x] **Dominio registrato** e pannello DNS accessibile: `legisboard.it` (istanze clienti) e
+      `legisboard.eu` (landing e demo), su Hostinger, dal 2026-09-14. Il token per le zone è in
+      `~/.config/flotta/hostinger.env`.
 - [ ] Record **CAA** sul dominio: `0 issue "letsencrypt.org"`. Senza, qualunque altra CA può
       emettere un certificato per i vostri sottodomini.
 - [ ] **Macchina di monitoraggio, separata dai clienti.** Se il monitoraggio gira sulla VPS
@@ -43,7 +43,7 @@ Dettagli: [RUNBOOK.md](RUNBOOK.md). Struttura ripresa da
 - [ ] `ADMIN_EMAIL=<mail del referente> ./deploy/onboard-cliente.sh <slug>`
       → genera i segreti e stampa il record DNS da creare.
 - [ ] Creare il record **A** sul pannello: `<slug>` → IP della VPS.
-- [ ] **Attendere che il DNS risolva** (`dig +short <slug>.compliancedesk.it`). Caddy chiede
+- [ ] **Attendere che il DNS risolva** (`dig +short <slug>.legisboard.it`). Caddy chiede
       il certificato all'avvio: senza risoluzione il rilascio si ferma lì.
 - [ ] `./deploy/onboard-cliente.sh <slug> --avvia`
       → alza lo stack, verifica salute e intestazioni. Deve finire con **COMPLETATO**.

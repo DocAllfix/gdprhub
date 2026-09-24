@@ -18,7 +18,7 @@
 
 import { afterAll, describe, expect, it } from "vitest";
 import { and, eq } from "drizzle-orm";
-import { COLLEGAMENTI, oggiA } from "@gdpr/engine";
+import { COLLEGAMENTI, oggiA } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, obligationInstance } from "@/lib/db/schema";
 import type { requireStudio } from "@/features/auth/guards";

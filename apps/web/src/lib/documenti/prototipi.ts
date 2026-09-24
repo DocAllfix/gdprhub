@@ -26,7 +26,7 @@ import {
   type Dominio,
   type StatoScadenza,
   type VoceAgenda,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import {
   COSTO_CATEGORIA,
   componi,

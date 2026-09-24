@@ -1,5 +1,5 @@
 import { Check, ChevronRight, Clock, Search } from "lucide-react";
-import { formattaIt } from "@gdpr/engine";
+import { formattaIt } from "@legisboard/engine";
 import type { DatiVarianti } from "../dati";
 import { Cifra, Nastro, Pastiglia, Scheda, TINTA, VAR, classeStato } from "./pezzi";
 

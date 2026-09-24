@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Crea o rimuove il record DNS di un'istanza, sulle zone di Hostinger.
 #
-# CONDIVISO FRA I TRE PRODOTTI della casa — gdprhub, advisorhub, FlowCRM — e non per
+# CONDIVISO FRA I TRE PRODOTTI della casa — legisboard, advisorhub, FlowCRM — e non per
 # comodità: è il punto in cui tre implementazioni diverse sarebbero tre modi diversi di
 # azzerare la zona di un dominio. Una sola, provata una volta.
 #
 # Uso:
-#   HOSTINGER_API_TOKEN=… ./deploy/dns-hostinger.sh crea   verdi compliancedesk.it 1.2.3.4
-#   HOSTINGER_API_TOKEN=… ./deploy/dns-hostinger.sh togli  verdi compliancedesk.it
-#   HOSTINGER_API_TOKEN=… ./deploy/dns-hostinger.sh elenca compliancedesk.it
+#   HOSTINGER_API_TOKEN=… ./deploy/dns-hostinger.sh crea   verdi legisboard.it 1.2.3.4
+#   HOSTINGER_API_TOKEN=… ./deploy/dns-hostinger.sh togli  verdi legisboard.it
+#   HOSTINGER_API_TOKEN=… ./deploy/dns-hostinger.sh elenca legisboard.it
 #
 # Il gettone si genera da hPanel → API. Vive in `~/.config/flotta/hostinger.env`, chmod 600,
 # e NON sta mai su una VPS cliente: questo script gira sulla macchina dell'operatore.

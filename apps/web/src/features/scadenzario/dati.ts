@@ -11,7 +11,7 @@ import {
   type Adempimento,
   type AdempimentoRisolto,
   type Dominio,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { assessment, clientCompany, companyModule, obligationInstance } from "@/lib/db/schema";
 import { requireStudio } from "@/features/auth/guards";

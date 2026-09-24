@@ -1,4 +1,4 @@
-import { formattaIt, type Dominio } from "@gdpr/engine";
+import { formattaIt, type Dominio } from "@legisboard/engine";
 import type { DatiVarianti } from "./dati";
 
 // TRE DIREZIONI DI DESIGN, sugli stessi identici numeri.

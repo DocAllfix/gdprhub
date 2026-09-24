@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { and, eq } from "drizzle-orm";
-import { PRIORITA, STATI_LAVORO, scomponi, type Priorita, type StatoLavoro } from "@gdpr/engine";
+import { PRIORITA, STATI_LAVORO, scomponi, type Priorita, type StatoLavoro } from "@legisboard/engine";
 import { db } from "@/lib/db";
 import { assessment, auditLog, instanceHistory, obligationInstance } from "@/lib/db/schema";
 import { bloccoDemo, requireConsulente } from "@/features/auth/guards";

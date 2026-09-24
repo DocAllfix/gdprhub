@@ -18,7 +18,7 @@ import {
   templatePerCodice,
   type AdempimentoRisolto,
   type Dominio,
-} from "@gdpr/engine";
+} from "@legisboard/engine";
 
 // Dati per la vetrina delle varianti.
 //

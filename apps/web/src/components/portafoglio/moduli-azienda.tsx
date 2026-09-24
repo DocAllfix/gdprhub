@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { Check, Loader2, Power } from "lucide-react";
-import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@gdpr/engine";
+import { CATALOGHI, DOMINI, ETICHETTE_DOMINIO, type Dominio } from "@legisboard/engine";
 import { commutaModulo, type Esito } from "@/features/portafoglio/azioni";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

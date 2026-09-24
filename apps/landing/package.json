@@ -12,8 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@gdpr/engine": "workspace:*",
-    "@gdpr/ui": "workspace:*",
+    "@legisboard/engine": "workspace:*",
+    "@legisboard/ui": "workspace:*",
     "geist": "^1.7.2",
     "lucide-react": "^1.28.0",
     "next": "16.3.5",

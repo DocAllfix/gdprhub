@@ -32,7 +32,7 @@ const CSP = [
 
 const nextConfig: NextConfig = {
   // Motore e componenti condivisi sono sorgente TypeScript del workspace.
-  transpilePackages: ["@gdpr/engine", "@gdpr/ui"],
+  transpilePackages: ["@legisboard/engine", "@legisboard/ui"],
   poweredByHeader: false,
 
   async headers() {

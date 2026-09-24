@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { CATALOGHI, CLIENTI_DIMOSTRATIVI, costruisciDemo, oggiA, type Dominio } from "@gdpr/engine";
+import { CATALOGHI, CLIENTI_DIMOSTRATIVI, costruisciDemo, oggiA, type Dominio } from "@legisboard/engine";
 import { and, eq, inArray } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { env } from "@/lib/env";

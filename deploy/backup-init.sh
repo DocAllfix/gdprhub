@@ -55,7 +55,7 @@ SOTTO=$(hcloud storage-box subaccount create \
   --storage-box "$STORAGEBOX_ID" \
   --name "compliance-${SLUG}" \
   --home-directory "/istanze/${SLUG}" \
-  --ssh --labels "prodotto=gdprhub,slug=${SLUG}" \
+  --ssh --labels "prodotto=legisboard,slug=${SLUG}" \
   -o json 2>&1) || { echo "ERRORE: creazione fallita: $SOTTO" >&2; exit 1; }
 
 UTENTE=$(printf '%s' "$SOTTO" | grep -oE '"username"\s*:\s*"[^"]+"' | cut -d'"' -f4)
