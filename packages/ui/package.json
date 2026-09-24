@@ -1,0 +1,17 @@
+{
+  "name": "@gdpr/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Token di marca e componenti dei due assi, condivisi dal prodotto e dalla landing. Sorgente TypeScript, transpilato da chi lo usa.",
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./stato": "./src/stato.tsx"
+  },
+  "dependencies": {
+    "@gdpr/engine": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19"
+  }
+}

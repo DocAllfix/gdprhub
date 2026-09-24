@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 // LA GUARDIA DEI TOKEN — chiede al foglio quali esistono e al sorgente quali si usano.
@@ -34,7 +34,14 @@ import { join } from "node:path";
 // un token rinominato fa fallire subito i punti rimasti indietro.
 
 const RADICE = join(import.meta.dirname, "..");
-const CSS = join(RADICE, "app", "globals.css");
+const MONOREPO = join(RADICE, "..", "..", "..");
+
+// I TOKEN STANNO IN UN PACCHETTO dal 2026-09-24, condivisi con la landing: `@theme inline` si
+// legge da lì. E la guardia scansiona TUTTO il codice che ne usa le classi — il prodotto, il
+// pacchetto condiviso e la landing — perché un valore a mano in uno qualunque dei tre è lo
+// stesso difetto, e la landing è proprio il posto dove verrebbe voglia di scriverne.
+const CSS = join(MONOREPO, "packages", "ui", "tokens.css");
+const CARTELLE = [RADICE, join(MONOREPO, "packages", "ui", "src"), join(MONOREPO, "apps", "landing", "src")];
 
 /** Le famiglie di utility che `DESIGN.md` vincola: colore, raggio, ombra. */
 const FAMIGLIE = ["bg", "text", "border", "ring", "fill", "stroke", "shadow", "rounded", "from", "to", "via", "outline", "divide", "decoration", "accent", "caret"] as const;
@@ -84,13 +91,14 @@ function senzaCommenti(testo: string): string {
 }
 
 function fileDaControllare(): { percorso: string; testo: string }[] {
-  return sorgenti(RADICE)
+  return CARTELLE.filter((c) => existsSync(c))
+    .flatMap((c) => sorgenti(c))
     .filter((p) => !ESENTI.some((e) => p.includes(e)))
     .map((percorso) => ({ percorso, testo: senzaCommenti(readFileSync(percorso, "utf8")) }));
 }
 
 function relativo(p: string): string {
-  return p.slice(RADICE.length + 1).replace(/\\/g, "/");
+  return p.slice(MONOREPO.length + 1).replace(/\\/g, "/");
 }
 
 describe("i token sono l'unica sorgente di colore, raggio e ombra", () => {
@@ -136,7 +144,7 @@ describe("i token sono l'unica sorgente di colore, raggio e ombra", () => {
     // due elenchi è esattamente lo spazio in cui vive quel difetto.
     const css = readFileSync(CSS, "utf8");
     const blocco = css.match(/@theme inline\s*\{([\s\S]*?)\n\}/);
-    expect(blocco, "`@theme inline` non trovato in globals.css").not.toBeNull();
+    expect(blocco, "`@theme inline` non trovato in packages/ui/tokens.css").not.toBeNull();
 
     const esposti = new Set<string>();
     const corpo = blocco?.[1] ?? "";

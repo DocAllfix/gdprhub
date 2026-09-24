@@ -23,6 +23,9 @@ importers:
       '@gdpr/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@gdpr/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@neondatabase/serverless':
         specifier: ^1.1.0
         version: 1.1.0
@@ -159,6 +162,15 @@ importers:
       vitest:
         specifier: ^4.1.10
         version: 4.1.10(@types/node@22.20.1)(@vitest/coverage-v8@4.1.10)(vite@7.3.6(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1))
+
+  packages/ui:
+    dependencies:
+      '@gdpr/engine':
+        specifier: workspace:*
+        version: link:../engine
+      react:
+        specifier: ^19
+        version: 19.2.4
 
 packages:
 
