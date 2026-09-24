@@ -137,3 +137,19 @@
     0 0 0 2px var(--background),
     0 0 0 4px var(--ring);
 }
+
+/* ============================================================================
+   LA CARTA DA REGISTRO, sul fondo oliva dell'eroe.
+
+   Un prodotto che si chiama «board» e tiene un registro: la quadrettatura del foglio di un
+   libro contabile è la sua superficie, non una decorazione presa a prestito. Linee di un pixel
+   nel colore del filetto della barra, un quadretto da 2rem, e una maschera che la fa sparire
+   verso i bordi, così resta dietro al mazzo e non dietro al titolo.
+   ========================================================================= */
+.registro {
+  background-image:
+    linear-gradient(to right, var(--sidebar-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--sidebar-border) 1px, transparent 1px);
+  background-size: 2rem 2rem;
+  mask-image: radial-gradient(ellipse 60% 70% at 72% 45%, black 0%, transparent 100%);
+}

@@ -9,3 +9,7 @@ const BASE =
 
 export const PULSANTE_PIENO = `${BASE} bg-primary text-primary-foreground hover:bg-primary-hover`;
 export const PULSANTE_VUOTO = `${BASE} border border-border-strong bg-surface text-foreground hover:bg-surface-sunken`;
+
+// Sul fondo oliva: l'avorio diventa il pulsante pieno, l'oliva chiara il bordo del vuoto.
+export const PULSANTE_PIENO_SU_OLIVA = `${BASE} bg-background text-foreground hover:bg-surface`;
+export const PULSANTE_VUOTO_SU_OLIVA = `${BASE} border border-sidebar-muted text-sidebar-foreground hover:bg-sidebar-selected`;

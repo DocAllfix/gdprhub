@@ -92,6 +92,10 @@
   --sidebar-muted: oklch(0.735 0.03 112);
   --sidebar-border: oklch(0.4 0.06 112);
   --sidebar-selected: oklch(0.395 0.085 112);
+  /* L'accento SUL fondo oliva: l'oliva chiara di un titolo secondario o di un numero sulla barra
+     e sull'eroe della landing _(2026-09-24)_. Sul verde scuro l'avorio da solo è l'unica voce;
+     serviva un secondo colore della stessa famiglia, non un colore nuovo. */
+  --sidebar-accento: oklch(0.86 0.11 114);
 
   --foreground: oklch(0.243 0.013 110);
   --muted-foreground: oklch(0.503 0.01 110);
@@ -288,6 +292,7 @@
   --sidebar-muted: oklch(0.665 0.035 112);
   --sidebar-border: oklch(0.248 0.045 112);
   --sidebar-selected: oklch(0.275 0.065 112);
+  --sidebar-accento: oklch(0.84 0.11 114);
 
   /* Quattro livelli di testo, come i quattro di Linear: titolo, corrente,
      accompagnamento, marginale. Con tre non si riesce a spegnere abbastanza le
@@ -391,6 +396,7 @@
   --color-sidebar-muted: var(--sidebar-muted);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-selected: var(--sidebar-selected);
+  --color-sidebar-accento: var(--sidebar-accento);
   --color-surface-raised: var(--surface-raised);
   --color-accento: var(--accento);
   --color-accento-surface: var(--accento-surface);
@@ -527,6 +533,6 @@
    * che è misurato per una schermata di lavoro. Sono gli unici due valori fluidi del sistema:
    * il prodotto usa una scala fissa, perché la densità di una tabella non deve cambiare con la
    * larghezza, mentre una promessa letta da telefono deve starci senza andare a capo tre volte. */
-  --text-display: clamp(2.25rem, 1.35rem + 3.8vw, 3.75rem);
-  --text-display-sm: clamp(1.375rem, 1.15rem + 1vw, 1.75rem);
+  --text-display: clamp(2.5rem, 1.3rem + 4.2vw, 4.25rem);
+  --text-display-sm: clamp(1.875rem, 1.35rem + 1.9vw, 2.75rem);
 }

@@ -29,7 +29,10 @@ import { ADEMPIMENTI_GDPR, OGGI_ISO, SETTIMANA, TESI } from "@/lib/dati";
 // `aria-hidden`: ripete in forma di oggetto ciò che il testo accanto dice in parole, e la
 // matrice più in basso dice in forma accessibile. Letto due volte sarebbe rumore.
 
-const CARTA = "rounded-lg border bg-surface shadow-md motion-safe:transition-transform motion-safe:duration-500";
+// `text-foreground` dichiarato: sul fondo oliva dell'eroe le carte ereditavano l'avorio della
+// sezione, e il testo scuro diventava avorio su bianco. Invisibile, non sbagliato di poco.
+const CARTA =
+  "rounded-lg border bg-surface text-foreground shadow-md motion-safe:transition-transform motion-safe:duration-500";
 
 export function Mazzo() {
   return (

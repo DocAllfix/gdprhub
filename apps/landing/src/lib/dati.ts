@@ -193,3 +193,23 @@ export const SETTIMANA = (() => {
 
 export const ADEMPIMENTI_GDPR = CATALOGHI.gdpr.length;
 export const OGGI_ISO = OGGI;
+
+// --- La mappa del catalogo ---------------------------------------------------------------
+
+/**
+ * Il catalogo reso visibile: una casella per adempimento, per decreto, in ordine di catalogo.
+ *
+ * Sostituisce la fascia «numero grande, etichetta piccola», che è lo stampo più riconoscibile
+ * delle landing generate. Qui 171 non è una cifra da leggere: sono 171 caselle da vedere. E le
+ * caselle «completate e scadute» dell'azienda d'esempio sono segnate: la quantità porta alla tesi.
+ */
+export const MAPPA = DOMINI.map((d) => ({
+  dominio: d,
+  etichetta: ETICHETTE_DOMINIO[d],
+  celle: risolti(d).map((a) => ({
+    codice: a.codice,
+    tesi: a.stato === "Completata" && a.statoScadenza === "Scaduta",
+  })),
+}));
+
+export const QUANTE_TESI = MAPPA.reduce((somma, m) => somma + m.celle.filter((c) => c.tesi).length, 0);

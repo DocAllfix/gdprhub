@@ -96,7 +96,7 @@ export function Matrice() {
                 {c.quanti === 1 ? "adempimento" : "adempimenti"} · <strong className="font-semibold">{c.lavoro}</strong> e{" "}
                 <strong className={`font-semibold ${COLORE_SCADENZA[c.scadenza]}`}>{c.scadenza.toLowerCase()}</strong>
                 {c.quanti > c.righe.length ? (
-                  <span className="text-muted-foreground"> — i {c.righe.length} più urgenti</span>
+                  <span className="text-muted-foreground">, i {c.righe.length} più urgenti</span>
                 ) : null}
               </p>
               <ul className="mt-3 divide-y divide-border-subtle rounded-lg border bg-surface">

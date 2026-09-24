@@ -40,7 +40,7 @@ export const DOMANDE: readonly { readonly domanda: string; readonly risposta: st
     domanda: "Dove stanno i dati dei miei clienti?",
     risposta:
       "In un'installazione dedicata al vostro studio, che non condivide il database con nessun altro. " +
-      "Su quale macchina gira — un nostro server o uno vostro — si decide insieme, prima di cominciare.",
+      "Su quale macchina gira, un nostro server o uno vostro, si decide insieme prima di cominciare.",
   },
   {
     domanda: "L'accesso è protetto con il secondo fattore?",
