@@ -1,6 +1,7 @@
 import { formattaIt } from "@gdpr/engine";
 import { Codice, PastigliaDominio, Scadenza } from "@gdpr/ui/stato";
 import { ArrowRight } from "lucide-react";
+import { Contatti } from "@/components/contatti";
 import { Intestazione } from "@/components/intestazione";
 import { Mazzo } from "@/components/mazzo";
 import { Matrice } from "@/components/matrice";
@@ -10,7 +11,7 @@ import { PULSANTE_PIENO, PULSANTE_VUOTO } from "@/components/pulsanti";
 import { CAMPIONI, ENTRO_90, ESEMPIO_ASSESSMENT, INCROCIO, PER_DOMINIO, TOTALE } from "@/lib/dati";
 import { DATI_STRUTTURATI } from "@/lib/dati-strutturati";
 import { DOMANDE } from "@/lib/domande";
-import { INGRESSO_DEMO, RICHIESTE_ATTIVE } from "@/lib/sito";
+import { CONTATTO_POSSIBILE, INGRESSO_DEMO, RICHIESTE_ATTIVE } from "@/lib/sito";
 
 // Statica, rigenerata ogni giorno: i dati della demo sono relativi a oggi (vedi `lib/dati.ts`).
 export const revalidate = 86400;
@@ -134,8 +135,8 @@ export default function Pagina() {
                 <a href={INGRESSO_DEMO} className={PULSANTE_PIENO}>
                   Entra nella demo <ArrowRight className="size-4" aria-hidden />
                 </a>
-                <a href={RICHIESTE_ATTIVE ? "#richiesta" : "#problema"} className={PULSANTE_VUOTO}>
-                  {RICHIESTE_ATTIVE ? "Richiedi una presentazione" : "Guarda il problema"}
+                <a href={CONTATTO_POSSIBILE ? "#richiesta" : "#problema"} className={PULSANTE_VUOTO}>
+                  {CONTATTO_POSSIBILE ? "Richiedi una presentazione" : "Guarda il problema"}
                 </a>
               </div>
               <p className="mt-4 text-xs text-muted-foreground">
@@ -317,8 +318,8 @@ export default function Pagina() {
                 sotto="Legisboard non è un servizio a cui ci si iscrive. Ogni studio ha la propria installazione, con il proprio database, e l'accordo si fa di persona."
               />
               <div className="affiora mt-8 flex flex-wrap gap-3">
-                <a href={RICHIESTE_ATTIVE ? "/?motivo=appuntamento#richiesta" : INGRESSO_DEMO} className={PULSANTE_PIENO}>
-                  {RICHIESTE_ATTIVE ? "Fissa un appuntamento" : "Entra nella demo"}
+                <a href={CONTATTO_POSSIBILE ? "/?motivo=appuntamento#richiesta" : INGRESSO_DEMO} className={PULSANTE_PIENO}>
+                  {CONTATTO_POSSIBILE ? "Fissa un appuntamento" : "Entra nella demo"}
                 </a>
               </div>
             </div>
@@ -361,7 +362,7 @@ export default function Pagina() {
         </section>
 
         {/* ============================================================= RICHIESTA */}
-        {RICHIESTE_ATTIVE ? <ModuloRichiesta /> : null}
+        {RICHIESTE_ATTIVE ? <ModuloRichiesta /> : <Contatti />}
 
         {/* ============================================================= CHIUSURA */}
         <section aria-labelledby="chiusura-titolo">

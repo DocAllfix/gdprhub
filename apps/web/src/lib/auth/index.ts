@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { organization, twoFactor } from "better-auth/plugins";
 import { db, schema } from "@/lib/db";
 import { env } from "@/lib/env";
@@ -23,6 +24,50 @@ import { PRODOTTO } from "@/lib/brand";
 //    senza codice, e tenerlo anche con una sola organizzazione è ciò che rende reversibile
 //    la scelta di non usare RLS: il giorno che servisse un'istanza condivisa, la struttura
 //    c'è già.
+
+// ============================================================================================
+// LA DEMO PUBBLICA, SUL LATO CHE `assertNotDemo` NON VEDE _(2026-09-24)_
+// ============================================================================================
+//
+// `assertNotDemo` protegge le nostre server action. Ma password, secondo fattore, profilo e
+// sessioni passano dalle API di Better Auth, che le nostre azioni non attraversano: senza
+// questo gancio, il primo visitatore della demo poteva cambiare la password dell'utente
+// condiviso — o revocarne tutte le sessioni — e chiudere fuori tutti gli altri.
+//
+// Si blocca solo ciò che MODIFICA un account o la struttura dello studio. Resta aperta la
+// verifica del codice TOTP: l'amministratore della vetrina potrebbe averlo attivo, e
+// bloccarla lo chiuderebbe fuori dalla sua stessa istanza.
+const BLOCCATI_IN_DEMO = new Set([
+  "/change-password",
+  "/set-password",
+  "/reset-password",
+  "/request-password-reset",
+  "/forget-password",
+  "/change-email",
+  "/update-user",
+  "/delete-user",
+  "/revoke-session",
+  "/revoke-sessions",
+  "/revoke-other-sessions",
+  "/sign-up/email",
+  "/two-factor/enable",
+  "/two-factor/disable",
+  "/two-factor/generate-backup-codes",
+  "/organization/create",
+  "/organization/update",
+  "/organization/delete",
+  "/organization/invite-member",
+  "/organization/accept-invitation",
+  "/organization/remove-member",
+  "/organization/update-member-role",
+  "/organization/leave",
+]);
+
+/** Una riga sola per istanza: la modalità si legge solo quando il percorso è fra i bloccati. */
+async function istanzaInDemo(): Promise<boolean> {
+  const riga = await db.query.instanceConfig.findFirst({ columns: { mode: true } });
+  return riga?.mode === "demo";
+}
 
 function origini(): string[] {
   const elenco = [env.APP_URL];
@@ -65,6 +110,17 @@ export const auth = betterAuth({
   //   3. In sviluppo la porta cambia di continuo, e `localhost` e `127.0.0.1` sono origini
   //      diverse per il browser: è così che questo difetto è saltato fuori.
   trustedOrigins: origini(),
+
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (!BLOCCATI_IN_DEMO.has(ctx.path)) return;
+      if (await istanzaInDemo()) {
+        throw new APIError("FORBIDDEN", {
+          message: "In modalità dimostrativa questa operazione non è disponibile.",
+        });
+      }
+    }),
+  },
 
   // LIMITATORE, dichiarato invece che ereditato.
   //

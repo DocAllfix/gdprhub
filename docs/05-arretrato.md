@@ -44,6 +44,13 @@ di quattro, più un collegamento `otpauth://` che da telefono apre l'app: funzio
 scansiona. La strada a costo zero sul bundle è un'azione di server che restituisce l'SVG; è una
 decisione sulle dipendenze.
 
+**Manca un indirizzo di contatto** _(2026-09-24)_. Dalla demo e dalla landing, «Fissa un
+appuntamento» e «Richiedi l'acquisto» aprono un'email con l'oggetto già scritto: funziona senza
+relay SMTP, ma serve un indirizzo. Finché `CONTATTO_EMAIL` è vuota i due pulsanti **non
+compaiono** — resta solo «Entra nella demo» — perché un pulsante che porta dove non si può fare
+ciò che promette è peggio di nessun pulsante. Il committente ha deciso di rimandare: basta
+impostare la variabile su entrambi i progetti Vercel e rifare il deploy.
+
 **Una connessione a Neon caduta a metà query, e il risultato è una pagina 500** *(misurato il
 2026-09-22)*. In un giro completo del cancello — 1676 richieste in quaranta minuti — la
 connessione è caduta **una volta**, alle 16:57:28, producendo due 500 (`/scadenzario` e

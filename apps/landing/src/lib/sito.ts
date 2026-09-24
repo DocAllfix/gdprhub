@@ -32,3 +32,15 @@ export const INDICIZZABILE =
  * pulsante che ci porta non esistono proprio.
  */
 export const RICHIESTE_ATTIVE = process.env.RICHIESTE_ATTIVE === "1";
+
+/**
+ * L'indirizzo di contatto: il canale che funziona SENZA relay SMTP.
+ *
+ * Con il modulo spento, la sezione `#richiesta` offre email con l'oggetto già scritto. È lo
+ * stesso indirizzo che la fascia della demo usa per «Fissa un appuntamento». Assente, i
+ * rimandi al contatto non compaiono: resta «Entra nella demo».
+ */
+export const CONTATTO_EMAIL = process.env.CONTATTO_EMAIL ?? null;
+
+/** Vero se esiste almeno un modo di contattarci: il modulo, o l'indirizzo. */
+export const CONTATTO_POSSIBILE = RICHIESTE_ATTIVE || CONTATTO_EMAIL !== null;

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { auditLog, clientCompany, report } from "@/lib/db/schema";
-import { assertNotDemo, requireConsulente } from "@/features/auth/guards";
+import { bloccoDemo, requireConsulente } from "@/features/auth/guards";
 import { costruisciSnapshot, improntaSnapshot, type Snapshot } from "./snapshot";
 
 // GENERARE E PUBBLICARE.
@@ -37,7 +37,8 @@ export async function generaRelazione(
   dati: FormData,
 ): Promise<EsitoRelazione> {
   const ctx = await requireConsulente();
-  await assertNotDemo("genera una relazione");
+  const bloccata = await bloccoDemo("genera una relazione");
+  if (bloccata) return bloccata;
 
   const aziendaId = String(dati.get("aziendaId") ?? "");
   const ambitoGrezzo = String(dati.get("ambito") ?? "suite");
@@ -103,7 +104,8 @@ export async function pubblicaRelazione(
   dati: FormData,
 ): Promise<EsitoRelazione> {
   const ctx = await requireConsulente();
-  await assertNotDemo("pubblica una relazione");
+  const bloccata = await bloccoDemo("pubblica una relazione");
+  if (bloccata) return bloccata;
 
   const id = String(dati.get("relazioneId") ?? "");
   const riga = await db.query.report.findFirst({
@@ -133,7 +135,8 @@ export async function eliminaBozza(
   dati: FormData,
 ): Promise<EsitoRelazione> {
   const ctx = await requireConsulente();
-  await assertNotDemo("elimina una bozza");
+  const bloccata = await bloccoDemo("elimina una bozza");
+  if (bloccata) return bloccata;
 
   const id = String(dati.get("relazioneId") ?? "");
   const riga = await db.query.report.findFirst({

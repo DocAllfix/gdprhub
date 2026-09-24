@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { NonAutenticato, NonAutorizzato, requireStudio } from "@/features/auth/guards";
 import { tourVisti } from "@/features/tour/azioni";
+import { FasciaDemo } from "@/components/shell/fascia-demo";
 import { Shell } from "@/components/shell/shell";
 import { Ricevute } from "@/components/ui/ricevute";
 
@@ -35,6 +36,9 @@ export default async function LayoutApplicazione({ children }: { children: React
   return (
     <>
       <Shell studio={ctx.studioNome} utente={ctx.nome || ctx.email} ruolo={ctx.ruolo} tourVisti={visti}>
+        {/* La fascia della demo pubblica, in cima al contenuto di ogni pagina protetta. Sta qui e
+            non nella shell perché è una condizione dell'istanza, non della navigazione. */}
+        {ctx.mode === "demo" ? <FasciaDemo /> : null}
         {children}
       </Shell>
       {/* Qui e non nel layout di radice: le scritture stanno tutte dietro l accesso, e la

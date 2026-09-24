@@ -5,7 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { PRIORITA, STATI_LAVORO, scomponi, type Priorita, type StatoLavoro } from "@gdpr/engine";
 import { db } from "@/lib/db";
 import { assessment, auditLog, instanceHistory, obligationInstance } from "@/lib/db/schema";
-import { assertNotDemo, requireConsulente } from "@/features/auth/guards";
+import { bloccoDemo, requireConsulente } from "@/features/auth/guards";
 import { invalidaDati } from "@/lib/cache";
 
 // Le modifiche a un adempimento.
@@ -92,7 +92,14 @@ export async function cambiaStato(
   nuovo: StatoLavoro,
   motivazione?: string,
 ): Promise<EsitoModifica> {
-  await assertNotDemo("modifica di un adempimento");
+  // IN DEMO SI PUÒ CAMBIARE LO STATO: è ciò che un visitatore viene a provare (confermato dal
+  // committente il 2026-09-24), e ogni notte i dati tornano come prima. Tranne un passaggio:
+  // «Non applicabile» porta una motivazione in TESTO LIBERO, che il visitatore successivo
+  // leggerebbe. Su un'istanza aperta a chiunque è un canale di spam, o di peggio.
+  if (nuovo === "Non applicabile") {
+    const bloccata = await bloccoDemo("dichiarare un adempimento non applicabile");
+    if (bloccata) return bloccata;
+  }
   if (!(STATI_LAVORO as readonly string[]).includes(nuovo)) {
     return { ok: false, errore: "Stato sconosciuto." };
   }
@@ -133,7 +140,7 @@ export async function impostaUltimaEsecuzione(
   istanzaId: string,
   data: string | null,
 ): Promise<EsitoModifica> {
-  await assertNotDemo("modifica di un adempimento");
+  // Permesso in demo: è una data, non un testo, e muove la scadenza — cioè la tesi del prodotto.
 
   const pulita = (data ?? "").trim();
   if (pulita !== "") {
@@ -162,7 +169,7 @@ export async function impostaUltimaEsecuzione(
 }
 
 export async function cambiaPriorita(istanzaId: string, nuova: Priorita): Promise<EsitoModifica> {
-  await assertNotDemo("modifica di un adempimento");
+  // Permesso in demo: un valore da un elenco chiuso.
   if (!(PRIORITA as readonly string[]).includes(nuova)) return { ok: false, errore: "Priorità sconosciuta." };
 
   const ctx = await requireConsulente();
@@ -184,7 +191,9 @@ export async function cambiaPriorita(istanzaId: string, nuova: Priorita): Promis
 }
 
 export async function salvaNote(istanzaId: string, note: string): Promise<EsitoModifica> {
-  await assertNotDemo("modifica di un adempimento");
+  // Bloccata in demo: testo libero, che il visitatore successivo leggerebbe.
+  const bloccata = await bloccoDemo("scrivere una nota");
+  if (bloccata) return bloccata;
 
   const ctx = await requireConsulente();
   const istanza = await db.query.obligationInstance.findFirst({

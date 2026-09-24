@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { auditLog, user } from "@/lib/db/schema";
-import { requireSessione } from "@/features/auth/guards";
+import { bloccoDemo, requireSessione } from "@/features/auth/guards";
 
 // Cambio della password al primo accesso.
 //
@@ -19,6 +19,10 @@ export type EsitoCambio = { readonly ok: true } | { readonly ok: false; readonly
 const LUNGHEZZA_MINIMA = 12;
 
 export async function cambiaPassword(_precedente: EsitoCambio | null, dati: FormData): Promise<EsitoCambio> {
+  // L'utente della demo è condiviso da tutti i visitatori: chi gli cambiasse la password
+  // chiuderebbe fuori tutti gli altri, per sempre.
+  const bloccata = await bloccoDemo("cambiare la password");
+  if (bloccata) return bloccata;
   const sessione = await requireSessione();
 
   const attuale = String(dati.get("attuale") ?? "");

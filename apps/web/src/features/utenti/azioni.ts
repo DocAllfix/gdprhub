@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { account, auditLog, invitation, member, user } from "@/lib/db/schema";
 import { env } from "@/lib/env";
-import { assertNotDemo, requireAdmin, type Ruolo } from "@/features/auth/guards";
+import { bloccoDemo, requireAdmin, type Ruolo } from "@/features/auth/guards";
 import { accoda, postaConfigurata } from "@/lib/posta";
 import { invito as modelloInvito } from "@/lib/posta/modelli";
 import { nomeStudio } from "@/lib/posta/studio";
@@ -56,7 +56,8 @@ function generaPassword(): string {
 
 export async function creaUtente(_precedente: EsitoUtente | null, dati: FormData): Promise<EsitoUtente> {
   const ctx = await requireAdmin();
-  await assertNotDemo("creazione di un'utenza");
+  const bloccata = await bloccoDemo("creazione di un'utenza");
+  if (bloccata) return bloccata;
 
   const email = String(dati.get("email") ?? "")
     .trim()
@@ -122,7 +123,8 @@ export async function creaUtente(_precedente: EsitoUtente | null, dati: FormData
 
 export async function cambiaRuolo(_precedente: EsitoUtente | null, dati: FormData): Promise<EsitoUtente> {
   const ctx = await requireAdmin();
-  await assertNotDemo("modifica di un'utenza");
+  const bloccata = await bloccoDemo("modifica di un'utenza");
+  if (bloccata) return bloccata;
 
   const userId = String(dati.get("userId") ?? "");
   const ruolo = String(dati.get("ruolo") ?? "");
@@ -166,7 +168,8 @@ export async function reimpostaPassword(
   dati: FormData,
 ): Promise<EsitoUtente> {
   const ctx = await requireAdmin();
-  await assertNotDemo("reimpostazione di una password");
+  const bloccata = await bloccoDemo("reimpostazione di una password");
+  if (bloccata) return bloccata;
 
   const userId = String(dati.get("userId") ?? "");
   const appartenenza = await db.query.member.findFirst({
@@ -215,7 +218,8 @@ export async function reimpostaPassword(
  */
 export async function invitaCollega(_precedente: EsitoUtente | null, dati: FormData): Promise<EsitoUtente> {
   const ctx = await requireAdmin();
-  await assertNotDemo("invito di un collega");
+  const bloccata = await bloccoDemo("invito di un collega");
+  if (bloccata) return bloccata;
 
   const email = String(dati.get("email") ?? "")
     .trim()

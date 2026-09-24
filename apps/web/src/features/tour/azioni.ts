@@ -19,6 +19,8 @@ import { tourPerChiave } from "@/lib/tour/passi";
 
 export async function segnaTourVisto(chiave: string): Promise<void> {
   const ctx = await requireStudio();
+  // In demo l'utente è condiviso: il primo visitatore consumerebbe il giro per tutti gli altri.
+  if (ctx.mode === "demo") return;
   const tour = tourPerChiave(chiave);
   if (!tour) return;
 
@@ -33,6 +35,7 @@ export async function segnaTourVisto(chiave: string): Promise<void> {
 /** I tour già visti dall'utente corrente, con la versione. */
 export async function tourVisti(): Promise<Record<string, number>> {
   const ctx = await requireStudio();
+  if (ctx.mode === "demo") return {};
   const u = await db.query.user.findFirst({
     where: eq(user.id, ctx.userId),
     columns: { tourVisti: true },

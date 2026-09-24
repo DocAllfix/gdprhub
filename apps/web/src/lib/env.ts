@@ -129,8 +129,34 @@ const schema = z.object({
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
-  /** Mittente degli invii. Deve stare su un dominio con SPF, DKIM e DMARC configurati. */
-  SMTP_MITTENTE: z.string().default("no-reply@compliancedesk.it"),
+  /**
+   * Mittente degli invii. Deve stare su un dominio con SPF, DKIM e DMARC configurati.
+   *
+   * Il predefinito era `no-reply@compliancedesk.it`, residuo del nome di lavoro: un dominio che
+   * non è nostro. Un relay configurato senza mittente avrebbe spedito a nome di altri.
+   */
+  SMTP_MITTENTE: z.string().default("no-reply@legisboard.it"),
+
+  /**
+   * DEMO PUBBLICA _(docs/07 §5, confermata dal committente il 2026-09-24)_.
+   *
+   * L'utente in cui si entra con un clic da `/demo`, senza digitare nulla. Credenziali solo
+   * qui, mai mostrate: il visitatore non le vede e non le può cambiare (il gancio in
+   * `lib/auth` blocca password, secondo fattore e sessioni in modalità demo). Assenti, `/demo`
+   * risponde 404 anche su un'istanza in modalità demo.
+   */
+  DEMO_EMAIL: z.email().optional(),
+  DEMO_PASSWORD: z.string().min(16).optional(),
+  /** Il segreto con cui Vercel Cron firma la chiamata del ripristino notturno. */
+  CRON_SECRET: z.string().min(16).optional(),
+  /**
+   * L'indirizzo a cui scrivere per un appuntamento o una richiesta d'acquisto.
+   *
+   * La fascia della demo apre un'email con l'oggetto già scritto: funziona senza relay SMTP,
+   * che oggi non c'è. Assente, i due rimandi non compaiono — meglio nessun pulsante che uno
+   * che porta dove non si può fare quello che promette.
+   */
+  CONTATTO_EMAIL: z.email().optional(),
 });
 
 /**

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { assessment, auditLog, evidence, instanceHistory, obligationInstance } from "@/lib/db/schema";
-import { assertNotDemo, requireConsulente } from "@/features/auth/guards";
+import { bloccoDemo, requireConsulente } from "@/features/auth/guards";
 import { invalidaDati } from "@/lib/cache";
 import { evidenzeDi } from "@/features/evidenze/dati";
 import {
@@ -47,7 +47,8 @@ export async function caricaEvidenza(
   dati: FormData,
 ): Promise<EsitoEvidenza> {
   const ctx = await requireConsulente();
-  await assertNotDemo("carica un'evidenza");
+  const bloccata = await bloccoDemo("carica un'evidenza");
+  if (bloccata) return bloccata;
 
   const istanzaId = String(dati.get("istanzaId") ?? "");
   const file = dati.get("file");
@@ -159,7 +160,8 @@ export async function eliminaEvidenza(
   dati: FormData,
 ): Promise<EsitoEvidenza> {
   const ctx = await requireConsulente();
-  await assertNotDemo("elimina un'evidenza");
+  const bloccata = await bloccoDemo("elimina un'evidenza");
+  if (bloccata) return bloccata;
 
   const id = String(dati.get("evidenzaId") ?? "");
   const riga = await db.query.evidence.findFirst({

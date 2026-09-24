@@ -1,7 +1,7 @@
 import { Logotipo, Simbolo } from "@gdpr/ui/marchio";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { INGRESSO_DEMO, RICHIESTE_ATTIVE } from "@/lib/sito";
+import { CONTATTO_POSSIBILE, INGRESSO_DEMO } from "@/lib/sito";
 import { PULSANTE_PIENO } from "./pulsanti";
 
 export const ANCORE = [
@@ -41,7 +41,7 @@ export function Intestazione() {
         </nav>
 
         <div className="flex items-center gap-3">
-          {RICHIESTE_ATTIVE ? (
+          {CONTATTO_POSSIBILE ? (
             <a href="#richiesta" className="hidden text-sm font-medium text-foreground hover:underline sm:inline">
               Richiedi una presentazione
             </a>

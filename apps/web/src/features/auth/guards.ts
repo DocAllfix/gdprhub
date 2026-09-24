@@ -147,12 +147,25 @@ export const requireAdmin = () => requireRuolo("admin");
  * Va invocata nelle server action, MAI solo nell'interfaccia.
  */
 export async function assertNotDemo(capability: string): Promise<void> {
+  const blocco = await bloccoDemo(capability);
+  if (blocco) throw new NonAutorizzato(blocco.errore);
+}
+
+/**
+ * Come `assertNotDemo`, ma RESTITUISCE l'esito invece di lanciare _(2026-09-24)_.
+ *
+ * Le server action sono chiamate con `useActionState`: un'eccezione risale al confine d'errore,
+ * e il visitatore della demo che toccava un interruttore di modulo si ritrovava sulla pagina
+ * «qualcosa non ha funzionato» — in produzione Next ne nasconde perfino il messaggio. Un blocco
+ * deve spiegarsi nella stessa ricevuta di ogni altro errore. `assertNotDemo` resta per le rotte.
+ */
+export async function bloccoDemo(capability: string): Promise<{ readonly ok: false; readonly errore: string } | null> {
   const ctx = await requireStudio();
-  if (ctx.mode === "full") return;
-  throw new NonAutorizzato(
-    `In modalità dimostrativa l'operazione «${capability}» non è disponibile. ` +
-      "Contattaci per attivare un'istanza completa.",
-  );
+  if (ctx.mode === "full") return null;
+  return {
+    ok: false,
+    errore: `Nella demo l'operazione «${capability}» non è disponibile: in un'installazione vera sì.`,
+  };
 }
 
 /** Vero se nell'istanza esiste già uno studio configurato. */

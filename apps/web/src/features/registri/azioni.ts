@@ -6,7 +6,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { registroPerTipo } from "@gdpr/engine";
 import { db } from "@/lib/db";
 import { auditLog, clientCompany, companyModule, registro } from "@/lib/db/schema";
-import { assertNotDemo, requireConsulente } from "@/features/auth/guards";
+import { bloccoDemo, requireConsulente } from "@/features/auth/guards";
 import { invalidaDati } from "@/lib/cache";
 
 // APRIRE, AGGIORNARE, CHIUDERE una voce di registro.
@@ -69,7 +69,8 @@ function dettagliDa(tipo: string, dati: FormData): { valori: Record<string, unkn
 
 export async function apriVoce(_precedente: EsitoRegistro | null, dati: FormData): Promise<EsitoRegistro> {
   const ctx = await requireConsulente();
-  await assertNotDemo("apri una voce di registro");
+  const bloccata = await bloccoDemo("apri una voce di registro");
+  if (bloccata) return bloccata;
 
   const aziendaId = String(dati.get("aziendaId") ?? "");
   const tipo = String(dati.get("tipo") ?? "");
@@ -157,7 +158,8 @@ export async function apriVoce(_precedente: EsitoRegistro | null, dati: FormData
 
 export async function assolviVoce(_precedente: EsitoRegistro | null, dati: FormData): Promise<EsitoRegistro> {
   const ctx = await requireConsulente();
-  await assertNotDemo("chiudi una voce di registro");
+  const bloccata = await bloccoDemo("chiudi una voce di registro");
+  if (bloccata) return bloccata;
 
   const id = String(dati.get("voceId") ?? "");
   const esito = String(dati.get("esito") ?? "").trim();
@@ -199,7 +201,8 @@ export async function cambiaStatoVoce(
   dati: FormData,
 ): Promise<EsitoRegistro> {
   const ctx = await requireConsulente();
-  await assertNotDemo("cambia lo stato di una voce");
+  const bloccata = await bloccoDemo("cambia lo stato di una voce");
+  if (bloccata) return bloccata;
 
   const id = String(dati.get("voceId") ?? "");
   const stato = String(dati.get("stato") ?? "");

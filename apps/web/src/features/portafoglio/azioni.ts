@@ -14,7 +14,7 @@ import {
   obligationInstance,
   obligationTemplate,
 } from "@/lib/db/schema";
-import { assertNotDemo, requireAdmin, requireConsulente } from "@/features/auth/guards";
+import { bloccoDemo, requireAdmin, requireConsulente } from "@/features/auth/guards";
 import { invalidaDati } from "@/lib/cache";
 
 // Le azioni del portafoglio.
@@ -87,7 +87,8 @@ async function registra(
 
 export async function creaAzienda(_precedente: Esito | null, dati: FormData): Promise<Esito> {
   const ctx = await requireConsulente();
-  await assertNotDemo("creazione di un'azienda");
+  const bloccata = await bloccoDemo("creazione di un'azienda");
+  if (bloccata) return bloccata;
 
   const nome = testo(dati, "nome");
   if (nome.length < 2) {
@@ -149,7 +150,8 @@ export async function creaAzienda(_precedente: Esito | null, dati: FormData): Pr
 
 export async function archiviaAzienda(_precedente: Esito | null, dati: FormData): Promise<Esito> {
   const ctx = await requireConsulente();
-  await assertNotDemo("archiviazione di un'azienda");
+  const bloccata = await bloccoDemo("archiviazione di un'azienda");
+  if (bloccata) return bloccata;
 
   const id = testo(dati, "id");
   const trovata = await db.query.clientCompany.findFirst({
@@ -242,7 +244,8 @@ async function apriAssessment(
 
 export async function commutaModulo(_precedente: Esito | null, dati: FormData): Promise<Esito> {
   const ctx = await requireConsulente();
-  await assertNotDemo("attivazione di un modulo");
+  const bloccata = await bloccoDemo("attivazione di un modulo");
+  if (bloccata) return bloccata;
 
   const aziendaId = testo(dati, "aziendaId");
   const dominioGrezzo = testo(dati, "dominio");
@@ -300,7 +303,8 @@ export async function commutaModulo(_precedente: Esito | null, dati: FormData): 
 
 export async function aggiornaMarchio(_precedente: Esito | null, dati: FormData): Promise<Esito> {
   const ctx = await requireAdmin();
-  await assertNotDemo("modifica del marchio");
+  const bloccata = await bloccoDemo("modifica del marchio");
+  if (bloccata) return bloccata;
 
   const nome = testo(dati, "brandNome");
   if (nome.length < 2) return { ok: false, errore: "Il nome dello studio è obbligatorio." };
