@@ -1,14 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import { token } from "@/lib/colori";
 import { TOTALE } from "@/lib/dati";
 import { INDICIZZABILE, SITO } from "@/lib/sito";
+import localFont from "next/font/local";
 import "./globals.css";
 
 // I caratteri arrivano dal pacchetto npm `geist`, non da Google: la build non ha bisogno di
 // rete. Il prodotto li scarica ancora da `fonts.googleapis.com` in fase di build, ed è una
 // fragilità già registrata in docs/05.
+
+// IL MONO NON SI PRECARICA. Serve a cifre e codici, non al testo dell'eroe che fa l'LCP, e i due
+// caratteri variabili precaricati insieme pesavano 140 KB sul percorso critico. Stesse opzioni
+// del preset `geist/font/mono`, più `preload: false`. I ripieghi sono tutti a spaziatura fissa,
+// quindi allo scambio le cifre non cambiano larghezza: CLS rimisurato dopo la modifica.
+const geistMono = localFont({
+  src: "../../node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+  preload: false,
+  adjustFontFallback: false,
+  fallback: ["ui-monospace", "SFMono-Regular", "Roboto Mono", "Menlo", "Monaco", "Liberation Mono", "Courier New", "monospace"],
+});
 
 const TITOLO = "Legisboard · adempimenti GDPR, 231 e 81/08 in un registro";
 const DESCRIZIONE =
@@ -38,7 +51,7 @@ export const viewport: Viewport = { themeColor: token("--primary"), colorScheme:
 
 export default function Radice({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="it" className={`${GeistSans.variable} ${geistMono.variable}`}>
       <body>{children}</body>
     </html>
   );
