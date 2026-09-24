@@ -12,7 +12,7 @@
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
-echo "=== Suite Compliance — setup VPS ==="
+echo "=== Legisboard — setup VPS ==="
 
 echo "[setup] aggiornamento del sistema…"
 apt-get update -q

@@ -150,7 +150,7 @@ function documentoDiProva(): string {
   </table>`;
 
   return `<!doctype html>
-<html lang="it"><head><meta charset="utf-8"><title>Spike PDF - Suite Compliance</title>
+<html lang="it"><head><meta charset="utf-8"><title>Spike PDF - Legisboard</title>
 <style>
   @page { size: A4; margin: 18mm 14mm 20mm; }
   @page { @bottom-center { content: counter(page); } }

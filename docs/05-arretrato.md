@@ -164,22 +164,9 @@ sotto il nome dello studio, e l'**emittente TOTP** in `lib/auth/index.ts`, che �
 l'utente si trova scritto accanto al codice a sei cifre nell'app di autenticazione, per tutto
 il tempo in cui tiene attivo il secondo fattore.
 
-**Resta un residuo, ed è una trappola.** L'etichetta della versione del catalogo vale
-`Suite Compliance 2026.1`, è **un dato nel database** e si vede in Impostazioni come «Versione
-attiva». Ma è anche la **chiave di idempotenza del seeding**: `src/lib/db/seed.ts` salta se
-trova già una riga con quella etichetta.
+**Residuo chiuso il 2026-09-24.** L'etichetta del catalogo, che è anche la chiave di idempotenza del seeding, vale ora `Legisboard 2026.1`: cambiata PRIMA nei due database (sviluppo e produzione) e POI nella costante di `seed.ts`. Provato: `db:seed` risponde «già presente, nulla da fare» invece di riseminare 171 adempimenti.
 
-Quindi cambiarla nel codice e non nel database fa riseminare **tutti e 171 gli adempimenti**
-come versione nuova, in silenzio e al primo `db:seed`. Le due cose vanno cambiate insieme, e
-il database per primo. Non è stato fatto: la scrittura sul database di produzione è stata
-negata dai permessi, e cambiare solo il codice sarebbe stato peggio che non fare niente.
-
-Serve un `UPDATE` di una riga (`catalog_version`, colonna `unique`) più la costante
-`ETICHETTA` in `seed.ts`, nello stesso momento.
-
-**Il dominio non è ancora collegato.** `legisboard.it` e `.eu` puntano a `2.57.91.91`, che è
-il parcheggio di Hostinger. La vetrina gira su `gdprhub.vercel.app`. Collegarlo richiede due
-gesti: il record DNS su Hostinger e il dominio aggiunto al progetto Vercel.
+**Il dominio è collegato** _(2026-09-24)_: landing su `legisboard.eu`, `legisboard.it` e i `www` in 308 verso il `.eu`, demo pubblica su `demo.legisboard.eu`.
 
 ### 2.3 Le altre tre, dal piano iniziale
 

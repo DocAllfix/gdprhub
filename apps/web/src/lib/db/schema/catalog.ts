@@ -17,7 +17,7 @@ export const tipiPeriodicita = ["periodica", "continua", "evento", "una_tantum"]
 /** Una versione del catalogo. Gli assessment ci si agganciano e non la lasciano più. */
 export const catalogVersion = pgTable("catalog_version", {
   id: text("id").primaryKey(),
-  /** Etichetta leggibile, es. «Suite Compliance 2026.1». */
+  /** Etichetta leggibile, es. «Legisboard 2026.1». */
   etichetta: text("etichetta").notNull().unique(),
   /** Versione dell'applicazione che l'ha seminata: serve a ricostruire cosa c'era. */
   versioneApp: text("versione_app").notNull(),

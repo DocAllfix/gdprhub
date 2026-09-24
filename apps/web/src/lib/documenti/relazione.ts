@@ -1,4 +1,5 @@
 import { formattaIt } from "@legisboard/engine";
+import { PRODOTTO } from "@/lib/brand";
 import type { Snapshot, VoceCritica } from "@/features/relazioni/snapshot";
 import { componi, distribuisci, esc, type Documento, type Pagina } from "./impaginazione";
 import { barreConformita, barreOrizzontali, ciambella, colonneImpilate } from "./grafici-doc";
@@ -52,7 +53,7 @@ function copertina(s: Snapshot, studio: string, numero: number, impronta: string
   return `<div class="lastra">
     <div class="alto">
       <span class="marchio">${esc(studio)}</span>
-      <span class="qualifica">Suite Compliance</span>
+      <span class="qualifica">${esc(PRODOTTO.nome)}</span>
     </div>
 
     <div class="basso">
@@ -439,7 +440,7 @@ function esclusioniEChiusura(s: Snapshot, studio: string): Pagina[] {
       <div class="margine"><span class="num">9</span>Chiusura</div>
       <div>
         <h2 class="sezione">Dichiarazione di redazione</h2>
-        <p>La presente relazione è generata dalla Suite Compliance sui dati registrati
+        <p>La presente relazione è generata da ${esc(PRODOTTO.nome)} sui dati registrati
         nell'istanza di ${esc(studio)} alla data del ${formattaIt(s.dataRiferimento)}. I valori
         riportati sono congelati al momento della pubblicazione: modifiche successive agli
         adempimenti non alterano questo documento, e producono semmai una relazione nuova.</p>

@@ -30,7 +30,7 @@ import {
 // Uso:  pnpm --filter web db:seed
 
 /** Cambiare questa etichetta a ogni modifica del contenuto del catalogo. */
-const ETICHETTA = "Suite Compliance 2026.1";
+const ETICHETTA = "Legisboard 2026.1";
 const VERSIONE_APP = "0.1.0";
 
 async function main() {
